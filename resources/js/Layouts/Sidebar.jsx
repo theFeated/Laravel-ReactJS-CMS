@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 
 export default function Sidebar() {
     const [isOpen, setIsOpen] = useState(() => {
@@ -20,7 +20,7 @@ export default function Sidebar() {
         timeoutRef.current = setTimeout(() => {
             setIsOpen(false);
             localStorage.setItem('sidebarState', JSON.stringify(false));
-        }, 500);
+        }, 2000);
     };
 
     const handleMouseEnter = () => {
@@ -31,11 +31,12 @@ export default function Sidebar() {
 
     return (
         <div
-            className={`relative flex flex-col flex-wrap bg-gray-100 dark:bg-gray-900 border-r border-gray-500 
-                p-6 flex-none w-64 transition-transform duration-500 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'} 
-                md:fixed md:top-0 md:z-40 md:h-screen md:shadow-xl`}
+            className={`fixed inset-y-0 left-0 bg-gray-100 dark:bg-gray-900 border-r border-gray-500 
+                p-6 flex flex-col flex-none w-64 transition-transform duration-500 ease-in-out 
+                ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
             onMouseLeave={handleMouseLeave}
             onMouseEnter={handleMouseEnter}
+            style={{ zIndex: 10 }}
         >
             <div className="flex flex-col">
                 <p className="uppercase text-xs text-gray-200 mb-4 tracking-wider">Navigation</p>

@@ -9,7 +9,7 @@ import Sidebar from '@/Layouts/Sidebar';
 export default function Authenticated({ header, children }) {
     const user = usePage().props.auth.user;
     const { url } = usePage();
-    const currentPage = url.split('/').pop().replace('-', ' ').replace(/^\w/, c => c.toUpperCase());
+    const currentPage = url.split('/').pop().replace('-', ' ').replace(/^\w/, (c) => c.toUpperCase());
 
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
 
@@ -42,6 +42,12 @@ export default function Authenticated({ header, children }) {
                                                 type="button"
                                                 className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150"
                                             >
+                                   
+                                                <img
+                                                    src={user.userphoto ? `/user_photos/${user.userphoto}` : '/images/default-avatar.png'}
+                                                    alt="Profile"
+                                                    className="w-8 h-8 rounded-full mr-2"
+                                                />
                                                 {user.name}
 
                                                 <svg

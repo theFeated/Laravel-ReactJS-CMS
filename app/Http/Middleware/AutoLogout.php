@@ -12,7 +12,7 @@ class AutoLogout
     {
         // Check if the user is authenticated
         if (Auth::guard($guard)->check()) {
-            $inactivityTimeout = config('app.inactivity_timeout', 60); // Timeout in seconds
+            $inactivityTimeout = config('app.inactivity_timeout', 300); // Timeout in seconds
 
             $lastActivity = Session::get('last_activity');
 

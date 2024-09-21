@@ -60,4 +60,30 @@ class ProfileController extends Controller
 
         return Redirect::to('/');
     }
+
+    public function updatePhoto(Request $request)
+    {
+        $request->validate([
+            'userphoto' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Validation rules for the image
+        ]);
+    
+        $user = auth()->user();
+    
+        if ($request->hasFile('userphoto')) {
+            $image = $request->file('userphoto');
+            $imageName = 'img_' . time() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('user_photos'), $imageName);
+    
+            // Delete the old photo if it exists
+            if ($user->userphoto && file_exists(public_path('user_photos/' . $user->userphoto))) {
+                unlink(public_path('user_photos/' . $user->userphoto));
+            }
+    
+            $user->userphoto = $imageName;
+            $user->save();
+        }
+    
+        return redirect()->back()->with('success', 'Profile photo updated successfully');
+    }
+    
 }
