@@ -47,7 +47,7 @@ export default function Sidebar() {
                     </a>
                 </div>
                 <div className="mb-3 capitalize font-medium text-sm text-gray-400 hover:text-gray-100 transition ease-in-out duration-500">
-                    <a href="/profile" className="nav-link active">
+                    <a href="/profile/edit" className="nav-link active">
                         <i className="fas fa-user text-xs mr-2"></i>
                         Profile
                     </a>

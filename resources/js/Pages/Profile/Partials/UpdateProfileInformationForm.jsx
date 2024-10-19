@@ -4,7 +4,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import { Link, useForm, usePage } from '@inertiajs/react';
 import { Transition } from '@headlessui/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function UpdateProfileInformation({ mustVerifyEmail, status, className = '' }) {
     const user = usePage().props.auth.user;
@@ -20,10 +20,18 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status, clas
 
     const [photoPreview, setPhotoPreview] = useState(user.userphoto ? `/user_photos/${user.userphoto}` : null);
 
+    const [isSaved, setIsSaved] = useState(false);
+    const [isCameraClicked, setIsCameraClicked] = useState(false);
+    const [hasCameraPermission, setHasCameraPermission] = useState(false);
+    
     const submitProfile = (e) => {
         e.preventDefault();
         patch(route('profile.update'));
     };
+
+    const isPhotoUploaded = () => {
+        return photoData.userphoto !== null;
+    }
 
     const submitPhoto = (e) => {
         e.preventDefault();
@@ -31,6 +39,10 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status, clas
         const formData = new FormData();
         if (photoData.userphoto) {
             formData.append('userphoto', photoData.userphoto);
+        }
+
+        if (isPhotoUploaded()) {
+            setIsSaved(true);
         }
     
         postPhoto(route('profile.updatePhoto'), {
@@ -69,29 +81,30 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status, clas
             <div className="mt-6 flex flex-col md:flex-row space-x-0 md:space-x-6">
                 <div className="flex-shrink-0 flex items-start gap-4 mb-6 md:mb-0">
                     {photoPreview && (
-                        <img src={photoPreview} alt="Profile Preview" className="w-32 h-32 rounded-full" />
+                        <img src={photoPreview} alt="Profile Preview" className="w-40 h-40 rounded-full" />
                     )}
 
                     <form onSubmit={submitPhoto} encType="multipart/form-data" className="flex flex-col items-start">
                         <InputLabel htmlFor="userphoto" value="Profile Photo" />
-                        <InputError className="mt-2" message={photoErrors.userphoto} />
 
                         <input
                             id="userphoto"
                             type="file"
-                            className="mt-4 block text-sm text-gray-500 dark:text-gray-300 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+                            className="mt-4 block text-sm text-gray-500 dark:text-gray-300 file:py-2 
+                            file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold 
+                            file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
                             onChange={handlePhotoChange}
                         />
-                        <PrimaryButton disabled={photoProcessing} className="mt-4">Save Photo</PrimaryButton>
-
+                        <PrimaryButton disabled={photoProcessing || isSaved || !isPhotoUploaded()} className="mt-4">Save Photo</PrimaryButton>
+                        
                         <Transition
-                            show={photoRecentlySuccessful}
-                            enter="transition ease-in-out"
-                            enterFrom="opacity-0"
-                            leave="transition ease-in-out"
-                            leaveTo="opacity-0"
-                        >
-                            <p className="text-sm text-gray-600 dark:text-gray-400">Photo Saved.</p>
+                                show={photoRecentlySuccessful}
+                                enter="transition ease-in-out"
+                                enterFrom="opacity-0"
+                                leave="transition ease-in-out"
+                                leaveTo="opacity-0"
+                            >
+                                <p className="text-sm text-gray-600 dark:text-gray-400">Saved.</p>
                         </Transition>
                     </form>
                 </div>
