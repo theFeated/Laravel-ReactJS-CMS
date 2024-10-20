@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm } from '@inertiajs/react';
-import axios from 'axios'; // Import axios for making API calls
+import axios from 'axios'; 
 
 export default function Settings({ isGoogleAuthEnabled: initialIsGoogleAuthEnabled }) {
     const [isGoogleAuthEnabled, setIsGoogleAuthEnabled] = useState(initialIsGoogleAuthEnabled);
@@ -21,7 +21,7 @@ export default function Settings({ isGoogleAuthEnabled: initialIsGoogleAuthEnabl
             const response = await axios.post('/api/settings', {
                 is_google_auth_enabled: newState,
             });
-            console.log(response.data.message); // Display success message
+            console.log(response.data.message);
         } catch (error) {
             console.error('There was an error updating the settings', error);
         }
