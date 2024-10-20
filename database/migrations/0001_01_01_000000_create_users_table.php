@@ -20,7 +20,6 @@ return new class extends Migration
             $table->string('userphoto')->nullable();
             $table->string('google_id')->nullable();
             $table->string('two_factor_code')->nullable();
-            $table->timestamp('two_factor_code_sent_at')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

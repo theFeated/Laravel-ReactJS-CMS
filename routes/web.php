@@ -37,7 +37,6 @@ Route::middleware('auth', 'twofactor')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::get('/twofactor', [TwoFactorController::class, 'index'])->name('twofactor.index');
     Route::post('/twofactor/verify', [TwoFactorController::class, 'verify'])->name('twofactor.verify');
-    Route::get('/twofactor/timer', [TwoFactorController::class, 'timer'])->name('twofactor.timer');
 });
 
 //Login featch the settings for the gogle auth
