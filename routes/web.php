@@ -6,6 +6,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\TwoFactorController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -16,11 +17,10 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
-Route::middleware('auth')->group(function () {
+Route::middleware('auth', 'twofactor')->group(function () {
+    Route::get('/dashboard', function () {
+        return Inertia::render('Dashboard');
+    })->middleware(['verified'])->name('dashboard');
     
     Route::prefix('/')->controller(ProfileController::class)->group(function () {
         Route::get('profile', 'edit')->name('profile.edit');
@@ -32,6 +32,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
     Route::post('/api/settings', [SettingsController::class, 'update'])->name('settings.update');
 
+});
+
+Route::middleware('auth')->group(function () {
+    Route::get('/twofactor', [TwoFactorController::class, 'index'])->name('twofactor.index');
+    Route::post('/twofactor/verify', [TwoFactorController::class, 'verify'])->name('twofactor.verify');
+    Route::get('/twofactor/timer', [TwoFactorController::class, 'timer'])->name('twofactor.timer');
 });
 
 //Login featch the settings for the gogle auth

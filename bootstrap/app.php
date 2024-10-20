@@ -22,6 +22,9 @@ return Application::configure(basePath: dirname(__DIR__))
             HandleInertiaRequests::class,
             
         ]);
+        $middleware->alias([
+            'twofactor' =>  \App\Http\Middleware\Verify2FAMiddleware::class,       
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

@@ -33,6 +33,7 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    protected $dates = ['two_factor_code_sent_at'];
     /**
      * Get the attributes that should be cast.
      *
