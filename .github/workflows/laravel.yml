@@ -50,7 +50,6 @@ jobs:
       - name: Run migrations
         run: |
           php artisan migrate --force
-          php artisan db:seed --class=UserSeeder --force
 
       - name: Deploy application
         run: |
