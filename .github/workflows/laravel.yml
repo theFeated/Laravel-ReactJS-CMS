@@ -1,0 +1,48 @@
+name: 🎉 Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  web-deploy:
+    name: 🎉 Deploy
+    runs-on: ubuntu-latest
+
+    env:
+      GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+      GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+      GOOGLE_REDIRECT: ${{ secrets.GOOGLE_REDIRECT }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+  
+      - name: Use Node.js 18
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18'
+        
+      - name: Install Composer Dependencies
+        run: composer install
+  
+      - name: 🔨 Build Project
+        run: |
+          npm install
+          npm run build
+
+      - name: Run migrations
+        run: |
+          php artisan migrate --force
+          php artisan db:seed --class=UserSeeder --force
+
+      - name: Deploy application
+        run: |
+          # Add your deployment commands here
+          echo "Deploying application with Google API credentials"
