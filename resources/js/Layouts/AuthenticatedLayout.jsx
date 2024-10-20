@@ -5,6 +5,8 @@ import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { Link, usePage } from '@inertiajs/react';
 import Sidebar from '@/Layouts/Sidebar';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUser, faSignOutAlt, faCog } from '@fortawesome/free-solid-svg-icons';
 
 export default function Authenticated({ header, children }) {
     const user = usePage().props.auth.user;
@@ -42,7 +44,6 @@ export default function Authenticated({ header, children }) {
                                                 type="button"
                                                 className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150"
                                             >
-                                   
                                                 <img
                                                     src={user.userphoto ? `/user_photos/${user.userphoto}` : '/images/default-avatar.png'}
                                                     alt="Profile"
@@ -67,8 +68,16 @@ export default function Authenticated({ header, children }) {
                                     </Dropdown.Trigger>
 
                                     <Dropdown.Content>
-                                        <Dropdown.Link href={route('profile.edit')}>Profile</Dropdown.Link>
+                                        <Dropdown.Link href={route('profile.edit')}>
+                                            <FontAwesomeIcon icon={faUser} className="mr-2" />
+                                            Profile
+                                        </Dropdown.Link>
+                                        <Dropdown.Link href={route('settings')}>
+                                            <FontAwesomeIcon icon={faCog} className="mr-2" />
+                                            Settings
+                                        </Dropdown.Link>
                                         <Dropdown.Link href={route('logout')} method="post" as="button">
+                                            <FontAwesomeIcon icon={faSignOutAlt} className="mr-2" />
                                             Log Out
                                         </Dropdown.Link>
                                     </Dropdown.Content>
@@ -105,7 +114,6 @@ export default function Authenticated({ header, children }) {
                 <div className={(showingNavigationDropdown ? 'block' : 'hidden') + ' sm:hidden'}>
                     <div className="pt-2 pb-3 space-y-1">
                         <ResponsiveNavLink href={url} active={true}>
-                            <i className="fas fa-user text-xs mr-2"></i>
                             {currentPage}
                         </ResponsiveNavLink>
                     </div>
@@ -117,8 +125,16 @@ export default function Authenticated({ header, children }) {
                         </div>
 
                         <div className="mt-3 space-y-1">
-                            <ResponsiveNavLink href={route('profile.edit')}>Profile</ResponsiveNavLink>
+                            <ResponsiveNavLink href={route('profile.edit')}>
+                                <FontAwesomeIcon icon={faUser} className="mr-2" />
+                                Profile
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink href={route('settings')}>
+                                <FontAwesomeIcon icon={faCog} className="mr-2" />
+                                Settings
+                            </ResponsiveNavLink>
                             <ResponsiveNavLink method="post" href={route('logout')} as="button">
+                                <FontAwesomeIcon icon={faSignOutAlt} className="mr-2" />
                                 Log Out
                             </ResponsiveNavLink>
                         </div>

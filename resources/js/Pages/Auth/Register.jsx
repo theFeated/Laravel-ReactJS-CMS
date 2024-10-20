@@ -3,8 +3,11 @@ import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
+import GoogleAuth from '@/Components/GoogleAuth';
 import { Head, Link, useForm } from '@inertiajs/react';
-import GoogleAuth from '@/Components/GoogleAuth'; // Import the GoogleAuth component
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+
 
 export default function Register() {
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -21,6 +24,19 @@ export default function Register() {
             onFinish: () => reset('password', 'password_confirmation'),
         });
     };
+
+    const [isGoogleAuthEnabled, setIsGoogleAuthEnabled] = useState(false);
+
+    useEffect(() => {
+        axios.get('/api/settings')
+            .then(response => {
+                setIsGoogleAuthEnabled(response.data.is_google_auth_enabled);
+            })
+            .catch(error => {
+                console.error('Error fetching the settings', error);
+            });
+    }, []);    
+
 
     return (
         <GuestLayout>
@@ -120,20 +136,21 @@ export default function Register() {
                                 </PrimaryButton>
                             </div>
                         </form>
-                        <div className="mt-6">
-                            <div className="relative">
-                                <div className="absolute inset-0 flex items-center">
-                                    <div className="w-full border-t border-gray-300 dark:border-gray-700"></div>
+                        {isGoogleAuthEnabled ? (
+                            <div className="mt-6">
+                                <div className="relative">
+                                    <div className="absolute inset-0 flex items-center">
+                                        <div className="w-full border-t border-gray-300 dark:border-gray-700"></div>
+                                    </div>
+                                    <div className="relative flex justify-center text-sm">
+                                        <span className="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">Or continue with</span>
+                                    </div>
                                 </div>
-                                <div className="relative flex justify-center text-sm">
-                                    <span className="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">Or continue with</span>
+                                <div className="mt-6 grid grid-cols-1 gap-3">
+                                    <GoogleAuth buttonText="Google" />
                                 </div>
                             </div>
-
-                            <div className="mt-6 grid grid-cols-1 gap-3">
-                                <GoogleAuth buttonText="Google" />
-                            </div>
-                        </div>
+                        ) : null}
                     </div>
                 </div>
             </div>
