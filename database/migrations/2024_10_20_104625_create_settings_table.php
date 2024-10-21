@@ -14,6 +14,7 @@ class CreateSettingsTable extends Migration
             $table->boolean('is_2fa_enabled')->default(false);
             $table->string('web_icon')->nullable();
             $table->string('web_name')->nullable();
+            $table->string('logo')->nullable();
             $table->timestamps();
         });
     }

@@ -17,6 +17,7 @@ class SettingsController extends Controller
             'is2FAEnabled' => $setting ? $setting->is_2fa_enabled : false,
             'webIcon' => $setting && $setting->web_icon ? Storage::url($setting->web_icon) : '',  // Ensure full URL is returned
             'webName' => $setting ? $setting->web_name : '',
+            'logo' => $setting && $setting->logo ? Storage::url($setting->logo) : '',  // Include logo URL
         ]);
     }
 
@@ -47,6 +48,30 @@ class SettingsController extends Controller
         return response()->json(['message' => 'Web icon and name updated successfully']);
     }
 
+    public function uploadLogo(Request $request)
+    {
+        $request->validate([
+            'logo' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        $setting = Setting::firstOrCreate([]);
+
+        if ($request->hasFile('logo')) {
+            // Delete the old logo if it exists
+            if ($setting->logo) {
+                Storage::disk('public')->delete($setting->logo);
+            }
+
+            // Store the new logo and save the path
+            $file = $request->file('logo');
+            $filePath = $file->store('logos', 'public');
+            $setting->logo = $filePath;
+            $setting->save();
+        }
+
+        return response()->json(['message' => 'Logo uploaded successfully']);
+    }
+
     public function getSettings()
     {
         $setting = Setting::first();
@@ -55,6 +80,7 @@ class SettingsController extends Controller
             'is_2fa_enabled' => $setting ? $setting->is_2fa_enabled : false,
             'web_icon' => $setting && $setting->web_icon ? Storage::url($setting->web_icon) : '',  // Return full URL here as well
             'web_name' => $setting ? $setting->web_name : '',
+            'logo' => $setting && $setting->logo ? Storage::url($setting->logo) : '',
         ]);
     }
 }

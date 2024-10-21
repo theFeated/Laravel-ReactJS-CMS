@@ -11,5 +11,8 @@ class Setting extends Model
     protected $fillable = [
         'is_google_auth_enabled',
         'is_2fa_enabled',
+        'web_icon',
+        'web_name',
+        'logo',
     ];
 }

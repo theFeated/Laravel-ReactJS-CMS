@@ -1,17 +1,16 @@
 import { useState } from 'react';
 import axios from 'axios';
 
-export default function WebIconAndName({ initialWebIcon, initialWebName }) {
-    const [webIcon, setWebIcon] = useState(null);
-    const [webName, setWebName] = useState(initialWebName);
-    const [preview, setPreview] = useState(initialWebIcon);
+export default function UploadLogo({ initialLogo }) {
+    const [logo, setLogo] = useState(null);
+    const [preview, setPreview] = useState(initialLogo);
     const [processing, setProcessing] = useState(false);
     const [errors, setErrors] = useState({});
     const [successMessage, setSuccessMessage] = useState('');
 
-    const handleIconChange = (e) => {
+    const handleLogoChange = (e) => {
         const file = e.target.files[0];
-        setWebIcon(file);
+        setLogo(file);
         setPreview(URL.createObjectURL(file));
     };
 
@@ -22,13 +21,10 @@ export default function WebIconAndName({ initialWebIcon, initialWebName }) {
         setSuccessMessage('');
 
         const formData = new FormData();
-        if (webIcon) {
-            formData.append('web_icon', webIcon);
-        }
-        formData.append('web_name', webName);
+        formData.append('logo', logo);
 
         try {
-            const response = await axios.post('/settings/update-web-icon-and-name', formData, {
+            const response = await axios.post('/settings/upload-logo', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -38,7 +34,8 @@ export default function WebIconAndName({ initialWebIcon, initialWebName }) {
             if (error.response && error.response.data.errors) {
                 setErrors(error.response.data.errors);
             } else {
-                console.error('There was an error updating the settings', error);
+                console.error('Error uploading logo', error);
+                setErrors({ general: 'An unexpected error occurred. Please try again later.' });
             }
         } finally {
             setProcessing(false);
@@ -46,20 +43,23 @@ export default function WebIconAndName({ initialWebIcon, initialWebName }) {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="mb-8 rounded-lg">
+        <form onSubmit={handleSubmit}>
             <div className="mb-6">
-                <label htmlFor="webIcon" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Web Icon
+                <label htmlFor="logo" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Select Logo
                 </label>
                 <div className="flex items-center gap-4 mt-2">
+                    {/* Logo Upload Input */}
                     <input
                         type="file"
-                        id="webIcon"
+                        id="logo"
                         className="text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:text-gray-400 dark:bg-gray-700 dark:border-gray-600"
-                        onChange={handleIconChange}
+                        onChange={handleLogoChange}
                         disabled={processing}
                     />
-                     {preview && (
+                    
+                    {/* Preview Image */}
+                    {preview && (
                         <img 
                             src={preview} 
                             alt="Logo Preview" 
@@ -67,22 +67,11 @@ export default function WebIconAndName({ initialWebIcon, initialWebName }) {
                         />
                     )}
                 </div>
-                {errors.web_icon && <div className="text-red-500 text-sm mt-2">{errors.web_icon}</div>}
-            </div>
 
-            <div className="mb-6">
-                <label htmlFor="webName" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Web Name
-                </label>
-                <input
-                    type="text"
-                    id="webName"
-                    className="mt-2 block w-full px-3 py-2 text-sm text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:focus:ring-blue-500"
-                    value={webName}
-                    onChange={(e) => setWebName(e.target.value)}
-                    disabled={processing}
-                />
-                {errors.web_name && <div className="text-red-500 text-sm mt-2">{errors.web_name}</div>}
+                {/* Display Errors */}
+                {errors.logo && (
+                    <div className="text-red-500 text-sm mt-2">{errors.logo}</div>
+                )}
             </div>
 
             {errors.general && (
@@ -92,7 +81,8 @@ export default function WebIconAndName({ initialWebIcon, initialWebName }) {
             {successMessage && (
                 <div className="text-green-500 text-sm mb-4">{successMessage}</div>
             )}
-            
+
+            {/* Submit Button */}
             <button
                 type="submit"
                 className="bg-blue-500 text-white px-4 py-2 rounded"
@@ -104,10 +94,10 @@ export default function WebIconAndName({ initialWebIcon, initialWebName }) {
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
                         </svg>
-                        Saving...
+                        Uploading...
                     </div>
                 ) : (
-                    'Save'
+                    'Upload Logo'
                 )}
             </button>
         </form>
