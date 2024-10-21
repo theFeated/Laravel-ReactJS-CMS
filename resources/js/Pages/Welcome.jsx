@@ -1,4 +1,5 @@
 import { Link, Head } from '@inertiajs/react';
+import ApplicationLogo from '../Components/ApplicationLogo';
 
 export default function Welcome({ auth, laravelVersion, phpVersion }) {
     return (
@@ -8,13 +9,9 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
                 <div className="relative min-h-screen flex flex-col items-center justify-center selection:bg-[#FF2D20] selection:text-white">
                     <div className="relative w-full max-w-2xl px-6 lg:max-w-7xl">
                         <header className="flex flex-col items-center gap-6 py-10">
-                            <div className="flex justify-center">
-                                <img
-                                    src="/cms/img/j.png"
-                                    alt="Logo"
-                                    className="h-12 w-auto lg:h-16"
-                                />
-                            </div>
+                            <Link href="/">
+                                <ApplicationLogo className="w-20 h-20 fill-current text-gray-500" />
+                            </Link>
                             <nav className="flex flex-row items-center space-x-4">
                                 {auth.user ? (
                                     <Link

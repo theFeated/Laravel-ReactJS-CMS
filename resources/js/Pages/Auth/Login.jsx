@@ -39,9 +39,9 @@ export default function Login({ status, canResetPassword }) {
         <GuestLayout>
             <Head title="Log in" />
 
-            <div className="min-h-screen flex flex-col justify-center lg:px-2">
+            <div className="flex flex-col justify-center lg:px-2">
                 <div className="sm:mx-auto sm:w-full sm:max-w-md">
-                    <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-gray-100">
+                    <h2 className="mt-10 text-center text-3xl font-extrabold text-gray-900 dark:text-gray-100">
                         Sign in to your account
                     </h2>
                     <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400 max-w">
