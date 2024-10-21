@@ -31,6 +31,7 @@ Route::middleware('auth', 'twofactor')->group(function () {
 
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
     Route::post('/api/settings', [SettingsController::class, 'update'])->name('settings.update');
+    Route::post('/settings/update-web-icon-and-name', [SettingsController::class, 'updateWebIconAndName']);
 
 });
 

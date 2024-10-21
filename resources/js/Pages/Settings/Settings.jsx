@@ -2,8 +2,9 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import EnableGoogleAuth from './Partials/EnableGoogleAuth';
 import Enable2FA from './Partials/Enable2FA';
+import WebIconAndName from './Partials/WebIconAndName';
 
-export default function Settings({ isGoogleAuthEnabled, is2FAEnabled }) {
+export default function Settings({ isGoogleAuthEnabled, is2FAEnabled, webIcon, webName }) {
     return (
         <AuthenticatedLayout>
             <Head title="Settings" />
@@ -29,6 +30,7 @@ export default function Settings({ isGoogleAuthEnabled, is2FAEnabled }) {
                                 <Enable2FA initialIs2FAEnabled={is2FAEnabled} />
                             </div>
 
+                            <WebIconAndName initialWebIcon={webIcon} initialWebName={webName} />
                         </div>
                     </div>
                 </div>
