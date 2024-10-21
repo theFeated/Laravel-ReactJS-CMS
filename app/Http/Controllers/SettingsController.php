@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -15,12 +14,42 @@ class SettingsController extends Controller
         return Inertia::render('Settings/Settings', [
             'isGoogleAuthEnabled' => $setting ? $setting->is_google_auth_enabled : false,
             'is2FAEnabled' => $setting ? $setting->is_2fa_enabled : false,
-            'webIcon' => $setting && $setting->web_icon ? Storage::url($setting->web_icon) : '',  // Ensure full URL is returned
+            'webIcon' => $setting && $setting->web_icon ? Storage::url($setting->web_icon) : '',
             'webName' => $setting ? $setting->web_name : '',
-            'logo' => $setting && $setting->logo ? Storage::url($setting->logo) : '',  // Include logo URL
+            'logo' => $setting && $setting->logo ? Storage::url($setting->logo) : '',
         ]);
     }
 
+    public function update(Request $request)
+    {
+        // Fetch the first settings record or create a new one if it doesn't exist
+        $setting = Setting::firstOrCreate([]);
+    
+        // Check if the request contains the `is_google_auth_enabled` field and validate it
+        if ($request->has('is_google_auth_enabled')) {
+            $request->validate([
+                'is_google_auth_enabled' => 'required|boolean',
+            ]);
+            // Update only the Google Auth setting
+            $setting->update([
+                'is_google_auth_enabled' => $request->is_google_auth_enabled,
+            ]);
+        }
+    
+        // Check if the request contains the `is_2fa_enabled` field and validate it
+        if ($request->has('is_2fa_enabled')) {
+            $request->validate([
+                'is_2fa_enabled' => 'required|boolean',
+            ]);
+            // Update only the 2FA setting
+            $setting->update([
+                'is_2fa_enabled' => $request->is_2fa_enabled,
+            ]);
+        }
+    
+        return response()->json(['message' => 'Settings updated successfully']);
+    }
+    
     public function updateWebIconAndName(Request $request)
     {
         $request->validate([
@@ -31,12 +60,10 @@ class SettingsController extends Controller
         $setting = Setting::firstOrCreate([]);
 
         if ($request->hasFile('web_icon')) {
-            // Delete the old icon if it exists
             if ($setting->web_icon) {
                 Storage::disk('public')->delete($setting->web_icon);
             }
 
-            // Store the new icon and save the path
             $file = $request->file('web_icon');
             $filePath = $file->store('web_icons', 'public');
             $setting->web_icon = $filePath;
@@ -57,12 +84,10 @@ class SettingsController extends Controller
         $setting = Setting::firstOrCreate([]);
 
         if ($request->hasFile('logo')) {
-            // Delete the old logo if it exists
             if ($setting->logo) {
                 Storage::disk('public')->delete($setting->logo);
             }
 
-            // Store the new logo and save the path
             $file = $request->file('logo');
             $filePath = $file->store('logos', 'public');
             $setting->logo = $filePath;
@@ -78,7 +103,7 @@ class SettingsController extends Controller
         return response()->json([
             'is_google_auth_enabled' => $setting ? $setting->is_google_auth_enabled : false,
             'is_2fa_enabled' => $setting ? $setting->is_2fa_enabled : false,
-            'web_icon' => $setting && $setting->web_icon ? Storage::url($setting->web_icon) : '',  // Return full URL here as well
+            'web_icon' => $setting && $setting->web_icon ? Storage::url($setting->web_icon) : '',
             'web_name' => $setting ? $setting->web_name : '',
             'logo' => $setting && $setting->logo ? Storage::url($setting->logo) : '',
         ]);
