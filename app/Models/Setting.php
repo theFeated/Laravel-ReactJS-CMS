@@ -14,5 +14,6 @@ class Setting extends Model
         'web_icon',
         'web_name',
         'logo',
+        'is_google2fa_enabled'
     ];
 }

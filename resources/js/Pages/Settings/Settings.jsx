@@ -4,8 +4,9 @@ import EnableGoogleAuth from './Partials/EnableGoogleAuth';
 import Enable2FA from './Partials/Enable2FA';
 import WebIconAndName from './Partials/WebIconAndName';
 import UploadLogo from './Partials/UploadLogo';
+import Google2FAToggle from '../Google2FA/Partials/Google2FAToggle';
 
-export default function Settings({ isGoogleAuthEnabled, is2FAEnabled, webIcon, webName, logo }) {
+export default function Settings({ isGoogleAuthEnabled, is2FAEnabled, webIcon, webName, logo, isGoogle2FAEnabled }) {
     return (
         <AuthenticatedLayout>
             <Head title="Settings" />
@@ -36,6 +37,16 @@ export default function Settings({ isGoogleAuthEnabled, is2FAEnabled, webIcon, w
                             </div>
 
                             <div className="w-full md:w-1/2 px-4 mb-4">
+                                <div className="mb-8 p-6 bg-pink-50 dark:bg-pink-900 rounded-lg">
+                                <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-2">Enable Google2FA Authentication</h2>
+                                    <p className="text-gray-600 dark:text-gray-400 mb-4">
+                                        Enable Google2FA Authentication through Authenticator App.
+                                    </p>
+                                    <Google2FAToggle initialIsGoogle2FAEnabled={isGoogle2FAEnabled} />
+                                </div>
+                            </div>
+
+                            <div className="w-full md:w-1/2 px-4 mb-4">
                                 <div className="mb-8 p-6 bg-purple-50 dark:bg-purple-900 rounded-lg">
                                     <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-2">Web Icon and Name</h2>
                                     <p className="text-gray-600 dark:text-gray-400 mb-4">
@@ -54,6 +65,7 @@ export default function Settings({ isGoogleAuthEnabled, is2FAEnabled, webIcon, w
                                     <UploadLogo initialLogo={logo} />
                                 </div>
                             </div>
+                            
                         </div>
                     </div>
                 </div>

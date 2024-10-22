@@ -10,11 +10,12 @@ class CreateSettingsTable extends Migration
     {
         Schema::create('settings', function (Blueprint $table) {
             $table->id();
-            $table->boolean('is_google_auth_enabled')->default(false);
+            $table->boolean('is_google_auth_enabled')->default(true);
             $table->boolean('is_2fa_enabled')->default(false);
             $table->string('web_icon')->nullable();
             $table->string('web_name')->nullable();
             $table->string('logo')->nullable();
+            $table->boolean('is_google2fa_enabled')->default(false);
             $table->timestamps();
         });
     }

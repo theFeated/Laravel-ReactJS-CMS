@@ -21,6 +21,8 @@ class User extends Authenticatable
         'email',
         'password',
         'userphoto',
+        'google2fa_secret',
+
     ];
 
     /**

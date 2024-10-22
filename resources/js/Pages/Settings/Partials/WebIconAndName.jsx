@@ -77,7 +77,9 @@ export default function WebIconAndName({ initialWebIcon, initialWebName }) {
                 <input
                     type="text"
                     id="webName"
-                    className="mt-2 block w-full px-3 py-2 text-sm text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:focus:ring-blue-500"
+                    className="mt-2 block w-full sm:w-[19rem] px-3 py-2 text-sm text-gray-900 bg-gray-50 border 
+                    border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-blue-500 
+                    dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:focus:ring-blue-500"
                     value={webName}
                     onChange={(e) => setWebName(e.target.value)}
                     disabled={processing}
