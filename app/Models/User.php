@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use PragmaRX\Google2FAQRCode\Google2FA;
 
 class User extends Authenticatable
 {
@@ -47,4 +48,15 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function createTwoFactorAuth()
+    {
+        $google2fa = new Google2FA();
+        $secret = $google2fa->generateSecretKey();
+        $this->google2fa_secret = $secret;
+        $this->save();
+        return $secret;
+
+    }
+
 }

@@ -21,6 +21,8 @@ return new class extends Migration
             $table->string('google_id')->nullable();
             $table->string('two_factor_code')->nullable();
             $table->string('google2fa_secret')->nullable();
+            $table->boolean('google2fa_setup_complete')->default(false);
+            $table->boolean('google2fa_enabled')->default(false);
             $table->rememberToken();
             $table->timestamps();
         });

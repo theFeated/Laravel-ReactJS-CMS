@@ -23,7 +23,9 @@ return Application::configure(basePath: dirname(__DIR__))
             
         ]);
         $middleware->alias([
-            'twofactor' =>  \App\Http\Middleware\Verify2FAMiddleware::class,       
+            'twofactor' =>  \App\Http\Middleware\Verify2FAMiddleware::class,    
+            '2fa' => \App\Http\Middleware\Ensure2FAEnabled::class,
+   
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

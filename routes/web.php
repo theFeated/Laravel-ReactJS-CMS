@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Google2FAController;
 use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
@@ -17,7 +18,7 @@ Route::get('/', function () {
     ]);
 });
 
-Route::middleware('auth', 'twofactor')->group(function () {
+Route::middleware('auth', 'twofactor' ,'2fa')->group(function () {
     Route::get('/dashboard', function () {
         return Inertia::render('Dashboard');
     })->middleware(['verified'])->name('dashboard');
@@ -39,6 +40,11 @@ Route::middleware('auth', 'twofactor')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::get('/twofactor', [TwoFactorController::class, 'index'])->name('twofactor.index');
     Route::post('/twofactor/verify', [TwoFactorController::class, 'verify'])->name('twofactor.verify');
+
+    Route::get('/setup-2fa', [Google2FAController::class, 'show2FASetup'])->name('setup-2fa');
+    Route::get('/verify-2fa', [Google2FAController::class, 'show2FAVerify'])->name('verify-2fa');
+    Route::post('/complete-2fa-setup', [Google2FAController::class, 'complete2FASetup'])->name('complete-2fa-setup');
+    Route::post('/verify-2fa', [Google2FAController::class, 'verify2FA']);
 });
 
 //Login featch the settings for the gogle auth
