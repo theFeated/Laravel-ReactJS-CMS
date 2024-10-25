@@ -24,6 +24,10 @@ class User extends Authenticatable
         'userphoto',
         'google2fa_secret',
         'two_factor_code',
+        'google2fa_secret',
+        'google2fa_enabled',
+        'google2fa_setup_complete',
+
     ];
 
     /**

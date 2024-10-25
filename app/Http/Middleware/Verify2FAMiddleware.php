@@ -10,22 +10,17 @@ use App\Models\Setting;
 
 class Verify2FAMiddleware
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
     public function handle(Request $request, Closure $next): Response
     {
-        // Fetch the 2FA setting from the database
+        $user = Auth::user();
         $setting = Setting::first();
 
-        // Check if 2FA is enabled
-        $is2FAEnabled = $setting ? $setting->is_2fa_enabled : false;
+        $is2FAEnabledGlobally = $setting ? $setting->is_google2fa_enabled : false;
 
-        // Skip the 2FA check if it is disabled
-        if ($is2FAEnabled && auth()->check() && !session('two_factor_authenticated')) {
-            return redirect()->route('twofactor.index');
+        if ($is2FAEnabledGlobally && $user && $user->google2fa_enabled && !session('2fa_verified')) {
+            session(['url.intended' => $request->url()]);
+            
+            return redirect()->route('2fa.verify');
         }
 
         return $next($request);

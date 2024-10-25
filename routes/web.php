@@ -45,6 +45,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/verify-2fa', [Google2FAController::class, 'show2FAVerify'])->name('verify-2fa');
     Route::post('/complete-2fa-setup', [Google2FAController::class, 'complete2FASetup'])->name('complete-2fa-setup');
     Route::post('/verify-2fa', [Google2FAController::class, 'verify2FA']);
+
+    Route::post('/setup-2fa', [Google2FAController::class, 'setup2FA'])->name('2fa.setup');
+    Route::post('/verify-2fa', [Google2FAController::class, 'verify2FA'])->name('2fa.verify');    
 });
 
 //Login featch the settings for the gogle auth
