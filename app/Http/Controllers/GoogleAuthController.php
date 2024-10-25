@@ -43,23 +43,23 @@ class GoogleAuthController extends Controller
         }
 
         try {
-            $googleUser = Socialite::driver('google')->user();
-            $user = User::where('email', $googleUser->getEmail())->first();
+            $googleUser  = Socialite::driver('google')->user();
+            $user = User::where('email', $googleUser ->getEmail())->first();
 
             if ($user) {
                 $user->update([
-                    'userphoto' => $user->userphoto ?: $googleUser->getAvatar(),
-                    'google_id' => $user->google_id ?: $googleUser->getId(),
+                    'userphoto' => $user->userphoto ?: null, 
+                    'google_id' => $user->google_id ?: $googleUser ->getId(),
                 ]);
 
                 Auth::login($user);
                 return redirect()->intended('dashboard');
             } else {
                 $user = User::create([
-                    'name' => $googleUser->getName(),
-                    'email' => $googleUser->getEmail(),
-                    'userphoto' => $googleUser->getAvatar(),
-                    'google_id' => $googleUser->getId(),
+                    'name' => $googleUser ->getName(),
+                    'email' => $googleUser ->getEmail(),
+                    'userphoto' => null, 
+                    'google_id' => $googleUser ->getId(),
                     'email_verified_at' => now(),
                     'password' => bcrypt('1234'),
                 ]);
