@@ -23,7 +23,7 @@ class User extends Authenticatable
         'password',
         'userphoto',
         'google2fa_secret',
-
+        'two_factor_code',
     ];
 
     /**
@@ -58,5 +58,9 @@ class User extends Authenticatable
         return $secret;
 
     }
+
+    protected $casts = [
+        'two_factor_sent_at' => 'datetime',
+    ];
 
 }

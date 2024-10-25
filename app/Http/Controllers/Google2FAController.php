@@ -21,7 +21,7 @@ class Google2FAController extends Controller
         // Check if Google 2FA is enabled in settings
         $settings = \DB::table('settings')->first();
         if (!$settings->is_google2fa_enabled) {
-            return redirect()->route('home')->withErrors(['2fa' => 'Google 2FA is not enabled.']);
+            return redirect()->route('dashboard')->withErrors(['2fa' => 'Google 2FA is not enabled.']);
         }
     
         // Generate a secret key for the user if they don't have one

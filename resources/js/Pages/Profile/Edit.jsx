@@ -4,10 +4,11 @@ import UpdatePasswordForm from './Partials/UpdatePasswordForm';
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm';
 import { Head } from '@inertiajs/react';
 
+const defaultPhotoUrl = '/cms/img/grayprofile.png';
+
 export default function Edit({ mustVerifyEmail, status }) {
     return (
-        <AuthenticatedLayout
-        >
+        <AuthenticatedLayout>
             <Head title="Profile" />
 
             <div className="py-12">
@@ -17,6 +18,7 @@ export default function Edit({ mustVerifyEmail, status }) {
                             mustVerifyEmail={mustVerifyEmail}
                             status={status}
                             className="max-w-xl"
+                            defaultPhotoUrl={defaultPhotoUrl}
                         />
                     </div>
 

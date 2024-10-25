@@ -6,7 +6,7 @@ import { Link, useForm, usePage } from '@inertiajs/react';
 import { Transition } from '@headlessui/react';
 import { useEffect, useState } from 'react';
 
-export default function UpdateProfileInformation({ mustVerifyEmail, status, className = '' }) {
+export default function UpdateProfileInformation({ mustVerifyEmail, status, className = '', defaultPhotoUrl }) {
     const user = usePage().props.auth.user;
 
     const { data, setData, patch, errors, processing, recentlySuccessful } = useForm({
@@ -18,12 +18,8 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status, clas
         userphoto: null,
     });
 
-    const [photoPreview, setPhotoPreview] = useState(user.userphoto ? `/user_photos/${user.userphoto}` : null);
+    const [photoPreview, setPhotoPreview] = useState(user.userphoto ? `/user_photos/${user.userphoto}` : defaultPhotoUrl);
 
-    const [isSaved, setIsSaved] = useState(false);
-    const [isCameraClicked, setIsCameraClicked] = useState(false);
-    const [hasCameraPermission, setHasCameraPermission] = useState(false);
-    
     const submitProfile = (e) => {
         e.preventDefault();
         patch(route('profile.update'));
@@ -31,20 +27,16 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status, clas
 
     const isPhotoUploaded = () => {
         return photoData.userphoto !== null;
-    }
+    };
 
     const submitPhoto = (e) => {
         e.preventDefault();
-    
+
         const formData = new FormData();
         if (photoData.userphoto) {
             formData.append('userphoto', photoData.userphoto);
         }
 
-        if (isPhotoUploaded()) {
-            setIsSaved(true);
-        }
-    
         postPhoto(route('profile.updatePhoto'), {
             data: formData,
             headers: {
@@ -80,9 +72,11 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status, clas
 
             <div className="mt-6 flex flex-col md:flex-row space-x-0 md:space-x-6">
                 <div className="flex-shrink-0 flex items-start gap-4 mb-6 md:mb-0">
-                    {photoPreview && (
-                        <img src={photoPreview} alt="Profile Preview" className="w-40 h-40 rounded-full" />
-                    )}
+                    <img
+                        src={photoPreview}
+                        alt="Profile Preview"
+                        className="w-40 h-40 rounded-full"
+                    />
 
                     <form onSubmit={submitPhoto} encType="multipart/form-data" className="flex flex-col items-start">
                         <InputLabel htmlFor="userphoto" value="Profile Photo" />
@@ -95,16 +89,16 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status, clas
                             file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
                             onChange={handlePhotoChange}
                         />
-                        <PrimaryButton disabled={photoProcessing || isSaved || !isPhotoUploaded()} className="mt-4">Save Photo</PrimaryButton>
+                        <PrimaryButton disabled={photoProcessing || !isPhotoUploaded()} className="mt-4">Save Photo</PrimaryButton>
                         
                         <Transition
-                                show={photoRecentlySuccessful}
-                                enter="transition ease-in-out"
-                                enterFrom="opacity-0"
-                                leave="transition ease-in-out"
-                                leaveTo="opacity-0"
-                            >
-                                <p className="text-sm text-gray-600 dark:text-gray-400">Saved.</p>
+                            show={photoRecentlySuccessful}
+                            enter="transition ease-in-out"
+                            enterFrom="opacity-0"
+                            leave="transition ease-in-out"
+                            leaveTo="opacity-0"
+                        >
+                            <p className="text-sm text-gray-600 dark:text-gray-400">Saved.</p>
                         </Transition>
                     </form>
                 </div>

@@ -31,7 +31,7 @@ const updateDocument = (settings) => {
             link.rel = 'icon';
             document.getElementsByTagName('head')[0].appendChild(link);
         }
-        link.href = settings.web_icon;  // Update icon with full URL
+        link.href = settings.web_icon;
     }
 };
 
