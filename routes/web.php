@@ -18,7 +18,7 @@ Route::get('/', function () {
     ]);
 });
 
-Route::middleware('auth', 'twofactor' ,'2fa')->group(function () {
+Route::middleware('auth', 'twofactor' ,'2fa', 'autologout')->group(function () {
     Route::get('/dashboard', function () {
         return Inertia::render('Dashboard');
     })->middleware(['verified'])->name('dashboard');

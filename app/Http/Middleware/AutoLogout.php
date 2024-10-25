@@ -10,21 +10,26 @@ class AutoLogout
 {
     public function handle($request, Closure $next, $guard = null)
     {
-        // Check if the user is authenticated
         if (Auth::guard($guard)->check()) {
             $inactivityTimeout = config('app.inactivity_timeout', 300); // Timeout in seconds
 
             $lastActivity = Session::get('last_activity');
 
-            // Check if last activity time is set and calculate the time difference
             if ($lastActivity && (time() - $lastActivity > $inactivityTimeout)) {
+                $user = Auth::guard($guard)->user();
+
+                if ($user) {
+                    $user->two_factor_code = null;
+                    $user->two_factor_sent_at = null;
+                    $user->save();
+                }
+
                 Auth::guard($guard)->logout();
                 Session::invalidate();
-                return redirect()->route('login');
+                return redirect()->route('login')->with('message', 'You have been logged out due to inactivity.');
             }
         }
 
-        // Update last activity time
         Session::put('last_activity', time());
 
         return $next($request);
