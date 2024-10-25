@@ -20,32 +20,60 @@ export default function Google2FAVerify() {
     };
 
     return (
-        <div className="container mx-auto p-4">
-            <div className="max-w-md mx-auto bg-white shadow-md rounded-lg p-6">
-                <h2 className="text-2xl font-semibold mb-4">Verify Google Authenticator Code</h2>
-                <form onSubmit={handleSubmit}>
-                    <div className="mb-4">
-                        <label htmlFor="code" className="block text-sm font-medium text-gray-700">Enter the code from Google Authenticator</label>
-                        <input
-                            type="text"
-                            id="code"
-                            name="code"
-                            value={data.code}
-                            onChange={(e) => setData('code', e.target.value)}
-                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-500"
-                            maxLength={6}
-                        />
-                        {errors.code && <div className="text-red-500 text-sm mt-2">{errors.code}</div>}
+        <div className="relative font-inter antialiased">
+            <main className="relative min-h-screen flex flex-col justify-center bg-slate-50 overflow-hidden">
+                <div className="w-full max-w-6xl mx-auto px-4 md:px-6 py-24">
+                    <div className="flex justify-center">
+                        <div className="max-w-md mx-auto text-center bg-white px-4 sm:px-8 py-10 rounded-xl shadow">
+                            <header className="mb-8">
+                                <h1 className="text-2xl font-bold mb-1">Authenticator App Verification</h1>
+                                <p className="text-[15px] text-slate-500">Enter the 6-digit verification code from your Authenticator App.</p>
+                            </header>
+                            <form id="otp-form" onSubmit={handleSubmit}>
+                                <div className="flex items-center justify-center gap-3">
+                                    {[...Array(6)].map((_, index) => (
+                                        <input
+                                            key={index}
+                                            type="text"
+                                            className="w-14 h-14 text-center text-2xl font-extrabold text-slate-900 bg-slate-100 border border-transparent hover:border-slate-200 appearance-none rounded p-4 outline-none focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+                                            pattern="\d*"
+                                            maxLength="1"
+                                            value={data.code[index] || ''}
+                                            onChange={(e) => {
+                                                const newCode = data.code.split('');
+                                                newCode[index] = e.target.value;
+                                                setData('code', newCode.join(''));
+
+                                                // Move to the next input box
+                                                if (e.target.value && index < 5) {
+                                                    document.getElementById(`otp-${index + 1}`).focus();
+                                                }
+                                            }}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                                                    document.getElementById(`otp-${index - 1}`).focus();
+                                                }
+                                            }}
+                                            id={`otp-${index}`}
+                                        />
+                                    ))}
+                                </div>
+                                {errors.code && <div className="text-red-500 text-sm mt-2">{errors.code}</div>}
+                                <div className="max-w-[260px] mx-auto mt-4">
+                                    <button
+                                        type="submit"
+                                        className="w-full inline-flex justify-center whitespace-nowrap rounded-lg bg-indigo-500 px-3.5 py-2.5 text-sm font-medium text-white shadow-sm shadow-indigo-950/10 hover:bg-indigo-600 focus:outline-none focus:ring focus:ring-indigo-300 focus-visible:outline-none focus-visible:ring focus-visible:ring-indigo-300 transition-colors duration-150"
+                                        disabled={processing}
+                                    >
+                                        {processing ? 'Verifying...' : 'Verify Account'}
+                                    </button>
+                                </div>
+                            </form>
+                            <div className="text-sm text-slate-500 mt-4">Too Lazy? <a className="font-medium text-indigo-500 hover:text-indigo-600" href="#0">Disable in Settings</a></div>
+                        </div>
                     </div>
-                    <button
-                        type="submit"
-                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                        disabled={processing}
-                    >
-                        {processing ? 'Verifying...' : 'Verify'}
-                    </button>
-                </form>
-            </div>
+                </div>
+            </main>
         </div>
     );
 }

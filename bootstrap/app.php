@@ -23,9 +23,9 @@ return Application::configure(basePath: dirname(__DIR__))
             
         ]);
         $middleware->alias([
-            'twofactor' =>  \App\Http\Middleware\Verify2FAMiddleware::class,    
-            '2fa' => \App\Http\Middleware\Ensure2FAEnabled::class,
+            'google2fa' =>  \App\Http\Middleware\Verify2FAMiddleware::class,    
             'autologout' => \App\Http\Middleware\AutoLogout::class,
+            'twofactorauth' => \App\Http\Middleware\CheckTwoFactorAuthentication::class,
    
         ]);
     })

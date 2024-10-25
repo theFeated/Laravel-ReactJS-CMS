@@ -14,6 +14,53 @@ use BaconQrCode\Writer;
 
 class Google2FAController extends Controller
 {
+
+    // public function show2FASetup()
+    // {
+    //     $user = Auth::user();
+    
+    //     if (!$user) {
+    //         return redirect()->route('login');
+    //     }
+    
+    //     $settings = \DB::table('settings')->first();
+    //     if (!$settings->is_google2fa_enabled) {
+    //         return redirect()->route('dashboard')->withErrors(['2fa' => 'Google 2FA is not enabled.']);
+    //     }
+    
+    //     $google2fa = new Google2FA();
+        
+    //     // If 2FA is already enabled, use the existing secret
+    //     if ($user->google2fa_enabled) {
+    //         $secret = $user->google2fa_secret;
+    //     } else {
+    //         $secret = $google2fa->generateSecretKey();
+    //         // Store the secret in the session instead of the database
+    //         session(['temp_2fa_secret' => $secret]);
+    //     }
+    
+    //     // Generate QR code URL
+    //     $qrCodeUrl = $google2fa->getQRCodeUrl(
+    //         'Overkill Security',
+    //         $user->email,
+    //         $secret
+    //     );
+    
+    //     // Generate QR code SVG
+    //     $renderer = new ImageRenderer(
+    //         new RendererStyle(400),
+    //         new SvgImageBackEnd()
+    //     );
+    //     $writer = new Writer($renderer);
+    //     $qrCodeSvg = $writer->writeString($qrCodeUrl);
+    
+    //     return Inertia::render('Google2FA/Partials/Google2FASetup', [
+    //         'secret' => $secret,
+    //         'email' => $user->email,
+    //         'qrCodeSvg' => $qrCodeSvg,
+    //     ]);
+    // }
+
     public function show2FASetup()
     {
         $user = Auth::user();
@@ -29,13 +76,21 @@ class Google2FAController extends Controller
     
         $google2fa = new Google2FA();
         
-        // If 2FA is already enabled, use the existing secret
-        if ($user->google2fa_enabled) {
-            $secret = $user->google2fa_secret;
-        } else {
+        // Use the existing secret from the database
+        $secret = $user->google2fa_secret;
+    
+        // If the secret doesn't exist or 2FA is not enabled, generate a new one
+        // Set the user's secret key and enable 2FA. If not, an error will occur.
+        //This error arises because the system checks the length against an empty 
+        //database, as the secret key must pass OTP validation before being saved.
+        //Secret key is too short. Must be at least 16 base32 characters. 
+        //This error is kind of misleading.
+        //It's not short because it's actually checking an empty google2fa_secret, an actual nothing.
+        if (!$secret || !$user->google2fa_enabled) {
             $secret = $google2fa->generateSecretKey();
-            // Store the secret in the session instead of the database
-            session(['temp_2fa_secret' => $secret]);
+            $user->google2fa_secret = $secret;
+            $user->google2fa_enabled = true;
+            $user->save();
         }
     
         // Generate QR code URL
@@ -57,6 +112,7 @@ class Google2FAController extends Controller
             'secret' => $secret,
             'email' => $user->email,
             'qrCodeSvg' => $qrCodeSvg,
+            'isEnabled' => $user->google2fa_enabled,
         ]);
     }
     
@@ -122,10 +178,6 @@ class Google2FAController extends Controller
         ]);
     
         $user = Auth::user();
-
-        if (!$user->google2fa_enabled) {
-            return back()->withErrors(['code' => '2FA is not enabled for this account.']);
-        }
 
         $settings = \DB::table('settings')->first();
         if (!$settings->is_google2fa_enabled) {

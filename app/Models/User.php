@@ -53,18 +53,10 @@ class User extends Authenticatable
         ];
     }
 
-    public function createTwoFactorAuth()
-    {
-        $google2fa = new Google2FA();
-        $secret = $google2fa->generateSecretKey();
-        $this->google2fa_secret = $secret;
-        $this->save();
-        return $secret;
-
-    }
-
     protected $casts = [
         'two_factor_sent_at' => 'datetime',
+        'google2fa_enabled' => 'boolean',
+
     ];
 
 }
