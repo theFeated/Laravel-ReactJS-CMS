@@ -40,6 +40,7 @@ Route::middleware('auth', 'google2fa', 'autologout', 'twofactorauth')->group(fun
 Route::middleware('auth')->group(function () {
     Route::get('/twofactor', [TwoFactorController::class, 'index'])->name('twofactor.index');
     Route::post('/twofactor/verify', [TwoFactorController::class, 'verify'])->name('twofactor.verify');
+    Route::post('/twofactor/resend', [TwoFactorController::class, 'resend'])->name('twofactor.resend');
 
     Route::get('/setup-2fa', [Google2FAController::class, 'show2FASetup'])->name('setup-2fa');
     Route::get('/verify-2fa', [Google2FAController::class, 'show2FAVerify'])->name('verify-2fa');

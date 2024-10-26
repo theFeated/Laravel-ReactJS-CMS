@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Setting;
 
 class CheckTwoFactorAuthentication
 {
@@ -16,8 +17,13 @@ class CheckTwoFactorAuthentication
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (auth()->check() && !session('two_factor_authenticated')) {
-            return redirect()->route('twofactor.index');
+        $settings = Setting::first();
+        
+        // Only check for 2FA if it's enabled in settings
+        if ($settings && $settings->is_2fa_enabled) {
+            if (auth()->check() && !session('two_factor_authenticated')) {
+                return redirect()->route('twofactor.index');
+            }
         }
 
         return $next($request);
