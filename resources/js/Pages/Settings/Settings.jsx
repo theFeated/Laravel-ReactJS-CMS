@@ -36,19 +36,19 @@ export default function Settings({ isGoogleAuthEnabled, is2FAEnabled, webIcon, w
                         className={`tab px-4 py-2 focus:outline-none ${activeTab === 'google-auth' ? 'text-blue-600 border-b-4 border-blue-600' : 'text-gray-600 hover:text-blue-600 hover:border-blue-600'}`}
                         onClick={() => setActiveTab('google-auth')}
                     >
-                        Google Auth
+                        Google Authentication
                     </button>
                     <button
                         className={`tab px-4 py-2 focus:outline-none ${activeTab === '2fa' ? 'text-blue-600 border-b-4 border-blue-600' : 'text-gray-600 hover:text-blue-600 hover:border-blue-600'}`}
                         onClick={() => setActiveTab('2fa')}
                     >
-                        2FA
+                        EOTP
                     </button>
                     <button
                         className={`tab px-4 py-2 focus:outline-none ${activeTab === 'google2fa' ? 'text-blue-600 border-b-4 border-blue-600' : 'text-gray-600 hover:text-blue-600 hover:border-blue-600'}`}
                         onClick={() => setActiveTab('google2fa')}
                     >
-                        Google 2FA
+                        TOTP
                     </button>
                     <button
                         className={`tab px-4 py-2 focus:outline-none ${activeTab === 'web-icon-name' ? 'text-blue-600 border-b-4 border-blue-600' : 'text-gray-600 hover:text-blue-600 hover:border-blue-600'}`}

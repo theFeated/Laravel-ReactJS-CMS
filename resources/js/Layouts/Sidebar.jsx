@@ -1,66 +1,102 @@
-import React, { useState, useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { 
+    faTimes, 
+    faTachometerAlt, 
+    faUser , 
+    faCog, 
+    faChartLine,
+    faEnvelope,
+    faCalendar,
+    faSignOutAlt
+} from '@fortawesome/free-solid-svg-icons';
 
-export default function Sidebar() {
-    const [isOpen, setIsOpen] = useState(() => {
-        const savedState = localStorage.getItem('sidebarState');
-        return savedState !== null ? JSON.parse(savedState) : true;
-    });
+export default function Sidebar({ isOpen, setIsOpen }) {
+    const sidebarRef = useRef(null);
 
-    const timeoutRef = useRef(null);
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+                setIsOpen(false);
+                localStorage.setItem('sidebarState', JSON.stringify(false));
+            }
+        };
 
-    const toggleSidebar = () => {
-        setIsOpen((prevState) => {
-            const newState = !prevState;
-            localStorage.setItem('sidebarState', JSON.stringify(newState));
-            return newState;
-        });
-    };
+        document.addEventListener('mousedown', handleClickOutside);
 
-    const handleMouseLeave = () => {
-        timeoutRef.current = setTimeout(() => {
-            setIsOpen(false);
-            localStorage.setItem('sidebarState', JSON.stringify(false));
-        }, 2000);
-    };
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [setIsOpen]);
 
-    const handleMouseEnter = () => {
-        if (timeoutRef.current) {
-            clearTimeout(timeoutRef.current);
-        }
-    };
+    const NavItem = ({ icon, text, href }) => (
+        <a 
+            href={href}
+            className="group flex items-center px-4 py-3 mb-2 rounded-lg transition-all duration-300
+                       hover:bg-gray-800 hover:shadow-lg transform hover:-translate-y-0.5"
+        >
+            <div className="flex items-center flex-grow">
+                <div className="w-10 h-10 flex items-center justify-center bg-gray-800 rounded-lg
+                              group-hover:bg-gray-700 transition-colors duration-300">
+                    <FontAwesomeIcon 
+                        icon={icon} 
+                        className="text-gray-400 group-hover:text-white text-lg" 
+                    />
+                </div>
+                <span className="ml-4 text-gray-300 group-hover:text-white font-medium text-lg">
+                    {text}
+                </span>
+            </div>
+            <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <FontAwesomeIcon 
+                    icon={faChartLine} 
+                    className="text-gray-400 text-sm" 
+                />
+            </div>
+        </a>
+    );
 
     return (
         <div
-            className={`fixed inset-y-0 left-0 bg-gray-100 dark:bg-gray-900 border-r border-gray-500 
-                p-6 flex flex-col flex-none w-64 transition-transform duration-500 ease-in-out 
-                ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
-            onMouseLeave={handleMouseLeave}
-            onMouseEnter={handleMouseEnter}
+            ref={sidebarRef}
+            className={`fixed inset-y-0 left-0 bg-gray-900 
+                       w-80 transition-transform duration-500 ease-in-out 
+                       shadow-2xl ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
             style={{ zIndex: 10 }}
         >
-            <div className="flex flex-col">
-                <p className="uppercase text-xs text-gray-200 mb-4 tracking-wider">Navigation</p>
-                <div className="mb-3 capitalize font-medium text-sm text-gray-400 hover:text-gray-100 transition ease-in-out duration-500">
-                    <a href="/dashboard" className="nav-link active">
-                        <i className="fad fa-tachometer-alt text-xs mr-2"></i>
-                        Dashboard
-                    </a>
-                </div>
-                <div className="mb-3 capitalize font-medium text-sm text-gray-400 hover:text-gray-100 transition ease-in-out duration-500">
-                    <a href="/profile" className="nav-link active">
-                        <i className="fas fa-user text-xs mr-2"></i>
-                        Profile
-                    </a>
+            {/* Header */}
+            <div className="p-6 border-b border-gray-700">
+                <div className="flex justify-between items-center">
+                    <div>
+                        <h1 className="text-2xl font-bold text-white mb-1">Hello!</h1>
+                    </div>
+                    <button 
+                        className="p-2 rounded-full hover:bg-gray-800 transition-colors duration-300
+                                   focus:outline-none focus:ring-2 focus:ring-gray-600"
+                        onClick={() => {
+                            setIsOpen(false);
+                            localStorage.setItem('sidebarState', JSON.stringify(false));
+                        }}
+                    >
+                        <FontAwesomeIcon 
+                            icon={faTimes} 
+                            className="h-6 w-6 text-gray-400 hover:text-white" 
+                        />
+                    </button>
                 </div>
             </div>
-            <button
-                onClick={toggleSidebar}
-                className="absolute top-1/2 right-3 transform translate-x-full -translate-y-1/2 
-                bg-gray-600 text-white p-2 shadow-lg hover:bg-teal-700 transition ease-in-out 
-                duration-300 rounded-full"
-            >
-                <i className={`fa fa-chevron-${isOpen ? 'left' : 'right'}`}></i>
-            </button>
+
+            {/* Navigation Items */}
+            <div className="p-6">
+                <div className="mb-8">
+                    <h2 className="text-xs uppercase tracking-wider text-gray-400 mb-4 font-semibold">
+                        Main Navigation
+                    </h2>
+                    <NavItem icon={faTachometerAlt} text="Dashboard" href="/dashboard" />
+                    <NavItem icon={faUser } text="Profile" href="/profile" />
+                    <NavItem icon={faCog} text="Settings" href="/settings" />
+                </div>
+            </div>
         </div>
     );
 }

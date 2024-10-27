@@ -31,24 +31,24 @@ export default function Enable2FA({ initialIs2FAEnabled }) {
 
     const instructionSteps = [
         {
-            title: 'What is Email Authentication?',
-            description: 'A security feature that sends a verification code to your email during sign-in.'
+            title: 'What is Email OTP?',
+            description: 'Email OTP (One-Time Password) is a secure verification method where a unique code is sent to your registered email address to authenticate your identity.'
         },
         {
-            title: 'Why Enable It?',
-            description: 'Adds an extra security layer to protect your account from unauthorized access.'
+            title: 'Why Use It?',
+            description: 'It provides an additional layer of security by ensuring that only users with access to the registered email can complete the authentication process.'
+        },
+        {
+            title: 'How to Set Up',
+            description: 'Ensure your email address is correctly registered with your account. No additional setup is required for receiving OTPs via email.'
         },
         {
             title: 'How it Works',
-            description: 'Enter the verification code sent to your email to complete the sign-in process.'
-        },
-        {
-            title: 'Key Benefit',
-            description: 'Keeps your account secure even if your password is compromised.'
+            description: 'When you attempt to sign in, a unique OTP will be sent to your email. Enter this code to verify your identity and complete the sign-in process.'
         },
         {
             title: 'Important Note',
-            description: 'Verification required when signing in from new devices or browsers.'
+            description: 'Keep your email account secure, as access to it is crucial for receiving your OTP. If you lose access to your email, you may have difficulty logging in.'
         }
     ];
 
@@ -73,7 +73,7 @@ export default function Enable2FA({ initialIs2FAEnabled }) {
 
                         <div className="flex flex-col mx-5 space-y-1">
                             <h2 className="text-lg font-medium text-gray-700 sm:text-2xl dark:text-gray-200">
-                                Email Authentication
+                                Email OTP
                             </h2>
                             <div className="flex items-center space-x-2">
                                     <span className="px-2 py-1 text-xs text-blue-500 bg-blue-50 rounded-full dark:bg-blue-900/30">
@@ -120,7 +120,7 @@ export default function Enable2FA({ initialIs2FAEnabled }) {
             <InstructionModal
                 isOpen={showInstructions}
                 onClose={() => setShowInstructions(false)}
-                title="Email Authentication Guide"
+                title="Email OTP Guide"
                 icon={<svg className="w-6 h-6 text-blue-500" />}
                 steps={instructionSteps}
             />
