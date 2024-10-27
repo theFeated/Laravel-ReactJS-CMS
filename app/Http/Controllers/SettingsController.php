@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\RecoveryCode;
 use Illuminate\Http\Request;
 use App\Models\Setting;
 use Inertia\Inertia;
@@ -11,7 +12,10 @@ class SettingsController extends Controller
 {
     public function index()
     {
-        $setting = Setting::first();
+        $user = auth()->user();
+        $setting = Setting::where('user_id', $user->id)->first();
+        $recoveryCode = RecoveryCode::where('user_id', $user->id)->first();
+
         return Inertia::render('Settings/Settings', [
             'isGoogleAuthEnabled' => $setting ? $setting->is_google_auth_enabled : false,
             'is2FAEnabled' => $setting ? $setting->is_2fa_enabled : false,
@@ -19,42 +23,44 @@ class SettingsController extends Controller
             'webName' => $setting ? $setting->web_name : '',
             'logo' => $setting && $setting->logo ? Storage::url($setting->logo) : '',
             'isGoogle2FAEnabled' => $setting ? $setting->is_google2fa_enabled : false,
+            'recoveryCode' => $recoveryCode ? $recoveryCode->code : null,
+            'isCodeCopied' => $recoveryCode ? $recoveryCode->is_code_copied : false,
         ]);
     }
 
     public function update(Request $request)
     {
-        // Fetch the first settings record or create a new one if it doesn't exist
-        $setting = Setting::firstOrCreate([]);
+        $user = $request->user();
+        $setting = Setting::firstOrCreate(['user_id' => $user->id]);
 
-        // Check if the request contains the `is_google_auth_enabled` field and validate it
         if ($request->has('is_google_auth_enabled')) {
             $request->validate([
                 'is_google_auth_enabled' => 'required|boolean',
             ]);
-            // Update only the Google Auth setting
             $setting->update([
                 'is_google_auth_enabled' => $request->is_google_auth_enabled,
             ]);
         }
 
-        // Check if the request contains the `is_2fa_enabled` field and validate it
         if ($request->has('is_2fa_enabled')) {
             $request->validate([
                 'is_2fa_enabled' => 'required|boolean',
             ]);
-            // Update only the 2FA setting
             $setting->update([
                 'is_2fa_enabled' => $request->is_2fa_enabled,
             ]);
         }
 
-        // Check if the request contains the `is_google2fa_enabled` field and validate it
         if ($request->has('is_google2fa_enabled')) {
             $request->validate([
                 'is_google2fa_enabled' => 'required|boolean',
             ]);
-            // Update only the Google 2FA setting
+
+            $recoveryCode = RecoveryCode::where('user_id', $user->id)->first();
+            if (!$recoveryCode || !$recoveryCode->is_code_copied) {
+                return response()->json(['message' => 'You must generate and copy a recovery code before enabling Google 2FA'], 422);
+            }
+
             $setting->update([
                 'is_google2fa_enabled' => $request->is_google2fa_enabled,
             ]);
@@ -65,12 +71,13 @@ class SettingsController extends Controller
 
     public function updateWebIconAndName(Request $request)
     {
+        $user = $request->user();
         $request->validate([
             'web_icon' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'web_name' => 'required|string',
         ]);
 
-        $setting = Setting::firstOrCreate([]);
+        $setting = Setting::firstOrCreate(['user_id' => $user->id]);
 
         if ($request->hasFile('web_icon')) {
             if ($setting->web_icon) {
@@ -90,11 +97,12 @@ class SettingsController extends Controller
 
     public function uploadLogo(Request $request)
     {
+        $user = $request->user();
         $request->validate([
             'logo' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        $setting = Setting::firstOrCreate([]);
+        $setting = Setting::firstOrCreate(['user_id' => $user->id]);
 
         if ($request->hasFile('logo')) {
             if ($setting->logo) {
@@ -112,7 +120,8 @@ class SettingsController extends Controller
 
     public function getSettings()
     {
-        $setting = Setting::first();
+        $user = auth()->user();
+        $setting = Setting::where('user_id', $user->id)->first();
         return response()->json([
             'is_google_auth_enabled' => $setting ? $setting->is_google_auth_enabled : false,
             'is_2fa_enabled' => $setting ? $setting->is_2fa_enabled : false,

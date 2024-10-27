@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useForm } from '@inertiajs/react';
 import InstructionModal from '../../../Components/InstructionModal';
+import RecoveryCodesModal from '../../../Components/RecoveryCodesModal';
 
 export default function Google2FAToggle({ initialIsGoogle2FAEnabled }) {
     const [isGoogle2FAEnabled, setIsGoogle2FAEnabled] = useState(initialIsGoogle2FAEnabled || false);
     const [showInstructions, setShowInstructions] = useState(false);
+    const [showRecoveryCodesModal, setShowRecoveryCodesModal] = useState(false);
     const [error, setError] = useState('');
 
     const { setData, processing } = useForm({
@@ -28,7 +30,11 @@ export default function Google2FAToggle({ initialIsGoogle2FAEnabled }) {
             setIsGoogle2FAEnabled(newState);
             setError('');
         } catch (error) {
-            setError('Failed to update authenticator app settings. Please try again.');
+            if (error.response && error.response.status === 422) {
+                setError('You must generate and copy a recovery code before enabling TOTP.');
+            } else {
+                setError('Failed to update authenticator app settings. Please try again.');
+            }
             console.error('Settings update error:', error);
         }
     };
@@ -53,9 +59,17 @@ export default function Google2FAToggle({ initialIsGoogle2FAEnabled }) {
         {
             title: 'Important Note',
             description: 'Keep your device secure and back up your recovery codes in case you lose access to your authenticator app, as these codes are essential for account recovery.'
+        },
+        {
+            title: 'When to Use Recovery Code?',
+            description: 'Use your recovery code if you lose access to your authenticator app or if your device is lost or stolen. The recovery code allows you to regain access to your account and reset your authentication settings.'
+        },
+        {
+            title: 'Why Can\'t I Enable TOTP?',
+            description: 'If you receive an error when trying to enable TOTP, it is likely because you have not generated and copied a recovery code. Please generate a recovery code and copy it to a secure location before enabling TOTP.'
         }
     ];
-
+    
     return (
         <div className="bg-white dark:bg-gray-900">
             <div className="mt-6 space-y-4 xl:mt-12">
@@ -81,20 +95,26 @@ export default function Google2FAToggle({ initialIsGoogle2FAEnabled }) {
                                 time-based OTP
                             </h2>
                             <div className="flex items-center space-x-2">
-                                    <span className="px-2 py-1 text-xs text-blue-500 bg-blue-50 rounded-full dark:bg-blue-900/30">
-                                        Enhanced Security
-                                    </span>
+                                <span className="px-2 py-1 text-xs text-blue-500 bg-blue-50 rounded-full dark:bg-blue-900/30">
+                                    Enhanced Security
+                                </span>
                                 <button 
                                     onClick={() => setShowInstructions(true)}
-                                    className="text-sm text-blue-500 hover:text-blue-600 transition"
+                                    className="px-3 py-1 ml-2 text-sm text-blue-500 bg-blue-50 rounded-lg hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-800 transition"
                                 >
                                     Learn More
+                                </button>
+                                <button
+                                    onClick={() => setShowRecoveryCodesModal(true)}
+                                    className="px-3 py-1 ml-2 text-sm text-blue-500 bg-blue-50 rounded-lg hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-800 transition"
+                                >
+                                    Recovery Codes
                                 </button>
                             </div>
                         </div>
                     </div>
                     
-                    <div className="flex items-center">
+                    <div className="flex items-center space-x-4">
                         <span className="mr-3 text-sm text-gray-600 dark:text-gray-300">
                             {isGoogle2FAEnabled ? 'Enabled' : 'Disabled'}
                         </span>
@@ -128,6 +148,11 @@ export default function Google2FAToggle({ initialIsGoogle2FAEnabled }) {
                 title="Time-based OTP Setup Guide"
                 icon={<svg className="w-6 h-6 text-blue-500" />}
                 steps={instructionSteps}
+            />
+
+            <RecoveryCodesModal
+                isOpen={showRecoveryCodesModal}
+                onClose={() => setShowRecoveryCodesModal(false)}
             />
         </div>
     );

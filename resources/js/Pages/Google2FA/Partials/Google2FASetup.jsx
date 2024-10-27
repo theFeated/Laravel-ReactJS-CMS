@@ -39,7 +39,7 @@ export default function Google2FASetup({ secret, email, qrCodeSvg }) {
                             <h1 className="font-laonoto mt-4 text-center text-xl font-bold">Scan the QR Code</h1>
                             <p className="mt-2 text-center font-semibold text-gray-600">{email}</p>
                             <div className="mt-2 text-center">
-                                <div className="inline-block overflow-x-auto whitespace-nowrap" style={{ width: '15ch' }}>
+                                <div className="inline-block overflow-x-auto whitespace-nowrap">
                                     <span className="font-medium text-red-500">{secret}</span>
                                 </div>
                             </div>

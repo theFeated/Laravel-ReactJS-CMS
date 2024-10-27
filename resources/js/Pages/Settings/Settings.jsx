@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import EnableGoogleAuth from './Partials/EnableGoogleAuth';
@@ -8,7 +8,15 @@ import UploadLogo from './Partials/UploadLogo';
 import Google2FAToggle from '../Google2FA/Partials/Google2FAToggle';
 
 export default function Settings({ isGoogleAuthEnabled, is2FAEnabled, webIcon, webName, logo, isGoogle2FAEnabled }) {
-    const [activeTab, setActiveTab] = useState('google-auth');
+    const [activeTab, setActiveTab] = useState(localStorage.getItem('activeTab') || 'google-auth');
+
+    useEffect(() => {
+        localStorage.setItem('activeTab', activeTab);
+
+        return () => {
+            localStorage.removeItem('activeTab');
+        };
+    }, [activeTab]);
 
     const renderActiveTab = () => {
         switch (activeTab) {

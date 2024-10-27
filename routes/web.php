@@ -3,6 +3,7 @@
 use App\Http\Controllers\Google2FAController;
 use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RecoveryCodeController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -44,12 +45,15 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/setup-2fa', [Google2FAController::class, 'show2FASetup'])->name('setup-2fa');
     Route::get('/verify-2fa', [Google2FAController::class, 'show2FAVerify'])->name('verify-2fa');
-    Route::post('/complete-2fa-setup', [Google2FAController::class, 'complete2FASetup'])->name('complete-2fa-setup');
     Route::post('/verify-2fa', [Google2FAController::class, 'verify2FA']);
 
     Route::post('/setup-2fa', [Google2FAController::class, 'setup2FA'])->name('2fa.setup');
-    Route::post('/verify-2fa', [Google2FAController::class, 'verify2FA'])->name('2fa.verify');    
-});
+    Route::post('/verify-2fa', [Google2FAController::class, 'verify2FA'])->name('2fa.verify');  
+    
+    Route::post('/api/recovery-codes/generate', [RecoveryCodeController::class, 'generate']);
+    Route::get('/api/recovery-codes', [RecoveryCodeController::class, 'index']); 
+    Route::post('/api/recovery-codes/verify', [RecoveryCodeController::class, 'verify']);});
+    Route::post('/api/recovery-codes/mark-copied', [RecoveryCodeController::class, 'markCopied']);
 
 //Login featch the settings for the gogle auth
 Route::get('/api/settings', [SettingsController::class, 'getSettings']);

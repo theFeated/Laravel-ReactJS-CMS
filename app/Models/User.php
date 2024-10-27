@@ -26,7 +26,6 @@ class User extends Authenticatable
         'two_factor_code',
         'google2fa_secret',
         'google2fa_enabled',
-        'google2fa_setup_complete',
 
     ];
 
@@ -59,4 +58,8 @@ class User extends Authenticatable
 
     ];
 
+    public function recoveryCodes()
+    {
+        return $this->hasMany(RecoveryCode::class);
+    }
 }

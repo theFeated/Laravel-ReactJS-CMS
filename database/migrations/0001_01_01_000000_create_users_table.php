@@ -23,7 +23,6 @@ return new class extends Migration
             $table->timestamp('two_factor_sent_at')->nullable();
             $table->string('google2fa_secret')->nullable();
             $table->boolean('google2fa_enabled')->default(false);
-            $table->boolean('google2fa_setup_complete')->default(false);
             $table->rememberToken();
             $table->timestamps();
         });

@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from '@inertiajs/react';
+import RecoveryCodesModal from '../../../Components/RecoveryCodesModal';
 
 export default function Google2FAVerify() {
     const { data, setData, post, processing, errors } = useForm({
         code: '',
     });
+    const [showRecoveryCodesModal, setShowRecoveryCodesModal] = useState(false);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -69,11 +71,22 @@ export default function Google2FAVerify() {
                                     </button>
                                 </div>
                             </form>
-                            <div className="text-sm text-slate-500 mt-4">Too Lazy? <a className="font-medium text-indigo-500 hover:text-indigo-600" href="#0">Disable in Settings</a></div>
+                            <div className="text-sm text-slate-500 mt-4">Lost your device?{' '}
+                                <button
+                                    className="font-medium text-indigo-500 hover:text-indigo-600"
+                                    onClick={() => setShowRecoveryCodesModal(true)}
+                                >
+                                    Use Recovery Code
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </main>
+            <RecoveryCodesModal
+                isOpen={showRecoveryCodesModal}
+                onClose={() => setShowRecoveryCodesModal(false)}
+            />
         </div>
     );
 }

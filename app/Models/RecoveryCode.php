@@ -4,18 +4,19 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Setting extends Model
+class RecoveryCode extends Model
 {
-    protected $table = 'settings';
-
     protected $fillable = [
         'user_id',
-        'is_google_auth_enabled',
-        'is_2fa_enabled',
-        'web_icon',
-        'web_name',
-        'logo',
-        'is_google2fa_enabled'
+        'code',
+        'used',
+        'used_at',
+        'is_code_copied',
+    ];
+
+    protected $casts = [
+        'used' => 'boolean',
+        'used_at' => 'datetime'
     ];
 
     public function user()
