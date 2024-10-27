@@ -19,14 +19,6 @@ class GoogleAuthController extends Controller
 
     public function redirectToGoogle()
     {
-        $setting = Setting::first();
-
-        if (!$setting || $setting->is_google_auth_enabled == 0) {
-            $this->disableGoogleCredentials();
-
-            return redirect()->route('login');
-        }
-
         return Socialite::driver('google')
             ->with(['prompt' => 'select_account'])
             ->redirect();
@@ -34,41 +26,58 @@ class GoogleAuthController extends Controller
 
     public function handleGoogleCallback()
     {
-        $setting = Setting::first();
-
-        if (!$setting || $setting->is_google_auth_enabled == 0) {
-            $this->disableGoogleCredentials();
-
-            return redirect()->route('login');
-        }
-
         try {
-            $googleUser  = Socialite::driver('google')->user();
-            $user = User::where('email', $googleUser ->getEmail())->first();
+            $googleUser = Socialite::driver('google')->user();
+            $user = User::where('email', $googleUser->getEmail())->first();
 
             if ($user) {
                 $user->update([
-                    'userphoto' => $user->userphoto ?: null, 
-                    'google_id' => $user->google_id ?: $googleUser ->getId(),
+                    'userphoto' => $user->userphoto ?: null,
+                    'google_id' => $user->google_id ?: $googleUser->getId(),
                 ]);
 
                 Auth::login($user);
+
+                // Check if Google authentication is enabled for the user
+                $setting = Setting::where('user_id', $user->id)->first();
+                if (!$setting || $setting->is_google_auth_enabled == 0) {
+                    Auth::logout();
+                    return redirect()->route('login')->with('notification', [
+                        'message' => 'Google authentication is not enabled for your account.',
+                        'type' => 'error',
+                    ]);
+                }
+
                 return redirect()->intended('dashboard');
             } else {
                 $user = User::create([
-                    'name' => $googleUser ->getName(),
-                    'email' => $googleUser ->getEmail(),
-                    'userphoto' => null, 
-                    'google_id' => $googleUser ->getId(),
+                    'name' => $googleUser->getName(),
+                    'email' => $googleUser->getEmail(),
+                    'userphoto' => null,
+                    'google_id' => $googleUser->getId(),
                     'email_verified_at' => now(),
                     'password' => bcrypt('1234'),
                 ]);
 
                 Auth::login($user);
+
+                // Check if Google authentication is enabled for the user
+                $setting = Setting::where('user_id', $user->id)->first();
+                if (!$setting || $setting->is_google_auth_enabled == 0) {
+                    Auth::logout();
+                    return redirect()->route('login')->with('notification', [
+                        'message' => 'Google authentication is not enabled for your account.',
+                        'type' => 'error',
+                    ]);
+                }
+
                 return redirect()->intended('dashboard');
             }
         } catch (\Exception $e) {
-            return redirect()->route('login')->withErrors(['email' => 'Unable to login. Please try again.']);
+            return redirect()->route('login')->with('notification', [
+                'message' => 'Unable to login. Please try again.',
+                'type' => 'error',
+            ]);
         }
     }
 }

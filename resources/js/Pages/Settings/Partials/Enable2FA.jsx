@@ -1,12 +1,14 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useForm } from '@inertiajs/react';
 import axios from 'axios';
 import InstructionModal from '../../../Components/InstructionModal';
+import NotificationManager from '@/Components/NotificationManager';
 
 export default function Enable2FA({ initialIs2FAEnabled }) {
     const [is2FAEnabled, setIs2FAEnabled] = useState(initialIs2FAEnabled);
     const [showInstructions, setShowInstructions] = useState(false);
     const [error, setError] = useState('');
+    const notificationManagerRef = useRef(null);
 
     const { setData, processing } = useForm({
         is_2fa_enabled: initialIs2FAEnabled,
@@ -23,9 +25,22 @@ export default function Enable2FA({ initialIs2FAEnabled }) {
 
             setIs2FAEnabled(newState);
             setError('');
+
+            // Show success notification
+            notificationManagerRef.current.addNotification(
+                newState ? 'Two-Factor Authentication has been enabled successfully.' : 'Two-Factor Authentication has been disabled successfully.',
+                'success'
+            );
+
         } catch (error) {
-            setError('Failed to update email authentication settings. Please try again.');
+            setError('Failed to update Two-Factor Authentication settings. Please try again.');
             console.error('Settings update error:', error);
+
+            // Show error notification
+            notificationManagerRef.current.addNotification(
+                'Failed to update Two-Factor Authentication settings. Please try again.',
+                'error'
+            );
         }
     };
 
@@ -54,6 +69,9 @@ export default function Enable2FA({ initialIs2FAEnabled }) {
 
     return (
         <div className="bg-white dark:bg-gray-900">
+            <div>
+                <NotificationManager ref={notificationManagerRef} />
+            </div>
             <div className="mt-6 space-y-4 xl:mt-12">
                 <div className="flex items-center justify-between max-w-2xl px-8 py-4 mx-auto border rounded-xl dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition">
                     <div className="flex items-center">

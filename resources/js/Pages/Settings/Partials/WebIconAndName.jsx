@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import axios from 'axios';
 import InstructionModal from '../../../Components/InstructionModal';
+import NotificationManager from '@/Components/NotificationManager';
 
 export default function WebIconAndName({ initialWebIcon, initialWebName }) {
     const [webIcon, setWebIcon] = useState(null);
@@ -10,6 +11,7 @@ export default function WebIconAndName({ initialWebIcon, initialWebName }) {
     const [errors, setErrors] = useState({});
     const [successMessage, setSuccessMessage] = useState('');
     const [showInstructions, setShowInstructions] = useState(false);
+    const notificationManagerRef = useRef();
 
     const instructionSteps = [
         {
@@ -40,16 +42,24 @@ export default function WebIconAndName({ initialWebIcon, initialWebName }) {
             // File size validation (2MB limit)
             if (file.size > 2 * 1024 * 1024) {
                 setErrors({ web_icon: 'File size must be less than 2MB' });
+                notificationManagerRef.current.addNotification(
+                    'File size must be less than 2MB',
+                    'error'
+                );
                 return;
             }
-    
+
             // File type validation including SVG
             const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml'];
             if (!validTypes.includes(file.type)) {
                 setErrors({ web_icon: 'Please upload a valid image file (SVG, PNG, JPG, or GIF)' });
+                notificationManagerRef.current.addNotification(
+                    'Please upload a valid image file (SVG, PNG, JPG, or GIF)',
+                    'error'
+                );
                 return;
             }
-    
+
             // Additional SVG validation
             if (file.type === 'image/svg+xml') {
                 validateSVG(file).then(isValid => {
@@ -57,44 +67,56 @@ export default function WebIconAndName({ initialWebIcon, initialWebName }) {
                         setWebIcon(file);
                         setPreview(URL.createObjectURL(file));
                         setErrors({});
+                        notificationManagerRef.current.addNotification(
+                            'SVG file uploaded successfully',
+                            'success'
+                        );
                     } else {
                         setErrors({ web_icon: 'Invalid SVG file. Please ensure it contains no malicious content.' });
+                        notificationManagerRef.current.addNotification(
+                            'Invalid SVG file. Please ensure it contains no malicious content.',
+                            'error'
+                        );
                     }
                 });
             } else {
                 setWebIcon(file);
                 setPreview(URL.createObjectURL(file));
                 setErrors({});
+                notificationManagerRef.current.addNotification(
+                    'Image file uploaded successfully',
+                    'success'
+                );
             }
         }
     };
-    
+
     // SVG validation function
     const validateSVG = async (file) => {
         try {
             const text = await file.text();
             const parser = new DOMParser();
             const doc = parser.parseFromString(text, 'image/svg+xml');
-    
+
             // Check for parsing errors
             const parserError = doc.querySelector('parsererror');
             if (parserError) {
                 return false;
             }
-    
+
             // Check for potentially dangerous elements and attributes
             const dangerousElements = ['script', 'iframe', 'object', 'embed', 'base'];
             const dangerousAttributes = ['onload', 'onerror', 'onclick', 'onmouseover', 'onmouseout'];
-    
+
             // Check for dangerous elements
             const hasDangerousElements = dangerousElements.some(element => 
                 doc.getElementsByTagName(element).length > 0
             );
-    
+
             if (hasDangerousElements) {
                 return false;
             }
-    
+
             // Check for dangerous attributes
             const allElements = doc.getElementsByTagName('*');
             for (const element of allElements) {
@@ -107,20 +129,19 @@ export default function WebIconAndName({ initialWebIcon, initialWebName }) {
                     }
                 }
             }
-    
+
             return true;
         } catch (error) {
             console.error('SVG validation error:', error);
             return false;
         }
     };
-    
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setProcessing(true);
         setErrors({});
-        setSuccessMessage('');
-    
+
         const formData = new FormData();
         
         if (webIcon) {
@@ -132,6 +153,10 @@ export default function WebIconAndName({ initialWebIcon, initialWebName }) {
                     formData.append('web_icon', sanitizedSVG);
                 } catch (error) {
                     setErrors({ web_icon: 'Error processing SVG file' });
+                    notificationManagerRef.current.addNotification(
+                        'Error processing SVG file',
+                        'error'
+                    );
                     setProcessing(false);
                     return;
                 }
@@ -139,9 +164,9 @@ export default function WebIconAndName({ initialWebIcon, initialWebName }) {
                 formData.append('web_icon', webIcon);
             }
         }
-    
+
         if (webName) formData.append('web_name', webName);
-    
+
         try {
             const response = await axios.post('/settings/update-web-icon-and-name', formData, {
                 headers: { 
@@ -149,28 +174,34 @@ export default function WebIconAndName({ initialWebIcon, initialWebName }) {
                     'Accept': 'application/json'
                 },
             });
-            setSuccessMessage(response.data.message);
-            setTimeout(() => setSuccessMessage(''), 5000);
+            notificationManagerRef.current.addNotification(
+                response.data.message,
+                'success'
+            );
         } catch (error) {
             const errorMessage = error.response?.data?.errors || { 
                 general: 'An unexpected error occurred. Please try again.' 
             };
             setErrors(errorMessage);
+            notificationManagerRef.current.addNotification(
+                'An unexpected error occurred. Please try again.',
+                'error'
+            );
         } finally {
             setProcessing(false);
         }
     };
-    
+
     // SVG sanitization function
     const sanitizeSVG = async (file) => {
         const text = await file.text();
         const parser = new DOMParser();
         const doc = parser.parseFromString(text, 'image/svg+xml');
-    
+
         // Remove potentially dangerous elements and attributes
         const dangerousElements = ['script', 'iframe', 'object', 'embed', 'base'];
         const dangerousAttributes = ['onload', 'onerror', 'onclick', 'onmouseover', 'onmouseout'];
-    
+
         // Remove dangerous elements
         dangerousElements.forEach(tag => {
             const elements = doc.getElementsByTagName(tag);
@@ -178,7 +209,7 @@ export default function WebIconAndName({ initialWebIcon, initialWebName }) {
                 elements[0].parentNode.removeChild(elements[0]);
             }
         });
-    
+
         // Remove dangerous attributes
         const allElements = doc.getElementsByTagName('*');
         for (const element of allElements) {
@@ -190,7 +221,7 @@ export default function WebIconAndName({ initialWebIcon, initialWebName }) {
                 }
             }
         }
-    
+
         // Convert sanitized SVG back to a file
         const serializer = new XMLSerializer();
         const sanitizedSVGString = serializer.serializeToString(doc);
@@ -199,6 +230,9 @@ export default function WebIconAndName({ initialWebIcon, initialWebName }) {
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+            <div>
+                <NotificationManager ref={notificationManagerRef} />
+            </div>
             <div className="max-w-3xl mx-auto">
                 <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
                     <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">

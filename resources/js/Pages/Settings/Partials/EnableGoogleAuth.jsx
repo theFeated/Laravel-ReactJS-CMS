@@ -1,13 +1,15 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useForm } from '@inertiajs/react';
 import axios from 'axios';
 import InstructionModal from '../../../Components/InstructionModal';
+import NotificationManager from '@/Components/NotificationManager';
 
 export default function EnableGoogleAuth({ initialIsGoogleAuthEnabled }) {
     const [isGoogleAuthEnabled, setIsGoogleAuthEnabled] = useState(initialIsGoogleAuthEnabled);
     const [showInstructions, setShowInstructions] = useState(false);
     const [error, setError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
+    const notificationManagerRef = useRef();
 
     const { setData, processing } = useForm({
         is_google_auth_enabled: initialIsGoogleAuthEnabled,
@@ -40,29 +42,35 @@ export default function EnableGoogleAuth({ initialIsGoogleAuthEnabled }) {
         try {
             const newState = !isGoogleAuthEnabled;
             setData('is_google_auth_enabled', newState);
-
+    
             const response = await axios.post('/api/settings', {
                 is_google_auth_enabled: newState,
             });
-
+    
             setIsGoogleAuthEnabled(newState);
-            setSuccessMessage(newState ? 
-                'Google Authentication has been enabled successfully.' : 
-                'Google Authentication has been disabled successfully.'
+    
+            // Show success notification
+            notificationManagerRef.current.addNotification(
+                newState ? 'Google Authentication has been enabled successfully.' : 'Google Authentication has been disabled successfully.',
+                'success'
             );
-            setError('');
-
-            // Clear success message after 5 seconds
-            setTimeout(() => setSuccessMessage(''), 5000);
-
+    
         } catch (error) {
-            setError('Failed to update Google Authentication settings. Please try again.');
             console.error('Settings update error:', error);
+    
+            // Show error notification
+            notificationManagerRef.current.addNotification(
+                'Failed to update Google Authentication settings. Please try again.',
+                'error'
+            );
         }
     };
 
     return (
         <div className="bg-white dark:bg-gray-900">
+            <div>
+                <NotificationManager ref={notificationManagerRef} />
+            </div>
             <div className="mt-6 space-y-4 xl:mt-12">
                 <div className="flex items-center justify-between max-w-2xl px-8 py-4 mx-auto border rounded-xl dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition">
                     <div className="flex items-center">

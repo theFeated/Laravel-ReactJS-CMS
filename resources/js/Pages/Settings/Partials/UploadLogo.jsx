@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import axios from 'axios';
 import InstructionModal from '../../../Components/InstructionModal';
+import NotificationManager from '@/Components/NotificationManager';
+
 
 export default function UploadLogo({ initialLogo }) {
     const [logo, setLogo] = useState(null);
@@ -9,6 +11,7 @@ export default function UploadLogo({ initialLogo }) {
     const [errors, setErrors] = useState({});
     const [successMessage, setSuccessMessage] = useState('');
     const [showInstructions, setShowInstructions] = useState(false);
+    const notificationManagerRef = useRef();
 
     const instructionSteps = [
         {
@@ -39,16 +42,24 @@ export default function UploadLogo({ initialLogo }) {
             // File size validation (2MB limit)
             if (file.size > 2 * 1024 * 1024) {
                 setErrors({ logo: 'File size must be less than 2MB' });
+                notificationManagerRef.current.addNotification(
+                    'File size must be less than 2MB',
+                    'error'
+                );
                 return;
             }
-    
+
             // File type validation including SVG
             const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml'];
             if (!validTypes.includes(file.type)) {
                 setErrors({ logo: 'Please upload a valid image file (SVG, PNG, JPG, or GIF)' });
+                notificationManagerRef.current.addNotification(
+                    'Please upload a valid image file (SVG, PNG, JPG, or GIF)',
+                    'error'
+                );
                 return;
             }
-    
+
             // SVG-specific validation
             if (file.type === 'image/svg+xml') {
                 validateSVGFile(file).then(result => {
@@ -56,8 +67,16 @@ export default function UploadLogo({ initialLogo }) {
                         setLogo(file);
                         setPreview(URL.createObjectURL(file));
                         setErrors({});
+                        notificationManagerRef.current.addNotification(
+                            'SVG file uploaded successfully',
+                            'success'
+                        );
                     } else {
                         setErrors({ logo: result.error });
+                        notificationManagerRef.current.addNotification(
+                            result.error,
+                            'error'
+                        );
                     }
                 });
             } else {
@@ -67,21 +86,29 @@ export default function UploadLogo({ initialLogo }) {
                         setLogo(file);
                         setPreview(URL.createObjectURL(file));
                         setErrors({});
+                        notificationManagerRef.current.addNotification(
+                            'Image file uploaded successfully',
+                            'success'
+                        );
                     } else {
                         setErrors({ logo: result.error });
+                        notificationManagerRef.current.addNotification(
+                            result.error,
+                            'error'
+                        );
                     }
                 });
             }
         }
     };
-    
+
     // Validate SVG file
     const validateSVGFile = async (file) => {
         try {
             const text = await file.text();
             const parser = new DOMParser();
             const doc = parser.parseFromString(text, 'image/svg+xml');
-    
+
             // Check for parsing errors
             const parserError = doc.querySelector('parsererror');
             if (parserError) {
@@ -90,23 +117,23 @@ export default function UploadLogo({ initialLogo }) {
                     error: 'Invalid SVG file format' 
                 };
             }
-    
+
             // Check for potentially dangerous elements and attributes
             const dangerousElements = ['script', 'iframe', 'object', 'embed', 'base'];
             const dangerousAttributes = ['onload', 'onerror', 'onclick', 'onmouseover', 'onmouseout'];
-    
+
             // Check for dangerous elements
             const hasDangerousElements = dangerousElements.some(element => 
                 doc.getElementsByTagName(element).length > 0
             );
-    
+
             if (hasDangerousElements) {
                 return { 
                     isValid: false, 
                     error: 'SVG contains potentially harmful elements' 
                 };
             }
-    
+
             // Check for dangerous attributes
             const allElements = doc.getElementsByTagName('*');
             for (const element of allElements) {
@@ -121,7 +148,7 @@ export default function UploadLogo({ initialLogo }) {
                     }
                 }
             }
-    
+
             return { isValid: true };
         } catch (error) {
             console.error('SVG validation error:', error);
@@ -131,7 +158,7 @@ export default function UploadLogo({ initialLogo }) {
             };
         }
     };
-    
+
     // Validate image dimensions
     const validateImageDimensions = async (file) => {
         return new Promise((resolve) => {
@@ -141,7 +168,7 @@ export default function UploadLogo({ initialLogo }) {
                 URL.revokeObjectURL(img.src);
                 const maxDimension = 2000; // Maximum allowed dimension
                 const minDimension = 50;   // Minimum allowed dimension
-    
+
                 if (img.width > maxDimension || img.height > maxDimension) {
                     resolve({ 
                         isValid: false, 
@@ -165,20 +192,23 @@ export default function UploadLogo({ initialLogo }) {
             };
         });
     };
-    
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!logo) {
             setErrors({ logo: 'Please select a logo to upload' });
+            notificationManagerRef.current.addNotification(
+                'Please select a logo to upload',
+                'error'
+            );
             return;
         }
-    
+
         setProcessing(true);
         setErrors({});
-        setSuccessMessage('');
-    
+
         const formData = new FormData();
-    
+
         try {
             // Process SVG files before upload
             if (logo.type === 'image/svg+xml') {
@@ -187,36 +217,42 @@ export default function UploadLogo({ initialLogo }) {
             } else {
                 formData.append('logo', logo);
             }
-    
+
             const response = await axios.post('/settings/upload-logo', formData, {
                 headers: { 
                     'Content-Type': 'multipart/form-data',
                     'Accept': 'application/json'
                 },
             });
-    
-            setSuccessMessage(response.data.message);
-            setTimeout(() => setSuccessMessage(''), 5000);
+
+            notificationManagerRef.current.addNotification(
+                response.data.message,
+                'success'
+            );
         } catch (error) {
             const errorMessage = error.response?.data?.errors || { 
                 general: 'Failed to upload logo. Please try again.' 
             };
             setErrors(errorMessage);
+            notificationManagerRef.current.addNotification(
+                'Failed to upload logo. Please try again.',
+                'error'
+            );
         } finally {
             setProcessing(false);
         }
     };
-    
+
     // Sanitize SVG file
     const sanitizeSVGFile = async (file) => {
         const text = await file.text();
         const parser = new DOMParser();
         const doc = parser.parseFromString(text, 'image/svg+xml');
-    
+
         // Remove potentially dangerous elements and attributes
         const dangerousElements = ['script', 'iframe', 'object', 'embed', 'base'];
         const dangerousAttributes = ['onload', 'onerror', 'onclick', 'onmouseover', 'onmouseout'];
-    
+
         // Remove dangerous elements
         dangerousElements.forEach(tag => {
             const elements = doc.getElementsByTagName(tag);
@@ -224,7 +260,7 @@ export default function UploadLogo({ initialLogo }) {
                 elements[0].parentNode.removeChild(elements[0]);
             }
         });
-    
+
         // Remove dangerous attributes
         const allElements = doc.getElementsByTagName('*');
         for (const element of allElements) {
@@ -236,7 +272,7 @@ export default function UploadLogo({ initialLogo }) {
                 }
             }
         }
-    
+
         // Convert back to file
         const serializer = new XMLSerializer();
         const sanitizedSVGString = serializer.serializeToString(doc);
@@ -245,6 +281,9 @@ export default function UploadLogo({ initialLogo }) {
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+            <div>
+                <NotificationManager ref={notificationManagerRef} />
+            </div>
             <div className="max-w-3xl mx-auto">
                 <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
                     <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
