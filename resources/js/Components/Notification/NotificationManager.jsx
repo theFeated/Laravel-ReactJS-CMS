@@ -21,10 +21,10 @@ const NotificationManager = forwardRef((props, ref) => {
         try {
             const response = await axios.get('/api/notification-settings');
             setSettings(response.data);
-            setIsLoading(false);
             console.log('Fetched settings:', response.data);
         } catch (error) {
             console.error('Failed to fetch notification settings:', error);
+        } finally {
             setIsLoading(false);
         }
     };
@@ -43,7 +43,7 @@ const NotificationManager = forwardRef((props, ref) => {
                 setNotifications(prev => prev.slice(1));
             }
 
-            const id = new Date().getTime();
+            const id = Date.now();
             setNotifications(prev => [
                 ...prev,
                 { id, message, type }

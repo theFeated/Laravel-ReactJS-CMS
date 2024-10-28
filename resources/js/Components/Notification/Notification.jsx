@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react';
 
-export default function Notification({ id, message, type, onClose }) {
+export default function Notification({ 
+    id, 
+    message, 
+    type, 
+    onClose, 
+    displayDuration = 3000,  // Default value if not provided
+    progressStep = 3.33      // Default value if not provided
+}) {
     const [visible, setVisible] = useState(true);
     const [progress, setProgress] = useState(100);
-
-    const displayDuration = 3000;  // Fixed duration
-    const progressStep = 3.33;     // Fixed step
 
     useEffect(() => {
         setVisible(true);
@@ -34,7 +38,7 @@ export default function Notification({ id, message, type, onClose }) {
             clearTimeout(timer);
             clearInterval(progressInterval);
         };
-    }, [message, id, onClose]);
+    }, [message, id, onClose, displayDuration, progressStep]);
 
     const handleClose = () => {
         setVisible(false);
@@ -54,6 +58,7 @@ export default function Notification({ id, message, type, onClose }) {
                         : 'border-blue-500'
                 }`}
             >
+                {/* Rest of your JSX remains the same */}
                 <div className="flex items-center justify-between p-4">
                     <div className="flex items-center flex-grow">
                         <div className="flex-shrink-0">

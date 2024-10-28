@@ -94,19 +94,19 @@ const NotificationSettings = () => {
     const instructionSteps = [
         {
             title: 'Notification Settings',
-            description: 'Configure your notification preferences including display duration, progress step, and maximum notifications.'
+            description: 'Configure your notification preferences, including how long notifications are displayed, how they progress visually, and the maximum number of notifications shown at once.'
         },
         {
             title: 'Display Duration',
-            description: 'Set the duration (in milliseconds) for which notifications will be displayed.'
+            description: 'Set the duration (in milliseconds) for which notifications will be displayed on the screen. A good practice is to set this between 3000 ms (3 seconds) and 5000 ms (5 seconds) for optimal visibility without overwhelming the user. For smoother animations, 3000 ms is recommended.'
         },
         {
             title: 'Progress Step',
-            description: 'Set the progress step (in percentage) for the notification progress bar.'
+            description: 'Define the progress step (in percentage) for the notification progress bar. This determines how quickly the progress bar fills up during the display duration. For example, if you set the display duration to 3000 ms, a progress step of 3.33% means the bar will fill completely in 30 steps, creating a smooth visual experience. Adjust the progress step proportionally if you change the display duration.'
         },
         {
             title: 'Max Notifications',
-            description: 'Set the maximum number of notifications that can be displayed at once.'
+            description: 'Set the maximum number of notifications that can be displayed at once. This helps prevent clutter on the screen. A recommended value is between 3 and 5 notifications, depending on the importance of the messages being displayed.'
         }
     ];
 

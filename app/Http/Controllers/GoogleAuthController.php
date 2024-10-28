@@ -58,6 +58,7 @@ class GoogleAuthController extends Controller
             // Check if Google authentication is enabled for the user
             $setting = Setting::where('user_id', $user->id)->first();
             if (!$setting || $setting->is_google_auth_enabled == 0) {
+                DB::rollBack();
                 return redirect()->route('login')->with('notification', [
                     'message' => 'Google authentication is not enabled for your account.',
                     'type' => 'error',
