@@ -7,6 +7,7 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import axios from 'axios';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+const defaultIconPath = '/cms/img/j.png';
 
 const fetchSettings = async () => {
     try {
@@ -24,15 +25,14 @@ const fetchSettings = async () => {
 const updateDocument = (settings) => {
     document.title = settings.web_name || appName;
 
-    if (settings.web_icon) {
-        let link = document.querySelector("link[rel~='icon']");
-        if (!link) {
-            link = document.createElement('link');
-            link.rel = 'icon';
-            document.getElementsByTagName('head')[0].appendChild(link);
-        }
-        link.href = settings.web_icon;
+    const iconPath = settings.web_icon || defaultIconPath;
+    let link = document.querySelector("link[rel~='icon']");
+    if (!link) {
+        link = document.createElement('link');
+        link.rel = 'icon';
+        document.getElementsByTagName('head')[0].appendChild(link);
     }
+    link.href = iconPath;
 };
 
 fetchSettings().then((settings) => {

@@ -33,6 +33,13 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        // Add a welcome message to the session
+        $user = Auth::user();
+        $request->session()->flash('notification', [
+            'message' => 'Welcome back, ' . $user->name . '! We are glad to see you again.',
+            'type' => 'success',
+        ]);
+
         return redirect()->intended(route('dashboard', absolute: false));
     }
 
@@ -41,7 +48,6 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
-
         $user = Auth::user();
 
         if ($user) {

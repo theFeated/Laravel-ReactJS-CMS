@@ -68,7 +68,10 @@ class GoogleAuthController extends Controller
             Auth::login($user);
             DB::commit();
 
-            return redirect()->intended('dashboard');
+            return redirect()->intended('dashboard')->with('notification', [
+                'message' => 'Welcome back, ' . $user->name . '! We are glad to see you again.',
+                'type' => 'success',
+            ]);
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->route('login')->with('notification', [
