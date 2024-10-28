@@ -2,7 +2,7 @@ import { useState, useRef } from 'react';
 import { useForm } from '@inertiajs/react';
 import axios from 'axios';
 import InstructionModal from '../../../Components/InstructionModal';
-import NotificationManager from '@/Components/NotificationManager';
+import NotificationManager from "../../../Components/Notification/NotificationManager";
 
 export default function Enable2FA({ initialIs2FAEnabled }) {
     const [is2FAEnabled, setIs2FAEnabled] = useState(initialIs2FAEnabled);
@@ -99,7 +99,7 @@ export default function Enable2FA({ initialIs2FAEnabled }) {
                                     </span>
                                 <button 
                                     onClick={() => setShowInstructions(true)}
-                                    className="text-sm text-blue-500 hover:text-blue-600 transition"
+                                    className="px-3 py-1 ml-2 text-sm text-blue-500 bg-blue-50 rounded-lg hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-800 transition"
                                 >
                                     Learn More
                                 </button>

@@ -1,6 +1,6 @@
 import ApplicationLogo from '@/Components/ApplicationLogo';
 import { Link, usePage } from '@inertiajs/react';
-import Notification from '@/Components/Notification';
+import Notification from '../Components/Notification/Notification';
 
 export default function Guest({ children }) {
     const { flash } = usePage().props;

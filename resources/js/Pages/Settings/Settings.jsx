@@ -6,6 +6,7 @@ import Enable2FA from './Partials/Enable2FA';
 import WebIconAndName from './Partials/WebIconAndName';
 import UploadLogo from './Partials/UploadLogo';
 import Google2FAToggle from '../Google2FA/Partials/Google2FAToggle';
+import NotificationSettings from './Partials/NotificationSettings';
 
 export default function Settings({ isGoogleAuthEnabled, is2FAEnabled, webIcon, webName, logo, isGoogle2FAEnabled }) {
     const [activeTab, setActiveTab] = useState(localStorage.getItem('activeTab') || 'google-auth');
@@ -30,6 +31,8 @@ export default function Settings({ isGoogleAuthEnabled, is2FAEnabled, webIcon, w
                 return <WebIconAndName initialWebIcon={webIcon} initialWebName={webName} />;
             case 'upload-logo':
                 return <UploadLogo initialLogo={logo} />;
+            case 'notification-settings':
+                return <NotificationSettings />;
             default:
                 return null;
         }
@@ -69,6 +72,12 @@ export default function Settings({ isGoogleAuthEnabled, is2FAEnabled, webIcon, w
                         onClick={() => setActiveTab('upload-logo')}
                     >
                         Upload Logo
+                    </button>
+                    <button
+                        className={`tab px-4 py-2 focus:outline-none ${activeTab === 'notification-settings' ? 'text-blue-600 border-b-4 border-blue-600' : 'text-gray-600 hover:text-blue-600 hover:border-blue-600'}`}
+                        onClick={() => setActiveTab('notification-settings')}
+                    >
+                        Notification Settings
                     </button>
                 </div>
                 <div className="content">

@@ -58,7 +58,7 @@ class SettingsController extends Controller
 
             $recoveryCode = RecoveryCode::where('user_id', $user->id)->first();
             if (!$recoveryCode || !$recoveryCode->is_code_copied) {
-                return response()->json(['message' => 'You must generate and copy a recovery code before enabling Google 2FA'], 422);
+                return response()->json(['message' => 'You must generate and copy a recovery code before enabling Google 2FA'], 401);
             }
 
             $setting->update([

@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useForm } from "@inertiajs/react";
 import InstructionModal from "../../../Components/InstructionModal";
-import RecoveryCodesModal from "../../../Components/RecoveryCodesModal";
-import NotificationManager from '@/Components/NotificationManager';
+import RecoveryCodesModal from "../../../Components/RecoveryCodes/RecoveryCodesModal";
+import NotificationManager from "../../../Components/Notification/NotificationManager";
 
 export default function Google2FAToggle({ initialIsGoogle2FAEnabled }) {
     const [isGoogle2FAEnabled, setIsGoogle2FAEnabled] = useState(
@@ -35,14 +35,14 @@ export default function Google2FAToggle({ initialIsGoogle2FAEnabled }) {
                 'success'
             );
         } catch (error) {
-            if (error.response && error.response.status === 422) {
+            if (error.response && error.response.status === 401) {
                 notificationManagerRef.current.addNotification(
                     'You must generate and copy a recovery code before enabling TOTP.',
                     'error'
                 );
             } else {
                 notificationManagerRef.current.addNotification(
-                    'Failed to update authenticator app settings. Please try again.',
+                    'Failed to update TOTP settings. Please try again.',
                     'error'
                 );
             }

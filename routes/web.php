@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Google2FAController;
 use App\Http\Controllers\GoogleAuthController;
+use App\Http\Controllers\NotificationSettingsController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RecoveryCodeController;
 use Illuminate\Foundation\Application;
@@ -52,8 +53,13 @@ Route::middleware('auth')->group(function () {
     
     Route::post('/api/recovery-codes/generate', [RecoveryCodeController::class, 'generate']);
     Route::get('/api/recovery-codes', [RecoveryCodeController::class, 'index']); 
-    Route::post('/api/recovery-codes/verify', [RecoveryCodeController::class, 'verify']);});
+    Route::post('/api/recovery-codes/verify', [RecoveryCodeController::class, 'verify']);
     Route::post('/api/recovery-codes/mark-copied', [RecoveryCodeController::class, 'markCopied']);
+
+    Route::get('/api/notification-settings', [NotificationSettingsController::class, 'index']);
+    Route::put('/api/notification-settings', [NotificationSettingsController::class, 'update']);
+    
+});
 
 //Login featch the settings for the gogle auth
 Route::get('/api/settings', [SettingsController::class, 'getSettings']);

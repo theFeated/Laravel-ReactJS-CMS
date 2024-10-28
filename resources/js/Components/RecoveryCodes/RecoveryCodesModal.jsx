@@ -2,8 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faCopy, faSyncAlt } from '@fortawesome/free-solid-svg-icons';
-import NotificationManager from '@/Components/NotificationManager';
-
+import NotificationManager from '../Notification/NotificationManager';
 
 export default function RecoveryCodesModal({ isOpen, onClose }) {
     const [code, setCode] = useState('');

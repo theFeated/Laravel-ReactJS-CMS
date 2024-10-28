@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import axios from 'axios';
 import InstructionModal from '../../../Components/InstructionModal';
-import NotificationManager from '@/Components/NotificationManager';
+import NotificationManager from "../../../Components/Notification/NotificationManager";
 
 export default function WebIconAndName({ initialWebIcon, initialWebName }) {
     const [webIcon, setWebIcon] = useState(null);

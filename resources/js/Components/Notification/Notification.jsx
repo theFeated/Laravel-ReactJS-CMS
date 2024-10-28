@@ -4,6 +4,9 @@ export default function Notification({ id, message, type, onClose }) {
     const [visible, setVisible] = useState(true);
     const [progress, setProgress] = useState(100);
 
+    const displayDuration = 3000;  // Fixed duration
+    const progressStep = 3.33;     // Fixed step
+
     useEffect(() => {
         setVisible(true);
         setProgress(100);
@@ -18,14 +21,14 @@ export default function Notification({ id, message, type, onClose }) {
                     clearInterval(progressInterval);
                     return 0;
                 }
-                return prev - 3.33; // 3 seconds of progress animation
+                return prev - progressStep;
             });
         }, 100);
 
         const timer = setTimeout(() => {
             setVisible(false);
             onClose(id);
-        }, 3000); // 3 seconds of notification display
+        }, displayDuration);
 
         return () => {
             clearTimeout(timer);

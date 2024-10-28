@@ -62,4 +62,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(RecoveryCode::class);
     }
+
+    public function notificationSettings()
+    {
+        return $this->hasOne(NotificationSettings::class);
+    }
 }

@@ -1,6 +1,6 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, usePage } from '@inertiajs/react';
-import Notification from '@/Components/Notification';
+import Notification from '../Components/Notification/Notification';
 
 export default function Dashboard() {
     const { flash } = usePage().props;
