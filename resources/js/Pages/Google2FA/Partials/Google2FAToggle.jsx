@@ -31,7 +31,7 @@ export default function Google2FAToggle({ initialIsGoogle2FAEnabled }) {
 
             setIsGoogle2FAEnabled(newState);
             notificationManagerRef.current.addNotification(
-                'Authenticator app settings updated successfully.',
+                'TOTP settings updated successfully.',
                 'success'
             );
         } catch (error) {

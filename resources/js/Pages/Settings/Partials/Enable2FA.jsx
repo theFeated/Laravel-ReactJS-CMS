@@ -33,12 +33,12 @@ export default function Enable2FA({ initialIs2FAEnabled }) {
             );
 
         } catch (error) {
-            setError('Failed to update Two-Factor Authentication settings. Please try again.');
+            setError('Failed to update EOTP settings. Please try again.');
             console.error('Settings update error:', error);
 
             // Show error notification
             notificationManagerRef.current.addNotification(
-                'Failed to update Two-Factor Authentication settings. Please try again.',
+                'Failed to update EOTP settings. Please try again.',
                 'error'
             );
         }

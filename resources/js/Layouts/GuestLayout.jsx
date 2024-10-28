@@ -6,12 +6,14 @@ export default function Guest({ children }) {
     const { flash } = usePage().props;
 
     return (
-        <div className="min-h-screen flex flex-col justify-center items-center bg-gray-100 dark:bg-gray-900">
+        <div className="min-h-screen flex flex-col justify-center items-center bg-gray-100 dark:bg-gray-900 relative">
             {flash.notification && (
-                <Notification 
-                    message={flash.notification.message} 
-                    type={flash.notification.type} 
-                />
+                <div className="absolute top-4 right-4 z-50">
+                    <Notification 
+                        message={flash.notification.message} 
+                        type={flash.notification.type} 
+                    />
+                </div>
             )}
             <div className="w-full sm:max-w-md mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
                 <div className="flex justify-center mb-4">

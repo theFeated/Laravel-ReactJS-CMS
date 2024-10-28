@@ -50,6 +50,7 @@ class GoogleAuthController extends Controller
 
                 return redirect()->intended('dashboard');
             } else {
+                // Create new user
                 $user = User::create([
                     'name' => $googleUser->getName(),
                     'email' => $googleUser->getEmail(),
@@ -59,19 +60,19 @@ class GoogleAuthController extends Controller
                     'password' => bcrypt('1234'),
                 ]);
 
+                // Create and enable Google authentication setting for new user
+                Setting::create([
+                    'user_id' => $user->id,
+                    'is_google_auth_enabled' => 1,
+                    // Add any other required fields for your Settings table
+                ]);
+
                 Auth::login($user);
 
-                // Check if Google authentication is enabled for the user
-                $setting = Setting::where('user_id', $user->id)->first();
-                if (!$setting || $setting->is_google_auth_enabled == 0) {
-                    Auth::logout();
-                    return redirect()->route('login')->with('notification', [
-                        'message' => 'Google authentication is not enabled for your account.',
-                        'type' => 'error',
-                    ]);
-                }
-
-                return redirect()->intended('dashboard');
+                return redirect()->intended('dashboard')->with('notification', [
+                    'message' => 'Successfully registered! Your default password is 1234',
+                    'type' => 'success',
+                ]);
             }
         } catch (\Exception $e) {
             return redirect()->route('login')->with('notification', [

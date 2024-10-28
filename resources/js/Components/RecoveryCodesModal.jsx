@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faCopy, faSyncAlt } from '@fortawesome/free-solid-svg-icons';
+import NotificationManager from '@/Components/NotificationManager';
+
 
 export default function RecoveryCodesModal({ isOpen, onClose }) {
     const [code, setCode] = useState('');
@@ -10,6 +12,7 @@ export default function RecoveryCodesModal({ isOpen, onClose }) {
     const [error, setError] = useState('');
     const [recoveryCode, setRecoveryCode] = useState('');
     const [verificationError, setVerificationError] = useState('');
+    const notificationManagerRef = useRef();
 
     const fetchCode = async () => {
         try {
@@ -17,8 +20,20 @@ export default function RecoveryCodesModal({ isOpen, onClose }) {
             setCode(response.data.code.code);
             setIsCodeCopied(response.data.code.is_code_copied);
             setError('');
+
+            // Show success notification
+            notificationManagerRef.current.addNotification(
+                'Recovery code fetched successfully.',
+                'success'
+            );
         } catch (error) {
             setError('Failed to fetch recovery code');
+
+            // Show error notification
+            notificationManagerRef.current.addNotification(
+                'Failed to fetch recovery code.',
+                'error'
+            );
         }
     };
 
@@ -29,8 +44,20 @@ export default function RecoveryCodesModal({ isOpen, onClose }) {
             setCode(response.data.code);
             setIsCodeCopied(false);
             setError('');
+
+            // Show success notification
+            notificationManagerRef.current.addNotification(
+                'Recovery code generated successfully.',
+                'success'
+            );
         } catch (error) {
             setError('Failed to generate recovery code');
+
+            // Show error notification
+            notificationManagerRef.current.addNotification(
+                'Failed to generate recovery code.',
+                'error'
+            );
         } finally {
             setLoading(false);
         }
@@ -43,8 +70,20 @@ export default function RecoveryCodesModal({ isOpen, onClose }) {
 
             // Update the server to mark the code as copied
             await axios.post('/api/recovery-codes/mark-copied', { code });
+
+            // Show success notification
+            notificationManagerRef.current.addNotification(
+                'Recovery code copied to clipboard.',
+                'success'
+            );
         } catch (err) {
             console.error('Failed to copy code:', err);
+
+            // Show error notification
+            notificationManagerRef.current.addNotification(
+                'Failed to copy recovery code.',
+                'error'
+            );
         }
     };
 
@@ -56,11 +95,29 @@ export default function RecoveryCodesModal({ isOpen, onClose }) {
             });
             if (response.data.success) {
                 onClose();
+
+                // Show success notification
+                notificationManagerRef.current.addNotification(
+                    'Recovery code verified successfully.',
+                    'success'
+                );
             } else {
                 setVerificationError('Invalid recovery code');
+
+                // Show error notification
+                notificationManagerRef.current.addNotification(
+                    'Invalid recovery code.',
+                    'error'
+                );
             }
         } catch (error) {
             setVerificationError('Failed to verify recovery code');
+
+            // Show error notification
+            notificationManagerRef.current.addNotification(
+                'Failed to verify recovery code.',
+                'error'
+            );
         } finally {
             setLoading(false);
         }
@@ -76,6 +133,9 @@ export default function RecoveryCodesModal({ isOpen, onClose }) {
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div>
+                <NotificationManager ref={notificationManagerRef} />
+            </div>
             <div className="w-full max-w-sm p-4 bg-white rounded-lg shadow dark:bg-gray-800">
                 <div className="flex justify-between items-center mb-4">
                     <h2 className="text-lg font-semibold text-gray-800 dark:text-white">
