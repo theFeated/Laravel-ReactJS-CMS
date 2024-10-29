@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import NotificationManager from '../../../Components/Notification/NotificationManager';
 import InstructionModal from '../../../Components/InstructionModal';
+import NotificationHistoryModal from '../../../Components/Notification/NotificationHistoryModal';
 
 const NotificationSettings = () => {
     const [settings, setSettings] = useState({
@@ -15,6 +16,7 @@ const NotificationSettings = () => {
     const [showSettingsModal, setShowSettingsModal] = useState(false);
     const [error, setError] = useState('');
     const notificationManagerRef = useRef(null);
+    const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
 
     useEffect(() => {
         fetchSettings();
@@ -205,7 +207,6 @@ const NotificationSettings = () => {
                             <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
                             <polyline points="22,6 12,13 2,6" />
                         </svg>
-
                         <div className="flex flex-col mx-5 space-y-1">
                             <h2 className="text-lg font-medium text-gray-700 sm:text-2xl dark:text-gray-200">
                                 Notification Settings
@@ -225,6 +226,12 @@ const NotificationSettings = () => {
                                     className="px-3 py-1 ml-2 text-sm text-blue-500 bg-blue-50 rounded-lg hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-800 transition"
                                 >
                                     Set
+                                </button>
+                                <button 
+                                    onClick={() => setIsHistoryModalOpen(true)}
+                                    className="px-3 py-1 ml-2 text-sm text-blue-500 bg-blue-50 rounded-lg hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-800 transition"
+                                >
+                                    History
                                 </button>
                             </div>
                         </div>
@@ -269,6 +276,11 @@ const NotificationSettings = () => {
                 title="Notification Settings Guide"
                 icon={<svg className="w-6 h-6 text-blue-500" />}
                 steps={instructionSteps}
+            />
+
+            <NotificationHistoryModal
+                isOpen={isHistoryModalOpen}
+                onClose={() => setIsHistoryModalOpen(false)}
             />
         </div>
     );

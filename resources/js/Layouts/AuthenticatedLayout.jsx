@@ -10,14 +10,15 @@ import { faUser, faSignOutAlt, faCog } from '@fortawesome/free-solid-svg-icons';
 import NotificationManager from '../Components/Notification/NotificationManager';
 import { useForm } from '@inertiajs/react';
 import axios from 'axios';
+import NotificationHistoryModal from '../Components/Notification/NotificationHistoryModal';
 
 export default function Authenticated({ header, children, initialIsDarkModeEnabled }) {
     const user = usePage().props.auth.user;
     const { url } = usePage();
     const currentPage = url.split('/').pop().replace('-', ' ').replace(/^\w/, (c) => c.toUpperCase());
-
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
-    
+    const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
+
     const [isSidebarOpen, setIsSidebarOpen] = useState(() => {
         const savedState = localStorage.getItem('sidebarState');
         return savedState !== null ? JSON.parse(savedState) : true;
@@ -75,6 +76,7 @@ export default function Authenticated({ header, children, initialIsDarkModeEnabl
             );
         }
     };
+    
 
     return (
         <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
@@ -82,6 +84,10 @@ export default function Authenticated({ header, children, initialIsDarkModeEnabl
             <div>
                 <NotificationManager ref={notificationManagerRef} />
             </div>
+            <NotificationHistoryModal
+                isOpen={isHistoryModalOpen}
+                onClose={() => setIsHistoryModalOpen(false)}
+            />
             <nav className="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between h-16">
@@ -129,6 +135,18 @@ export default function Authenticated({ header, children, initialIsDarkModeEnabl
                         </div>
 
                         <div className="hidden sm:flex sm:items-center sm:ms-6">
+                            <div className="relative">
+                                <button 
+                                    onClick={() => setIsHistoryModalOpen(true)}
+                                    className="h-12 w-12 rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-700 transition"
+                                    aria-label="View notification history"
+                                >
+                                    <svg className="w-6 h-6 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                                    </svg>
+                                </button>
+                            </div>
+
                             <div className="ms-3 relative">
                                 <button
                                     onClick={toggleDarkMode}

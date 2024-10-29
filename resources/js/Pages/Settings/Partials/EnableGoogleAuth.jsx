@@ -1,15 +1,17 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useForm } from '@inertiajs/react';
 import axios from 'axios';
 import InstructionModal from '../../../Components/InstructionModal';
 import NotificationManager from "../../../Components/Notification/NotificationManager";
+import NotificationHistoryManager from '../../../Components/Notification/NotificationHistoryManager';
 
-export default function EnableGoogleAuth({ initialIsGoogleAuthEnabled }) {
+export default function EnableGoogleAuth({ initialIsGoogleAuthEnabled, userId }) {
     const [isGoogleAuthEnabled, setIsGoogleAuthEnabled] = useState(initialIsGoogleAuthEnabled);
     const [showInstructions, setShowInstructions] = useState(false);
     const [error, setError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
-    const notificationManagerRef = useRef();
+    const notificationManagerRef = useRef(null);
+    const notificationHistoryManagerRef = useRef(null);
 
     const { setData, processing } = useForm({
         is_google_auth_enabled: initialIsGoogleAuthEnabled,
@@ -49,20 +51,34 @@ export default function EnableGoogleAuth({ initialIsGoogleAuthEnabled }) {
     
             setIsGoogleAuthEnabled(newState);
     
+            const message = newState 
+                ? 'Google Authentication has been enabled successfully.' 
+                : 'Google Authentication has been disabled successfully.';
+    
             // Show success notification
-            notificationManagerRef.current.addNotification(
-                newState ? 'Google Authentication has been enabled successfully.' : 'Google Authentication has been disabled successfully.',
-                'success'
-            );
+            notificationManagerRef.current.addNotification(message, 'success');
+    
+            // Save notification to history
+            if (notificationHistoryManagerRef.current) {
+                await notificationHistoryManagerRef.current.saveNotification(message, 'success');
+            } else {
+                console.error('notificationHistoryManagerRef is not available');
+            }
     
         } catch (error) {
             console.error('Settings update error:', error);
     
+            const errorMessage = 'Failed to update Google Authentication settings. Please try again.';
+    
             // Show error notification
-            notificationManagerRef.current.addNotification(
-                'Failed to update Google Authentication settings. Please try again.',
-                'error'
-            );
+            notificationManagerRef.current.addNotification(errorMessage, 'error');
+    
+            // Save error notification to history
+            if (notificationHistoryManagerRef.current) {
+                await notificationHistoryManagerRef.current.saveNotification(errorMessage, 'error');
+            } else {
+                console.error('notificationHistoryManagerRef is not available');
+            }
         }
     };
 
@@ -70,7 +86,8 @@ export default function EnableGoogleAuth({ initialIsGoogleAuthEnabled }) {
         <div className="dark:bg-gray-900">
             <div>
                 <NotificationManager ref={notificationManagerRef} />
-            </div>
+                <NotificationHistoryManager ref={notificationHistoryManagerRef} userId={userId} />
+                </div>
             <div className="mt-6 space-y-4 xl:mt-12">
                 <div className="flex items-center justify-between max-w-2xl px-8 py-4 mx-auto border rounded-xl dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition">
                     <div className="flex items-center">

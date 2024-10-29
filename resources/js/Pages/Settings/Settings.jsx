@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
 import EnableGoogleAuth from './Partials/EnableGoogleAuth';
 import Enable2FA from './Partials/Enable2FA';
 import WebIconAndName from './Partials/WebIconAndName';
@@ -11,6 +11,7 @@ import EnableDarkMode from './Partials/EnableDarkMode';
 
 export default function Settings({ isGoogleAuthEnabled, is2FAEnabled, webIcon, webName, logo, isGoogle2FAEnabled, isDarkModeEnabled }) {
     const [activeTab, setActiveTab] = useState(localStorage.getItem('activeTab') || 'google-auth');
+    const { auth } = usePage().props;
 
     useEffect(() => {
         localStorage.setItem('activeTab', activeTab);
@@ -19,10 +20,10 @@ export default function Settings({ isGoogleAuthEnabled, is2FAEnabled, webIcon, w
 
     const renderActiveTab = () => {
         switch (activeTab) {
-            case 'google-auth': return <EnableGoogleAuth initialIsGoogleAuthEnabled={isGoogleAuthEnabled} />;
-            case '2fa': return <Enable2FA initialIs2FAEnabled={is2FAEnabled} />;
+            case 'google-auth': return <EnableGoogleAuth initialIsGoogleAuthEnabled={isGoogleAuthEnabled} userId={auth.user.id} />;
+            case '2fa': return <Enable2FA initialIs2FAEnabled={is2FAEnabled} userId={auth.user.id} />;
             case 'google2fa': return <Google2FAToggle initialIsGoogle2FAEnabled={isGoogle2FAEnabled} />;
-            case 'web-icon-name': return <WebIconAndName initialWebIcon={webIcon} initialWebName={webName} />;
+            case 'web-icon-name': return <WebIconAndName initialWebIcon={webIcon} initialWebName={webName} userId={auth.user.id} />;
             case 'upload-logo': return <UploadLogo initialLogo={logo} />;
             case 'notification-settings': return <NotificationSettings />;
             case 'dark-mode': return <EnableDarkMode initialIsDarkModeEnabled={isDarkModeEnabled} />;

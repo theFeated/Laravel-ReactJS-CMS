@@ -9,6 +9,7 @@ use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use App\Models\Notification;
 
 class GoogleAuthController extends Controller
 {
@@ -66,6 +67,14 @@ class GoogleAuthController extends Controller
             }
 
             Auth::login($user);
+
+            // Save login notification to history
+            Notification::create([
+                'user_id' => $user->id,
+                'message' => 'Logged in successfully via Google.',
+                'type' => 'success'
+            ]);
+
             DB::commit();
 
             return redirect()->intended('dashboard')->with('notification', [
@@ -114,6 +123,14 @@ class GoogleAuthController extends Controller
             ]);
 
             Auth::login($user);
+
+            // Save registration notification to history
+            Notification::create([
+                'user_id' => $user->id,
+                'message' => 'Account created and logged in successfully via Google.',
+                'type' => 'success'
+            ]);
+
             DB::commit();
 
             return redirect()->intended('dashboard')->with('notification', [

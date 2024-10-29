@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Google2FAController;
 use App\Http\Controllers\GoogleAuthController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\NotificationSettingsController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RecoveryCodeController;
@@ -58,10 +59,14 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/api/notification-settings', [NotificationSettingsController::class, 'index']);
     Route::put('/api/notification-settings', [NotificationSettingsController::class, 'update']);
-    
-});
 
-//Login featch the settings for the gogle auth
+    Route::get('/notification-history', [NotificationController::class, 'index']);
+    Route::delete('/notification-history/{notification}', [NotificationController::class, 'destroy']);
+    Route::post('/notification-history/{notification}/mark-read', [NotificationController::class, 'markAsRead']);
+    Route::post('/notification-history/mark-all-read', [NotificationController::class, 'markAllAsRead']);
+    Route::post('/notifications', [NotificationController::class, 'store'])->name('notifications.store');});
+
+//Login fetch the settings for the gogle auth
 Route::get('/api/settings', [SettingsController::class, 'getSettings']);
 
 Route::get('auth/google/redirect', [GoogleAuthController::class, 'redirectToGoogle'])->name('auth.google.redirect');

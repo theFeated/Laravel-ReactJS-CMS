@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Models\Notification;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -33,11 +34,22 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        // Add a welcome message to the session
         $user = Auth::user();
+        
+        // Create welcome message
+        $message = 'Welcome back, ' . $user->name . '! We are glad to see you again.';
+        
+        // Add notification to session
         $request->session()->flash('notification', [
-            'message' => 'Welcome back, ' . $user->name . '! We are glad to see you again.',
+            'message' => $message,
             'type' => 'success',
+        ]);
+
+        // Save to notification history
+        Notification::create([
+            'user_id' => $user->id,
+            'message' => $message,
+            'type' => 'success'
         ]);
 
         return redirect()->intended(route('dashboard', absolute: false));
@@ -51,6 +63,13 @@ class AuthenticatedSessionController extends Controller
         $user = Auth::user();
 
         if ($user) {
+            // Save logout notification to history
+            Notification::create([
+                'user_id' => $user->id,
+                'message' => 'You have been successfully logged out.',
+                'type' => 'info'
+            ]);
+
             $user->two_factor_code = null;
             $user->two_factor_sent_at = null;
             $user->save();
