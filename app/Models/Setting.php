@@ -15,7 +15,8 @@ class Setting extends Model
         'web_icon',
         'web_name',
         'logo',
-        'is_google2fa_enabled'
+        'is_google2fa_enabled',
+        'is_dark_mode_enabled'
     ];
 
     public function user()

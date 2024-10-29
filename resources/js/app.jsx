@@ -7,9 +7,31 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import axios from 'axios';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
-const defaultIconPath = '/cms/img/j.png';
+
+// List of auth-related routes that should be excluded from custom settings
+const authRoutes = [
+    '/login',
+    '/register',
+    '/forgot-password',
+    '/reset-password',
+    '/verify-email',
+];
+
+const isAuthPage = () => {
+    const path = window.location.pathname;
+    return authRoutes.some(route => path.startsWith(route));
+};
 
 const fetchSettings = async () => {
+    // If it's an auth page, return default settings
+    if (isAuthPage()) {
+        return {
+            web_name: appName,
+            web_icon: null,
+            is_dark_mode_enabled: false,
+        };
+    }
+
     try {
         const response = await axios.get('/api/settings');
         return response.data;
@@ -18,32 +40,59 @@ const fetchSettings = async () => {
         return {
             web_name: appName,
             web_icon: null,
+            is_dark_mode_enabled: false,
         };
     }
 };
 
 const updateDocument = (settings) => {
+    // For auth pages, use default title and icon
+    if (isAuthPage()) {
+        document.title = appName;
+        // Reset favicon to default if needed
+        let link = document.querySelector("link[rel~='icon']");
+        if (link) {
+            link.href = '/favicon.ico'; // Your default favicon path
+        }
+        // Ensure dark mode is disabled on auth pages
+        document.documentElement.classList.remove('dark');
+        return;
+    }
+
+    // For non-auth pages, apply custom settings
     document.title = settings.web_name || appName;
 
-    const iconPath = settings.web_icon || defaultIconPath;
-    let link = document.querySelector("link[rel~='icon']");
-    if (!link) {
-        link = document.createElement('link');
-        link.rel = 'icon';
-        document.getElementsByTagName('head')[0].appendChild(link);
+    if (settings.web_icon) {
+        let link = document.querySelector("link[rel~='icon']");
+        if (!link) {
+            link = document.createElement('link');
+            link.rel = 'icon';
+            document.getElementsByTagName('head')[0].appendChild(link);
+        }
+        link.href = settings.web_icon;
     }
-    link.href = iconPath;
+
+    if (settings.is_dark_mode_enabled) {
+        document.documentElement.classList.add('dark');
+    } else {
+        document.documentElement.classList.remove('dark');
+    }
 };
 
 fetchSettings().then((settings) => {
-    updateDocument(settings);
-
     createInertiaApp({
-        title: (title) => `${title} - ${settings.web_name || appName}`,
+        title: (title) => {
+            if (isAuthPage()) {
+                return `${title} - ${appName}`;
+            }
+            return `${title} - ${settings.web_name || appName}`;
+        },
         resolve: (name) => resolvePageComponent(`./Pages/${name}.jsx`, import.meta.glob('./Pages/**/*.jsx')),
         setup({ el, App, props }) {
             const root = createRoot(el);
 
+            // Update document before rendering
+            updateDocument(settings);
             root.render(<App {...props} />);
         },
         progress: {

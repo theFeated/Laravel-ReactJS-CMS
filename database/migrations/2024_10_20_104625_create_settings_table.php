@@ -17,6 +17,7 @@ class CreateSettingsTable extends Migration
             $table->string('web_name')->nullable();
             $table->string('logo')->nullable();
             $table->boolean('is_google2fa_enabled')->default(false);
+            $table->boolean('is_dark_mode_enabled')->default(false);
             $table->timestamps();
         });
     }

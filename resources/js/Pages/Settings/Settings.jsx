@@ -7,8 +7,9 @@ import WebIconAndName from './Partials/WebIconAndName';
 import UploadLogo from './Partials/UploadLogo';
 import Google2FAToggle from '../Google2FA/Partials/Google2FAToggle';
 import NotificationSettings from './Partials/NotificationSettings';
+import EnableDarkMode from './Partials/EnableDarkMode'; // Import the new component
 
-export default function Settings({ isGoogleAuthEnabled, is2FAEnabled, webIcon, webName, logo, isGoogle2FAEnabled }) {
+export default function Settings({ isGoogleAuthEnabled, is2FAEnabled, webIcon, webName, logo, isGoogle2FAEnabled, isDarkModeEnabled }) {
     const [activeTab, setActiveTab] = useState(localStorage.getItem('activeTab') || 'google-auth');
 
     useEffect(() => {
@@ -33,6 +34,8 @@ export default function Settings({ isGoogleAuthEnabled, is2FAEnabled, webIcon, w
                 return <UploadLogo initialLogo={logo} />;
             case 'notification-settings':
                 return <NotificationSettings />;
+            case 'dark-mode': // Add case for dark mode
+                return <EnableDarkMode initialIsDarkModeEnabled={isDarkModeEnabled} />;
             default:
                 return null;
         }
@@ -78,6 +81,12 @@ export default function Settings({ isGoogleAuthEnabled, is2FAEnabled, webIcon, w
                         onClick={() => setActiveTab('notification-settings')}
                     >
                         Notification Settings
+                    </button>
+                    <button
+                        className={`tab px-4 py-2 focus:outline-none ${activeTab === 'dark-mode' ? 'text-blue-600 border-b-4 border-blue-600' : 'text-gray-600 hover:text-blue-600 hover:border-blue-600'}`}
+                        onClick={() => setActiveTab('dark-mode')}
+                    >
+                        Dark Mode
                     </button>
                 </div>
                 <div className="content">

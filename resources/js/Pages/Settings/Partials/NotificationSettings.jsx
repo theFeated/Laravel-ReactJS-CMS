@@ -185,7 +185,7 @@ const NotificationSettings = () => {
     };
 
     return (
-        <div className="bg-white dark:bg-gray-900">
+        <div className="dark:bg-gray-900">
             <div>
                 <NotificationManager ref={notificationManagerRef} />
             </div>

@@ -25,6 +25,7 @@ class SettingsController extends Controller
             'isGoogle2FAEnabled' => $setting ? $setting->is_google2fa_enabled : false,
             'recoveryCode' => $recoveryCode ? $recoveryCode->code : null,
             'isCodeCopied' => $recoveryCode ? $recoveryCode->is_code_copied : false,
+            'isDarkModeEnabled' => $setting ? $setting->is_dark_mode_enabled : false, // Added dark mode setting
         ]);
     }
 
@@ -63,6 +64,15 @@ class SettingsController extends Controller
 
             $setting->update([
                 'is_google2fa_enabled' => $request->is_google2fa_enabled,
+            ]);
+        }
+
+        if ($request->has('is_dark_mode_enabled')) {
+            $request->validate([
+                'is_dark_mode_enabled' => 'required|boolean',
+            ]);
+            $setting->update([
+                'is_dark_mode_enabled' => $request->is_dark_mode_enabled,
             ]);
         }
 
@@ -129,6 +139,7 @@ class SettingsController extends Controller
             'web_name' => $setting ? $setting->web_name : '',
             'logo' => $setting && $setting->logo ? Storage::url($setting->logo) : '',
             'is_google2fa_enabled' => $setting ? $setting->is_google2fa_enabled : false,
+            'is_dark_mode_enabled' => $setting ? $setting->is_dark_mode_enabled : false,
         ]);
     }
 }

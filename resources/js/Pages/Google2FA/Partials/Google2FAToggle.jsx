@@ -90,7 +90,7 @@ export default function Google2FAToggle({ initialIsGoogle2FAEnabled }) {
     ];
 
     return (
-        <div className="bg-white dark:bg-gray-900">
+        <div className="dark:bg-gray-900">
             <div>
                 <NotificationManager ref={notificationManagerRef} />
             </div>

@@ -4,41 +4,48 @@ import axios from 'axios';
 import InstructionModal from '../../../Components/InstructionModal';
 import NotificationManager from "../../../Components/Notification/NotificationManager";
 
-export default function Enable2FA({ initialIs2FAEnabled }) {
-    const [is2FAEnabled, setIs2FAEnabled] = useState(initialIs2FAEnabled);
+export default function EnableDarkMode({ initialIsDarkModeEnabled }) {
+    const [isDarkModeEnabled, setIsDarkModeEnabled] = useState(initialIsDarkModeEnabled);
     const [showInstructions, setShowInstructions] = useState(false);
     const [error, setError] = useState('');
     const notificationManagerRef = useRef(null);
 
     const { setData, processing } = useForm({
-        is_2fa_enabled: initialIs2FAEnabled,
+        is_dark_mode_enabled: initialIsDarkModeEnabled,
     });
 
-    const toggle2FA = async () => {
+    const toggleDarkMode = async () => {
         try {
-            const newState = !is2FAEnabled;
-            setData('is_2fa_enabled', newState);
+            const newState = !isDarkModeEnabled;
+            setData('is_dark_mode_enabled', newState);
 
             const response = await axios.post('/api/settings', {
-                is_2fa_enabled: newState,
+                is_dark_mode_enabled: newState,
             });
 
-            setIs2FAEnabled(newState);
+            setIsDarkModeEnabled(newState);
             setError('');
+
+            // Apply dark mode class to document element
+            if (newState) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
 
             // Show success notification
             notificationManagerRef.current.addNotification(
-                newState ? 'Two-Factor Authentication has been enabled successfully.' : 'Two-Factor Authentication has been disabled successfully.',
+                newState ? 'Dark mode has been enabled successfully.' : 'Dark mode has been disabled successfully.',
                 'success'
             );
 
         } catch (error) {
-            setError('Failed to update EOTP settings. Please try again.');
+            setError('Failed to update dark mode settings. Please try again.');
             console.error('Settings update error:', error);
 
             // Show error notification
             notificationManagerRef.current.addNotification(
-                'Failed to update EOTP settings. Please try again.',
+                'Failed to update dark mode settings. Please try again.',
                 'error'
             );
         }
@@ -46,24 +53,24 @@ export default function Enable2FA({ initialIs2FAEnabled }) {
 
     const instructionSteps = [
         {
-            title: 'What is Email OTP?',
-            description: 'Email OTP (One-Time Password) is a secure verification method where a unique code is sent to your registered email address to authenticate your identity.'
+            title: 'What is Dark Mode?',
+            description: 'Dark mode is a setting that changes the background color of an app window to black. It is designed to reduce eye strain and save battery life on devices with OLED screens.'
         },
         {
             title: 'Why Use It?',
-            description: 'It provides an additional layer of security by ensuring that only users with access to the registered email can complete the authentication process.'
+            description: 'Dark mode can reduce eye strain in low-light conditions and can also save battery life on devices with OLED screens.'
         },
         {
             title: 'How to Set Up',
-            description: 'Ensure your email address is correctly registered with your account. No additional setup is required for receiving OTPs via email.'
+            description: 'Simply toggle the switch to enable or disable dark mode. Your preference will be saved and applied across the application.'
         },
         {
             title: 'How it Works',
-            description: 'When you attempt to sign in, a unique OTP will be sent to your email. Enter this code to verify your identity and complete the sign-in process.'
+            description: 'When dark mode is enabled, the background color of the application changes to a darker color, making it easier on the eyes in low-light conditions.'
         },
         {
             title: 'Important Note',
-            description: 'Keep your email account secure, as access to it is crucial for receiving your OTP. If you lose access to your email, you may have difficulty logging in.'
+            description: 'Dark mode is a personal preference and may not be suitable for everyone. You can switch back to light mode at any time.'
         }
     ];
 
@@ -85,17 +92,16 @@ export default function Enable2FA({ initialIs2FAEnabled }) {
                             strokeLinecap="round" 
                             strokeLinejoin="round"
                         >
-                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                            <polyline points="22,6 12,13 2,6" />
+                            <path d="M12 3.75V1.5M12 22.5v-2.25M4.219 4.219l-1.5-1.5M19.781 19.781l-1.5-1.5M1.5 12H3.75M22.5 12h-2.25M4.219 19.781l-1.5 1.5M19.781 4.219l-1.5 1.5M12 6.75a5.25 5.25 0 100 10.5 5.25 5.25 0 000-10.5z" />
                         </svg>
 
                         <div className="flex flex-col mx-5 space-y-1">
                             <h2 className="text-lg font-medium text-gray-700 sm:text-2xl dark:text-gray-200">
-                                Email OTP
+                                Dark Mode
                             </h2>
                             <div className="flex items-center space-x-2">
                                     <span className="px-2 py-1 text-xs text-blue-500 bg-blue-50 rounded-full dark:bg-blue-900/30">
-                                        Enhanced Security
+                                        Enhanced Comfort
                                     </span>
                                 <button 
                                     onClick={() => setShowInstructions(true)}
@@ -109,18 +115,18 @@ export default function Enable2FA({ initialIs2FAEnabled }) {
                     
                     <div className="flex items-center">
                         <span className="mr-3 text-sm text-gray-600 dark:text-gray-300">
-                            {is2FAEnabled ? 'Enabled' : 'Disabled'}
+                            {isDarkModeEnabled ? 'Enabled' : 'Disabled'}
                         </span>
                         <label 
-                            htmlFor="2fa-toggle" 
+                            htmlFor="dark-mode-toggle" 
                             className="relative inline-flex items-center cursor-pointer"
                         >
                             <input
                                 type="checkbox"
-                                id="2fa-toggle"
+                                id="dark-mode-toggle"
                                 className="sr-only peer"
-                                checked={is2FAEnabled}
-                                onChange={toggle2FA}
+                                checked={isDarkModeEnabled}
+                                onChange={toggleDarkMode}
                                 disabled={processing}
                             />
                             <div className="w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:bg-blue-600 after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
@@ -138,7 +144,7 @@ export default function Enable2FA({ initialIs2FAEnabled }) {
             <InstructionModal
                 isOpen={showInstructions}
                 onClose={() => setShowInstructions(false)}
-                title="Email OTP Guide"
+                title="Dark Mode Guide"
                 icon={<svg className="w-6 h-6 text-blue-500" />}
                 steps={instructionSteps}
             />
