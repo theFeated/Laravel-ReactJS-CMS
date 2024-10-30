@@ -286,15 +286,15 @@ export default function WebIconAndName({ initialWebIcon, initialWebName, userId 
     };
 
     return (
-        <div className="min-h-screen dark:bg-gray-900 py-8">
+        <div className="min-h-screen dark:bg-gray-900 py-4 sm:py-8 px-4 sm:px-0">
             <div>
                 <NotificationManager ref={notificationManagerRef} />
                 <NotificationHistoryManager ref={notificationHistoryManagerRef} userId={userId} />
             </div>
             <div className="max-w-3xl mx-auto">
                 <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-                    <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                        <div className="flex justify-between items-center">
+                    <div className="px-4 sm:px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-0">
                             <div>
                                 <h2 className="text-xl font-semibold text-gray-800 dark:text-white">
                                     Website Settings
@@ -305,20 +305,21 @@ export default function WebIconAndName({ initialWebIcon, initialWebName, userId 
                             </div>
                             <button
                                 onClick={() => setShowInstructions(true)}
-                                className="text-sm text-blue-500 hover:text-blue-600 transition"
+                                className="text-sm text-blue-500 hover:text-blue-600 transition self-start sm:self-auto"
                             >
                                 View Guidelines
                             </button>
                         </div>
                     </div>
-
-                    <form onSubmit={handleSubmit} className="p-6 space-y-6">
+    
+                    <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-6">
                         {/* Web Icon Section */}
                         <div className="space-y-2">
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                 Website Icon
                             </label>
-                            <div className="flex items-center space-x-4">
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                            {/* <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4"> */}
                                 <div className="flex-shrink-0">
                                     <div className="h-24 w-24 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center overflow-hidden">
                                         {preview ? (
@@ -358,10 +359,10 @@ export default function WebIconAndName({ initialWebIcon, initialWebName, userId 
                                 </div>
                             </div>
                             {errors.web_icon && (
-                                <p className="text-sm text-red-600 dark:text-red-400">{errors.web_icon}</p>
+                                <p className="text-sm text-red-600 dark:text-red-400 mt-2">{errors.web_icon}</p>
                             )}
                         </div>
-
+    
                         {/* Web Name Section */}
                         <div className="space-y-2">
                             <label htmlFor="webName" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -370,36 +371,36 @@ export default function WebIconAndName({ initialWebIcon, initialWebName, userId 
                             <input
                                 type="text"
                                 id="webName"
-                                className="block w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white sm:text-sm transition"
+                                className="block w-full px-3 sm:px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white text-sm transition"
                                 value={webName}
                                 onChange={(e) => setWebName(e.target.value)}
-                                disable ={processing}
+                                disabled={processing}
                                 placeholder="Enter website name"
                             />
                             {errors.web_name && (
-                                <p className="text-sm text-red-600 dark:text-red-400">{errors.web_name}</p>
+                                <p className="text-sm text-red-600 dark:text-red-400 mt-2">{errors.web_name}</p>
                             )}
                         </div>
-
+    
                         {/* Messages */}
                         {successMessage && (
                             <div className="p-4 rounded-md bg-green-50 dark:bg-green-900/30">
                                 <p className="text-sm text-green-700 dark:text-green-400">{successMessage}</p>
                             </div>
                         )}
-
+    
                         {errors.general && (
                             <div className="p-4 rounded-md bg-red-50 dark:bg-red-900/30">
                                 <p className="text-sm text-red-700 dark:text-red-400">{errors.general}</p>
                             </div>
                         )}
-
+    
                         {/* Submit Button */}
                         <div className="pt-4">
                             <button
                                 type="submit"
                                 disabled={processing}
-                                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                                className="w-full sm:w-auto min-w-[200px] flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition"
                             >
                                 {processing ? (
                                     <div className="flex items-center space-x-2">
@@ -410,14 +411,13 @@ export default function WebIconAndName({ initialWebIcon, initialWebName, userId 
                                         <span>Saving changes...</span>
                                     </div>
                                 ) : (
-                                    'Save Changes'
-                                )}
+                                    'Save Changes' )}
                             </button>
                         </div>
                     </form>
                 </div>
             </div>
-
+    
             <InstructionModal
                 isOpen={showInstructions}
                 onClose={() => setShowInstructions(false)}

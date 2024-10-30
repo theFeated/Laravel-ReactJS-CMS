@@ -84,17 +84,17 @@ export default function Enable2FA({ initialIs2FAEnabled, userId }) {
     ];
 
     return (
-        <div className="dark:bg-gray-900">
+        <div className="dark:bg-gray-900 p-4 sm:p-6">
             <div>
                 <NotificationManager ref={notificationManagerRef} />
                 <NotificationHistoryManager ref={notificationHistoryManagerRef} userId={userId} />
             </div>
             <div className="mt-6 space-y-4 xl:mt-12">
-                <div className="flex items-center justify-between max-w-2xl px-8 py-4 mx-auto border rounded-xl dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition">
-                    <div className="flex items-center">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between max-w-2xl px-4 sm:px-8 py-4 mx-auto border rounded-xl dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition">
+                    <div className="flex items-center w-full sm:w-auto mb-4 sm:mb-0">
                         <svg 
                             xmlns="http://www.w3.org/2000/svg" 
-                            className="w-5 h-5 text-gray-400 sm:h-9 sm:w-9" 
+                            className="w-5 h-5 text-gray-400 sm:h-9 sm:w-9 flex-shrink-0" 
                             viewBox="0 0 24 24" 
                             fill="none" 
                             stroke="currentColor" 
@@ -105,18 +105,18 @@ export default function Enable2FA({ initialIs2FAEnabled, userId }) {
                             <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
                             <polyline points="22,6 12,13 2,6" />
                         </svg>
-
-                        <div className="flex flex-col mx-5 space-y-1">
+    
+                        <div className="flex flex-col mx-3 sm:mx-5 space-y-1">
                             <h2 className="text-lg font-medium text-gray-700 sm:text-2xl dark:text-gray-200">
                                 Email OTP
                             </h2>
-                            <div className="flex items-center space-x-2">
-                                    <span className="px-2 py-1 text-xs text-blue-500 bg-blue-50 rounded-full dark:bg-blue-900/30">
-                                        Enhanced Security
-                                    </span>
+                            <div className="flex flex-wrap items-center space-x-2">
+                                <span className="px-2 py-1 text-xs text-blue-500 bg-blue-50 rounded-full dark:bg-blue-900/30">
+                                    Enhanced Security
+                                </span>
                                 <button 
                                     onClick={() => setShowInstructions(true)}
-                                    className="px-3 py-1 ml-2 text-sm text-blue-500 bg-blue-50 rounded-lg hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-800 transition"
+                                    className="px-3 py-1 mt-2 sm:mt-0 text-sm text-blue-500 bg-blue-50 rounded-lg hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-800 transition"
                                 >
                                     Learn More
                                 </button>
@@ -124,7 +124,7 @@ export default function Enable2FA({ initialIs2FAEnabled, userId }) {
                         </div>
                     </div>
                     
-                    <div className="flex items-center">
+                    <div className="flex items-center justify-between w-full sm:w-auto mt-4 sm:mt-0">
                         <span className="mr-3 text-sm text-gray-600 dark:text-gray-300">
                             {is2FAEnabled ? 'Enabled' : 'Disabled'}
                         </span>
@@ -144,14 +144,14 @@ export default function Enable2FA({ initialIs2FAEnabled, userId }) {
                         </label>
                     </div>
                 </div>
-
+    
                 {error && (
-                    <div className="max-w-2xl mx-auto px-8">
+                    <div className="max-w-2xl mx-auto px-4 sm:px-8">
                         <p className="text-red-500 text-sm">{error}</p>
                     </div>
                 )}
             </div>
-
+    
             <InstructionModal
                 isOpen={showInstructions}
                 onClose={() => setShowInstructions(false)}

@@ -135,37 +135,44 @@ export default function RecoveryCodesModal({ isOpen, onClose }) {
             <div>
                 <NotificationManager ref={notificationManagerRef} />
             </div>
-            <div className="w-full max-w-sm p-4 bg-white rounded-lg shadow dark:bg-gray-800">
+            <div className="w-full max-w-sm p-6 bg-white rounded-lg shadow-lg dark:bg-gray-800">
                 <div className="flex justify-between items-center mb-4">
                     <h2 className="text-lg font-semibold text-gray-800 dark:text-white">
                         Recovery Code
                     </h2>
-                    <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+                    <button 
+                        onClick={onClose} 
+                        className="text-gray-400 hover:text-gray-600 focus:outline-none"
+                        aria-label="Close modal"
+                    >
                         <FontAwesomeIcon icon={faTimes} />
                     </button>
                 </div>
-
+    
                 {error && <div className="mb-4 text-red-500 text-sm">{error}</div>}
-
+    
                 {!isCodeCopied ? (
                     <div className="mb-4">
-                        <div className="flex justify-end space-x-2 mb-2">
+                        <div className="flex justify-end space-x-4 mb-2">
                             <FontAwesomeIcon 
                                 icon={faCopy} 
-                                className="text-gray-500 hover:text-blue-500 cursor-pointer" 
+                                className="text-gray-500 hover:text-blue-500 cursor-pointer transition-colors duration-200" 
                                 onClick={copyCode} 
+                                aria-label="Copy recovery code"
                             />
                             <FontAwesomeIcon 
                                 icon={faSyncAlt} 
-                                className="text-gray-500 hover:text-green-500 cursor-pointer" 
+                                className="text-gray-500 hover:text-green-500 cursor-pointer transition-colors duration-200" 
                                 onClick={generateCode} 
+                                aria-label="Generate new recovery code"
                             />
                         </div>
                         <textarea
                             readOnly
                             value={code}
-                            className="w-full p-2 bg-gray-100 dark:bg-gray-700 rounded font-mono text-sm"
+                            className="w-full p-2 bg-gray-100 dark:bg-gray-700 rounded font-mono text-sm border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                             rows={4}
+                            aria-label="Recovery code"
                         />
                     </div>
                 ) : (
@@ -173,30 +180,32 @@ export default function RecoveryCodesModal({ isOpen, onClose }) {
                         The recovery code has been copied and will not be displayed again.
                     </div>
                 )}
-
+    
                 <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
                     Copy and save this recovery code in a secure location. It can only be used once.
                 </p>
-
+    
                 <div className="space-y-4">
                     <p className="text-sm text-gray-600 dark:text-gray-300">
                         Enter the recovery code to verify your account
                     </p>
-
+    
                     <input
                         type="text"
                         value={recoveryCode}
                         onChange={(e) => setRecoveryCode(e.target.value)}
-                        className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+                        className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                        placeholder="Enter recovery code"
+                        aria-label="Recovery code input"
                     />
-
+    
                     {verificationError && (
                         <div className="text-red-500 text-sm">{verificationError}</div>
                     )}
-
+    
                     <button
                         onClick={verifyRecoveryCode}
-                        className="w-full p-2 bg-blue-500 hover:bg-blue-700 text-white rounded"
+                        className="w-full p-2 bg-blue-500 hover:bg-blue-700 text-white rounded transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                     >
                         Verify
                     </button>

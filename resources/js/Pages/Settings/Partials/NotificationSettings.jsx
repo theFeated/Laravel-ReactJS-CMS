@@ -4,6 +4,8 @@ import NotificationManager from "../../../Components/Notification/NotificationMa
 import InstructionModal from "../../../Components/InstructionModal";
 import NotificationHistoryModal from "../../../Components/Notification/NotificationHistoryModal";
 import NotificationHistoryManager from "../../../Components/Notification/NotificationHistoryManager";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
 
 const NotificationSettings = ({userId}) => {
     const [settings, setSettings] = useState({
@@ -157,16 +159,26 @@ const NotificationSettings = ({userId}) => {
 
     const SettingsModal = ({ isOpen, onClose }) => {
         if (!isOpen) return null;
-
+    
         return (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-96">
-                    <h3 className="text-lg font-medium mb-4 dark:text-white">
-                        Adjust Settings
-                    </h3>
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                <div className="w-full max-w-sm p-6 bg-white rounded-lg shadow-lg dark:bg-gray-800">
+                    <div className="flex justify-between items-center mb-4">
+                        <h2 className="text-lg font-semibold text-gray-800 dark:text-white">
+                            Adjust Settings
+                        </h2>
+                        <button 
+                            onClick={onClose} 
+                            className="text-gray-400 hover:text-gray-600 focus:outline-none"
+                            aria-label="Close modal"
+                        >
+                            <FontAwesomeIcon icon={faTimes} />
+                        </button>
+                    </div>
+    
                     <div className="space-y-4">
                         <div>
-                            <label className="block text-sm font-medium dark:text-gray-300">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                 Display Duration (ms)
                             </label>
                             <input
@@ -175,12 +187,12 @@ const NotificationSettings = ({userId}) => {
                                 value={settings.display_duration}
                                 onChange={handleChange}
                                 min="1000"
-                                className="w-full mt-1 p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                className="w-full mt-1 p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                             />
                         </div>
-
+    
                         <div>
-                            <label className="block text-sm font-medium dark:text-gray-300">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                 Progress Step (%)
                             </label>
                             <input
@@ -190,12 +202,12 @@ const NotificationSettings = ({userId}) => {
                                 onChange={handleChange}
                                 min="1"
                                 max="100"
-                                className="w-full mt-1 p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                className="w-full mt-1 p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                             />
                         </div>
-
+    
                         <div>
-                            <label className="block text-sm font-medium dark:text-gray-300">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                 Max Notifications
                             </label>
                             <input
@@ -204,27 +216,27 @@ const NotificationSettings = ({userId}) => {
                                 value={settings.max_notifications}
                                 onChange={handleChange}
                                 min="1"
-                                className="w-full mt-1 p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                className="w-full mt-1 p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                             />
                         </div>
-
-                        <div className="flex justify-end space-x-2 mt-6">
-                            <button
-                                onClick={onClose}
-                                className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-white"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={() => {
-                                    handleSubmit();
-                                    onClose();
-                                }}
-                                className="px-4 py-2 text-sm bg-blue-500 text-white rounded hover:bg-blue-600"
-                            >
-                                Save Changes
-                            </button>
-                        </div>
+                    </div>
+    
+                    <div className="flex justify-end space-x-2 mt-6">
+                        <button
+                            onClick={onClose}
+                            className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 dark:focus:ring-gray-400"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={() => {
+                                handleSubmit();
+                                onClose();
+                            }}
+                            className="px-4 py-2 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                        >
+                            Save Changes
+                        </button>
                     </div>
                 </div>
             </div>
@@ -232,17 +244,17 @@ const NotificationSettings = ({userId}) => {
     };
 
     return (
-        <div className="dark:bg-gray-900">
+        <div className="dark:bg-gray-900 p-4 sm:p-6">
             <div>
                 <NotificationManager ref={notificationManagerRef} />
                 <NotificationHistoryManager ref={notificationHistoryManagerRef} userId={userId} />
             </div>
             <div className="mt-6 space-y-4 xl:mt-12">
-                <div className="flex items-center justify-between max-w-2xl px-8 py-4 mx-auto border rounded-xl dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition">
-                    <div className="flex items-center">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between max-w-2xl px-4 sm:px-8 py-4 mx-auto border rounded-xl dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition">
+                    <div className="flex items-center w-full sm:w-auto mb-4 sm:mb-0">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
-                            className="w-5 h-5 text-gray-400 sm:h-9 sm:w-9"
+                            className="w-5 h-5 text-gray-400 sm:h-9 sm:w-9 flex-shrink-0"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
@@ -253,37 +265,37 @@ const NotificationSettings = ({userId}) => {
                             <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
                             <polyline points="22,6 12,13 2,6" />
                         </svg>
-                        <div className="flex flex-col mx-5 space-y-1">
+                        <div className="flex flex-col mx-3 sm:mx-5 space-y-1">
                             <h2 className="text-lg font-medium text-gray-700 sm:text-2xl dark:text-gray-200">
                                 Notification Settings
                             </h2>
-                            <div className="flex items-center space-x-2">
+                            <div className="flex flex-wrap items-center space-x-2">
                                 <span className="px-2 py-1 text-xs text-blue-500 bg-blue-50 rounded-full dark:bg-blue-900/30">
                                     Notifications
                                 </span>
                                 <button
                                     onClick={() => setShowInstructions(true)}
-                                    className="px-3 py-1 ml-2 text-sm text-blue-500 bg-blue-50 rounded-lg hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-800 transition"
+                                    className="px-3 py-1 mt-2 sm:mt-0 text-sm text-blue-500 bg-blue-50 rounded-lg hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-800 transition"
                                 >
                                     Learn More
                                 </button>
                                 <button
                                     onClick={() => setShowSettingsModal(true)}
-                                    className="px-3 py-1 ml-2 text-sm text-blue-500 bg-blue-50 rounded-lg hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-800 transition"
+                                    className="px-3 py-1 mt-2 sm:mt-0 text-sm text-blue-500 bg-blue-50 rounded-lg hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-800 transition"
                                 >
                                     Set
                                 </button>
                                 <button
                                     onClick={() => setIsHistoryModalOpen(true)}
-                                    className="px-3 py-1 ml-2 text-sm text-blue-500 bg-blue-50 rounded-lg hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-800 transition"
+                                    className="px-3 py-1 mt-2 sm:mt-0 text-sm text-blue-500 bg-blue-50 rounded-lg hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-800 transition"
                                 >
                                     History
                                 </button>
                             </div>
                         </div>
                     </div>
-
-                    <div className="flex items-center">
+    
+                    <div className="flex items-center justify-between w-full sm:w-auto">
                         <span className="mr-3 text-sm text-gray-600 dark:text-gray-300">
                             {settings.is_notification_enabled
                                 ? "Enabled"
@@ -305,19 +317,22 @@ const NotificationSettings = ({userId}) => {
                         </label>
                     </div>
                 </div>
-
+    
                 {error && (
-                    <div className="max-w-2xl mx-auto px-8">
+                    <div className="max-w-2xl mx-auto px-4 sm:px-8">
                         <p className="text-red-500 text-sm">{error}</p>
                     </div>
                 )}
             </div>
-
+    
             <SettingsModal
                 isOpen={showSettingsModal}
                 onClose={() => setShowSettingsModal(false)}
+                settings={settings}
+                handleChange={handleChange}
+                handleSubmit={handleSubmit}
             />
-
+    
             <InstructionModal
                 isOpen={showInstructions}
                 onClose={() => setShowInstructions(false)}
@@ -325,7 +340,7 @@ const NotificationSettings = ({userId}) => {
                 icon={<svg className="w-6 h-6 text-blue-500" />}
                 steps={instructionSteps}
             />
-
+    
             <NotificationHistoryModal
                 isOpen={isHistoryModalOpen}
                 onClose={() => setIsHistoryModalOpen(false)}

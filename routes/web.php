@@ -66,6 +66,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/notification-history/mark-all-read', [NotificationController::class, 'markAllAsRead']);
     Route::post('/notifications', [NotificationController::class, 'store'])->name('notifications.store');});
 
+    Route::post('/notifications/{notification}/mark-as-read', [NotificationController::class, 'markAsRead']);
+    Route::post('/mark-all-notifications-as-read', [NotificationController::class, 'markAllAsRead']);
+    
 //Login fetch the settings for the gogle auth
 Route::get('/api/settings', [SettingsController::class, 'getSettings']);
 

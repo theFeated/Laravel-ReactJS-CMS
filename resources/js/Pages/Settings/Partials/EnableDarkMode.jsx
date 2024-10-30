@@ -91,17 +91,17 @@ export default function EnableDarkMode({ initialIsDarkModeEnabled, userId }) {
     ];
 
     return (
-        <div className="dark:bg-gray-900">
+        <div className="dark:bg-gray-900 p-4 sm:p-6">
             <div>
                 <NotificationManager ref={notificationManagerRef} />
                 <NotificationHistoryManager ref={notificationHistoryManagerRef} userId={userId} />
             </div>
             <div className="mt-6 space-y-4 xl:mt-12">
-                <div className="flex items-center justify-between max-w-2xl px-8 py-4 mx-auto border rounded-xl dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition">
-                    <div className="flex items-center">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between max-w-2xl px-4 sm:px-8 py-4 mx-auto border rounded-xl dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition">
+                    <div className="flex items-center w-full sm:w-auto">
                         <svg 
                             xmlns="http://www.w3.org/2000/svg" 
-                            className="w-5 h-5 text-gray-400 sm:h-9 sm:w-9" 
+                            className="w-5 h-5 text-gray-400 sm:h-9 sm:w-9 flex-shrink-0" 
                             viewBox="0 0 24 24" 
                             fill="none" 
                             stroke="currentColor" 
@@ -111,18 +111,18 @@ export default function EnableDarkMode({ initialIsDarkModeEnabled, userId }) {
                         >
                             <path d="M12 3.75V1.5M12 22.5v-2.25M4.219 4.219l-1.5-1.5M19.781 19.781l-1.5-1.5M1.5 12H3.75M22.5 12h-2.25M4.219 19.781l-1.5 1.5M19.781 4.219l-1.5 1.5M12 6.75a5.25 5.25 0 100 10.5 5.25 5.25 0 000-10.5z" />
                         </svg>
-
-                        <div className="flex flex-col mx-5 space-y-1">
+    
+                        <div className="flex flex-col mx-3 sm:mx-5 space-y-1">
                             <h2 className="text-lg font-medium text-gray-700 sm:text-2xl dark:text-gray-200">
                                 Dark Mode
                             </h2>
-                            <div className="flex items-center space-x-2">
-                                    <span className="px-2 py-1 text-xs text-blue-500 bg-blue-50 rounded-full dark:bg-blue-900/30">
-                                        Enhanced Comfort
-                                    </span>
+                            <div className="flex flex-wrap items-center gap-2">
+                                <span className="px-2 py-1 text-xs text-blue-500 bg-blue-50 rounded-full dark:bg-blue-900/30">
+                                    Enhanced Comfort
+                                </span>
                                 <button 
                                     onClick={() => setShowInstructions(true)}
-                                    className="px-3 py-1 ml-2 text-sm text-blue-500 bg-blue-50 rounded-lg hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-800 transition"
+                                    className="px-3 py-1 text-sm text-blue-500 bg-blue-50 rounded-lg hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-800 transition"
                                 >
                                     Learn More
                                 </button>
@@ -130,11 +130,11 @@ export default function EnableDarkMode({ initialIsDarkModeEnabled, userId }) {
                         </div>
                     </div>
                     
-                    <div className="ms-3 relative">
+                    <div className="flex items-center mt-4 sm:mt-0">
                         <button
                             onClick={toggleDarkMode}
                             disabled={processing}
-                            className="h-12 w-12 rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-700"
+                            className="h-10 sm:h-12 w-10 sm:w-12 rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-700 transition-all"
                             aria-label="Toggle dark mode"
                         >
                             <svg className="fill-violet-700 block dark:hidden" fill="currentColor" viewBox="0 0 20 20">
@@ -149,14 +149,14 @@ export default function EnableDarkMode({ initialIsDarkModeEnabled, userId }) {
                         </button>
                     </div>
                 </div>
-
+    
                 {error && (
-                    <div className="max-w-2xl mx-auto px-8">
+                    <div className="max-w-2xl mx-auto px-4 sm:px-8">
                         <p className="text-red-500 text-sm">{error}</p>
                     </div>
                 )}
             </div>
-
+    
             <InstructionModal
                 isOpen={showInstructions}
                 onClose={() => setShowInstructions(false)}

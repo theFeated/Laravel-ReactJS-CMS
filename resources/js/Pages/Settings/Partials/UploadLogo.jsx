@@ -341,15 +341,15 @@ export default function UploadLogo({ initialLogo, userId }) {
     };
 
     return (
-        <div className="min-h-screen dark:bg-gray-900 py-8">
+        <div className="min-h-screen dark:bg-gray-900 py-4 sm:py-8">
             <div>
                 <NotificationManager ref={notificationManagerRef} />
                 <NotificationHistoryManager ref={notificationHistoryManagerRef} userId={userId} />
             </div>
-            <div className="max-w-3xl mx-auto">
+            <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-                    <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                        <div className="flex justify-between items-center">
+                    <div className="px-4 sm:px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
                             <div>
                                 <h2 className="text-xl font-semibold text-gray-800 dark:text-white">
                                     Upload Your Logo
@@ -360,25 +360,25 @@ export default function UploadLogo({ initialLogo, userId }) {
                             </div>
                             <button
                                 onClick={() => setShowInstructions(true)}
-                                className="text-sm text-blue-500 hover:text-blue-600 transition"
+                                className="mt-2 sm:mt-0 text-sm text-blue-500 hover:text-blue-600 transition"
                             >
                                 View Guidelines
                             </button>
                         </div>
                     </div>
-
-                    <form onSubmit={handleSubmit} className="p-6 space-y-6">
+    
+                    <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-6">
                         <div className="space-y-2">
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                 Logo Image
                             </label>
-                            <div className="flex items-center space-x-4">
+                            <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4">
                                 <div className="flex-shrink-0">
                                     <div className="h-24 w-24 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center overflow-hidden">
                                         {preview ? (
                                             <img 
                                                 src={preview} 
-                                                alt="Logo Preview" 
+                                                alt="Icon Preview" 
                                                 className="h-20 w-20 object-contain"
                                             />
                                         ) : (
@@ -388,7 +388,7 @@ export default function UploadLogo({ initialLogo, userId }) {
                                         )}
                                     </div>
                                 </div>
-                                <div className="flex-1">
+                                <div className="flex-1 w-full sm:w-auto">
                                     <input
                                         type="file"
                                         id="logo"
@@ -415,19 +415,19 @@ export default function UploadLogo({ initialLogo, userId }) {
                                 <p className="text-sm text-red-600 dark:text-red-400 mt-2">{errors.logo}</p>
                             )}
                         </div>
-
+    
                         {successMessage && (
                             <div className="p-4 rounded-md bg-green-50 dark:bg-green-900/30">
                                 <p className="text-sm text-green-700 dark:text-green-400">{successMessage}</p>
-                 </div>
+                            </div>
                         )}
-
+    
                         {errors.general && (
                             <div className="p-4 rounded-md bg-red-50 dark:bg-red-900/30">
                                 <p className="text-sm text-red-700 dark:text-red-400">{errors.general}</p>
                             </div>
                         )}
-
+    
                         <div className="pt-4">
                             <button
                                 type="submit"
@@ -450,7 +450,7 @@ export default function UploadLogo({ initialLogo, userId }) {
                     </form>
                 </div>
             </div>
-
+    
             <InstructionModal
                 isOpen={showInstructions}
                 onClose={() => setShowInstructions(false)}
