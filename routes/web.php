@@ -62,13 +62,11 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/notification-history', [NotificationController::class, 'index']);
     Route::delete('/notification-history/{notification}', [NotificationController::class, 'destroy']);
-    Route::post('/notification-history/{notification}/mark-read', [NotificationController::class, 'markAsRead']);
-    Route::post('/notification-history/mark-all-read', [NotificationController::class, 'markAllAsRead']);
-    Route::post('/notifications', [NotificationController::class, 'store'])->name('notifications.store');});
-
-    Route::post('/notifications/{notification}/mark-as-read', [NotificationController::class, 'markAsRead']);
     Route::post('/mark-all-notifications-as-read', [NotificationController::class, 'markAllAsRead']);
-    
+    Route::post('/mark-notification-as-read', [NotificationController::class, 'markAsRead']);
+    Route::post('/notifications', [NotificationController::class, 'store'])->name('notifications.store');
+    Route::delete('/notification-history', [NotificationController::class, 'destroyAll']); 
+});
 //Login fetch the settings for the gogle auth
 Route::get('/api/settings', [SettingsController::class, 'getSettings']);
 

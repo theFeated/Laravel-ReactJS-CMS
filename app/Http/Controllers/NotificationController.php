@@ -160,4 +160,18 @@ class NotificationController extends Controller
             return null;
         }
     }
+
+    public function destroyAll()
+    {
+        try {
+            $user = Auth::user();
+            $user->notifications()->delete();
+
+            return response()->json(['message' => 'All notifications deleted successfully']);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed to delete notifications', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+
 }
