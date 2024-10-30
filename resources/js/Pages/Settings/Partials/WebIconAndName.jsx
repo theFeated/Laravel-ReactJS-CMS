@@ -2,8 +2,9 @@ import { useState, useRef } from 'react';
 import axios from 'axios';
 import InstructionModal from '../../../Components/InstructionModal';
 import NotificationManager from "../../../Components/Notification/NotificationManager";
+import NotificationHistoryManager from '../../../Components/Notification/NotificationHistoryManager';
 
-export default function WebIconAndName({ initialWebIcon, initialWebName }) {
+export default function WebIconAndName({ initialWebIcon, initialWebName, userId }) {
     const [webIcon, setWebIcon] = useState(null);
     const [webName, setWebName] = useState(initialWebName);
     const [preview, setPreview] = useState(initialWebIcon);
@@ -11,7 +12,8 @@ export default function WebIconAndName({ initialWebIcon, initialWebName }) {
     const [errors, setErrors] = useState({});
     const [successMessage, setSuccessMessage] = useState('');
     const [showInstructions, setShowInstructions] = useState(false);
-    const notificationManagerRef = useRef();
+    const notificationManagerRef = useRef(null);
+    const notificationHistoryManagerRef = useRef(null);
 
     const instructionSteps = [
         {
@@ -36,58 +38,168 @@ export default function WebIconAndName({ initialWebIcon, initialWebName }) {
         }
     ];
 
-    const handleIconChange = (e) => {
+    const handleIconChange = async (e) => {
         const file = e.target.files[0];
         if (file) {
             // File size validation (2MB limit)
             if (file.size > 2 * 1024 * 1024) {
-                setErrors({ web_icon: 'File size must be less than 2MB' });
+                const errorMessage = 'File size must be less than 2MB';
+                setErrors({ web_icon: errorMessage });
                 notificationManagerRef.current.addNotification(
-                    'File size must be less than 2MB',
+                    errorMessage,
                     'error'
                 );
+                // Save error notification to history
+                if (notificationHistoryManagerRef.current) {
+                    await notificationHistoryManagerRef.current.saveNotification(errorMessage, 'error');
+                } else {
+                    console.error('notificationHistoryManagerRef is not available');
+                }
                 return;
             }
 
             // File type validation including SVG
             const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml'];
             if (!validTypes.includes(file.type)) {
-                setErrors({ web_icon: 'Please upload a valid image file (SVG, PNG, JPG, or GIF)' });
+                const errorMessage = 'Please upload a valid image file (SVG, PNG, JPG, or GIF)';
+                setErrors({ web_icon: errorMessage });
                 notificationManagerRef.current.addNotification(
-                    'Please upload a valid image file (SVG, PNG, JPG, or GIF)',
+                    errorMessage,
                     'error'
                 );
+                // Save error notification to history
+                if (notificationHistoryManagerRef.current) {
+                    await notificationHistoryManagerRef.current.saveNotification(errorMessage, 'error');
+                } else {
+                    console.error('notificationHistoryManagerRef is not available');
+                }
                 return;
             }
 
             // Additional SVG validation
             if (file.type === 'image/svg+xml') {
-                validateSVG(file).then(isValid => {
+                validateSVG(file).then(async (isValid) => {
                     if (isValid) {
                         setWebIcon(file);
                         setPreview(URL.createObjectURL(file));
                         setErrors({});
+                        const successMessage = 'SVG file uploaded successfully';
                         notificationManagerRef.current.addNotification(
-                            'SVG file uploaded successfully',
+                            successMessage,
                             'success'
                         );
+                        // Save success notification to history
+                        if (notificationHistoryManagerRef.current) {
+                            await notificationHistoryManagerRef.current.saveNotification(successMessage, 'success');
+                        } else {
+                            console.error('notificationHistoryManagerRef is not available');
+                        }
                     } else {
-                        setErrors({ web_icon: 'Invalid SVG file. Please ensure it contains no malicious content.' });
+                        const errorMessage = 'Invalid SVG file. Please ensure it contains no malicious content.';
+                        setErrors({ web_icon: errorMessage });
                         notificationManagerRef.current.addNotification(
-                            'Invalid SVG file. Please ensure it contains no malicious content.',
+                            errorMessage,
                             'error'
                         );
+                        // Save error notification to history
+                        if (notificationHistoryManagerRef.current) {
+                            await notificationHistoryManagerRef.current.saveNotification(errorMessage, 'error');
+                        } else {
+                            console.error('notificationHistoryManagerRef is not available');
+                        }
                     }
                 });
             } else {
                 setWebIcon(file);
                 setPreview(URL.createObjectURL(file));
                 setErrors({});
+                const successMessage = 'Image file uploaded successfully';
                 notificationManagerRef.current.addNotification(
-                    'Image file uploaded successfully',
+                    successMessage,
                     'success'
                 );
+                // Save success notification to history
+                if (notificationHistoryManagerRef.current) {
+                    await notificationHistoryManagerRef.current.saveNotification(successMessage, 'success');
+                } else {
+                    console.error('notificationHistoryManagerRef is not available');
+                }
             }
+        }
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setProcessing(true);
+        setErrors({});
+
+        const formData = new FormData();
+        
+        if (webIcon) {
+            // Additional processing for SVG files
+            if (webIcon.type === 'image/svg+xml') {
+                try {
+                    // Sanitize SVG before upload
+                    const sanitizedSVG = await sanitizeSVG(webIcon);
+                    formData.append('web_icon', sanitizedSVG);
+                } catch (error) {
+                    const errorMessage = 'Error processing SVG file';
+                    setErrors({ web_icon: errorMessage });
+                    notificationManagerRef.current.addNotification(
+                        errorMessage,
+                        'error'
+                    );
+                    // Save error notification to history
+                    if (notificationHistoryManagerRef.current) {
+                        await notificationHistoryManagerRef.current.saveNotification(errorMessage, 'error');
+                    } else {
+                        console.error('notificationHistoryManagerRef is not available');
+                    }
+                    setProcessing(false);
+                    return;
+                }
+            } else {
+                formData.append('web_icon', webIcon);
+            }
+        }
+
+        if (webName) formData.append('web_name', webName);
+
+        try {
+            const response = await axios.post('/settings/update-web-icon-and-name', formData, {
+                headers: { 
+                    'Content-Type': 'multipart/form-data',
+                    'Accept': 'application/json'
+                },
+            });
+            const successMessage = response.data.message;
+            notificationManagerRef.current.addNotification(
+                successMessage,
+                'success'
+            );
+            // Save success notification to history
+            if (notificationHistoryManagerRef.current) {
+                await notificationHistoryManagerRef.current.saveNotification(successMessage, 'success');
+            } else {
+                console.error('notificationHistoryManagerRef is not available');
+            }
+        } catch (error) {
+            const errorMessage = error.response?.data?.errors || { 
+                general: 'An unexpected error occurred. Please try again.' 
+            };
+            setErrors(errorMessage);
+            notificationManagerRef.current.addNotification(
+                'An unexpected error occurred. Please try again.',
+                'error'
+            );
+            // Save error notification to history
+            if (notificationHistoryManagerRef.current) {
+                await notificationHistoryManagerRef.current.saveNotification('An unexpected error occurred. Please try again.', 'error');
+            } else {
+                console.error('notificationHistoryManagerRef is not available');
+            }
+        } finally {
+            setProcessing(false);
         }
     };
 
@@ -137,61 +249,6 @@ export default function WebIconAndName({ initialWebIcon, initialWebName }) {
         }
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setProcessing(true);
-        setErrors({});
-
-        const formData = new FormData();
-        
-        if (webIcon) {
-            // Additional processing for SVG files
-            if (webIcon.type === 'image/svg+xml') {
-                try {
-                    // Sanitize SVG before upload
-                    const sanitizedSVG = await sanitizeSVG(webIcon);
-                    formData.append('web_icon', sanitizedSVG);
-                } catch (error) {
-                    setErrors({ web_icon: 'Error processing SVG file' });
-                    notificationManagerRef.current.addNotification(
-                        'Error processing SVG file',
-                        'error'
-                    );
-                    setProcessing(false);
-                    return;
-                }
-            } else {
-                formData.append('web_icon', webIcon);
-            }
-        }
-
-        if (webName) formData.append('web_name', webName);
-
-        try {
-            const response = await axios.post('/settings/update-web-icon-and-name', formData, {
-                headers: { 
-                    'Content-Type': 'multipart/form-data',
-                    'Accept': 'application/json'
-                },
-            });
-            notificationManagerRef.current.addNotification(
-                response.data.message,
-                'success'
-            );
-        } catch (error) {
-            const errorMessage = error.response?.data?.errors || { 
-                general: 'An unexpected error occurred. Please try again.' 
-            };
-            setErrors(errorMessage);
-            notificationManagerRef.current.addNotification(
-                'An unexpected error occurred. Please try again.',
-                'error'
-            );
-        } finally {
-            setProcessing(false);
-        }
-    };
-
     // SVG sanitization function
     const sanitizeSVG = async (file) => {
         const text = await file.text();
@@ -232,6 +289,7 @@ export default function WebIconAndName({ initialWebIcon, initialWebName }) {
         <div className="min-h-screen dark:bg-gray-900 py-8">
             <div>
                 <NotificationManager ref={notificationManagerRef} />
+                <NotificationHistoryManager ref={notificationHistoryManagerRef} userId={userId} />
             </div>
             <div className="max-w-3xl mx-auto">
                 <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">

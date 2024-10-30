@@ -4,9 +4,10 @@ import Notification from '../Components/Notification/Notification';
 
 export default function Dashboard() {
     const { flash } = usePage().props;
+    const { auth } = usePage().props;
 
     return (
-        <AuthenticatedLayout>
+        <AuthenticatedLayout userId={auth.user.id} >
             <Head title="Dashboard" />
 
             <div className="flex">

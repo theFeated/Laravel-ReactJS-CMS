@@ -2,16 +2,17 @@ import { useState, useRef } from 'react';
 import axios from 'axios';
 import InstructionModal from '../../../Components/InstructionModal';
 import NotificationManager from "../../../Components/Notification/NotificationManager";
+import NotificationHistoryManager from '../../../Components/Notification/NotificationHistoryManager';
 
-
-export default function UploadLogo({ initialLogo }) {
+export default function UploadLogo({ initialLogo, userId }) {
     const [logo, setLogo] = useState(null);
     const [preview, setPreview] = useState(initialLogo);
     const [processing, setProcessing] = useState(false);
     const [errors, setErrors] = useState({});
     const [successMessage, setSuccessMessage] = useState('');
     const [showInstructions, setShowInstructions] = useState(false);
-    const notificationManagerRef = useRef();
+    const notificationManagerRef = useRef(null);
+    const notificationHistoryManagerRef = useRef(null);
 
     const instructionSteps = [
         {
@@ -36,69 +37,179 @@ export default function UploadLogo({ initialLogo }) {
         }
     ];
 
-    const handleLogoChange = (e) => {
+    const handleLogoChange = async (e) => {
         const file = e.target.files[0];
         if (file) {
             // File size validation (2MB limit)
             if (file.size > 2 * 1024 * 1024) {
-                setErrors({ logo: 'File size must be less than 2MB' });
+                const errorMessage = 'File size must be less than 2MB';
+                setErrors({ logo: errorMessage });
                 notificationManagerRef.current.addNotification(
-                    'File size must be less than 2MB',
+                    errorMessage,
                     'error'
                 );
+                // Save error notification to history
+                if (notificationHistoryManagerRef.current) {
+                    await notificationHistoryManagerRef.current.saveNotification(errorMessage, 'error');
+                } else {
+                    console.error('notificationHistoryManagerRef is not available');
+                }
                 return;
             }
 
             // File type validation including SVG
             const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml'];
             if (!validTypes.includes(file.type)) {
-                setErrors({ logo: 'Please upload a valid image file (SVG, PNG, JPG, or GIF)' });
+                const errorMessage = 'Please upload a valid image file (SVG, PNG, JPG, or GIF)';
+                setErrors({ logo: errorMessage });
                 notificationManagerRef.current.addNotification(
-                    'Please upload a valid image file (SVG, PNG, JPG, or GIF)',
+                    errorMessage,
                     'error'
                 );
+                // Save error notification to history
+                if (notificationHistoryManagerRef.current) {
+                    await notificationHistoryManagerRef.current.saveNotification(errorMessage, 'error');
+                } else {
+                    console.error('notificationHistoryManagerRef is not available');
+                }
                 return;
             }
 
             // SVG-specific validation
             if (file.type === 'image/svg+xml') {
-                validateSVGFile(file).then(result => {
+                validateSVGFile(file).then(async (result) => {
                     if (result.isValid) {
                         setLogo(file);
                         setPreview(URL.createObjectURL(file));
                         setErrors({});
+                        const successMessage = 'SVG file uploaded successfully';
                         notificationManagerRef.current.addNotification(
-                            'SVG file uploaded successfully',
+                            successMessage,
                             'success'
                         );
+                        // Save success notification to history
+                        if (notificationHistoryManagerRef.current) {
+                            await notificationHistoryManagerRef.current.saveNotification(successMessage, 'success');
+                        } else {
+                            console.error('notificationHistoryManagerRef is not available');
+                        }
                     } else {
                         setErrors({ logo: result.error });
                         notificationManagerRef.current.addNotification(
                             result.error,
                             'error'
                         );
+                        // Save error notification to history
+                        if (notificationHistoryManagerRef.current) {
+                            await notificationHistoryManagerRef.current.saveNotification(result.error, 'error');
+                        } else {
+                            console.error('notificationHistoryManagerRef is not available');
+                        }
                     }
                 });
             } else {
                 // Handle other image types
-                validateImageDimensions(file).then(result => {
+                validateImageDimensions(file).then(async (result) => {
                     if (result.isValid) {
                         setLogo(file);
                         setPreview(URL.createObjectURL(file));
                         setErrors({});
+                        const successMessage = 'Image file uploaded successfully';
                         notificationManagerRef.current.addNotification(
-                            'Image file uploaded successfully',
+                            successMessage,
                             'success'
                         );
+                        // Save success notification to history
+                        if (notificationHistoryManagerRef.current) {
+                            await notificationHistoryManagerRef.current.saveNotification(successMessage, 'success');
+                        } else {
+                            console.error('notificationHistoryManagerRef is not available');
+                        }
                     } else {
                         setErrors({ logo: result.error });
                         notificationManagerRef.current.addNotification(
                             result.error,
                             'error'
                         );
+                        // Save error notification to history
+                        if (notificationHistoryManagerRef.current) {
+                            await notificationHistoryManagerRef.current.saveNotification(result.error, 'error');
+                        } else {
+                            console.error('notificationHistoryManagerRef is not available');
+                        }
                     }
                 });
             }
+        }
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (!logo) {
+            const errorMessage = 'Please select a logo to upload';
+            setErrors({ logo: errorMessage });
+            notificationManagerRef.current.addNotification(
+                errorMessage,
+                'error'
+            );
+            // Save error notification to history
+            if (notificationHistoryManagerRef.current) {
+                await notificationHistoryManagerRef.current.saveNotification(errorMessage, 'error');
+            } else {
+                console.error('notificationHistoryManagerRef is not available');
+            }
+            return;
+        }
+
+        setProcessing(true);
+        setErrors({});
+
+        const formData = new FormData();
+
+        try {
+            // Process SVG files before upload
+            if (logo.type === 'image/svg+xml') {
+                const sanitizedSVG = await sanitizeSVGFile(logo);
+                formData.append('logo', sanitizedSVG);
+            } else {
+                formData.append('logo', logo);
+            }
+
+            const response = await axios.post('/settings/upload-logo', formData, {
+                headers: { 
+                    'Content-Type': 'multipart/form-data',
+                    'Accept': 'application/json'
+                },
+            });
+
+            const successMessage = response.data.message;
+            notificationManagerRef.current.addNotification(
+                successMessage,
+                'success'
+            );
+            // Save success notification to history
+            if (notificationHistoryManagerRef.current) {
+                await notificationHistoryManagerRef.current.saveNotification(successMessage, 'success');
+            } else {
+                console.error('notificationHistoryManagerRef is not available');
+            }
+        } catch (error) {
+            const errorMessage = error.response?.data?.errors || { 
+                general: 'Failed to upload logo. Please try again.' 
+            };
+            setErrors(errorMessage);
+            notificationManagerRef.current.addNotification(
+                'Failed to upload logo. Please try again.',
+                'error'
+            );
+            // Save error notification to history
+            if (notificationHistoryManagerRef.current) {
+                await notificationHistoryManagerRef.current.saveNotification('Failed to upload logo. Please try again.', 'error');
+            } else {
+                console.error('notificationHistoryManagerRef is not available');
+            }
+        } finally {
+            setProcessing(false);
         }
     };
 
@@ -193,56 +304,6 @@ export default function UploadLogo({ initialLogo }) {
         });
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (!logo) {
-            setErrors({ logo: 'Please select a logo to upload' });
-            notificationManagerRef.current.addNotification(
-                'Please select a logo to upload',
-                'error'
-            );
-            return;
-        }
-
-        setProcessing(true);
-        setErrors({});
-
-        const formData = new FormData();
-
-        try {
-            // Process SVG files before upload
-            if (logo.type === 'image/svg+xml') {
-                const sanitizedSVG = await sanitizeSVGFile(logo);
-                formData.append('logo', sanitizedSVG);
-            } else {
-                formData.append('logo', logo);
-            }
-
-            const response = await axios.post('/settings/upload-logo', formData, {
-                headers: { 
-                    'Content-Type': 'multipart/form-data',
-                    'Accept': 'application/json'
-                },
-            });
-
-            notificationManagerRef.current.addNotification(
-                response.data.message,
-                'success'
-            );
-        } catch (error) {
-            const errorMessage = error.response?.data?.errors || { 
-                general: 'Failed to upload logo. Please try again.' 
-            };
-            setErrors(errorMessage);
-            notificationManagerRef.current.addNotification(
-                'Failed to upload logo. Please try again.',
-                'error'
-            );
-        } finally {
-            setProcessing(false);
-        }
-    };
-
     // Sanitize SVG file
     const sanitizeSVGFile = async (file) => {
         const text = await file.text();
@@ -283,6 +344,7 @@ export default function UploadLogo({ initialLogo }) {
         <div className="min-h-screen dark:bg-gray-900 py-8">
             <div>
                 <NotificationManager ref={notificationManagerRef} />
+                <NotificationHistoryManager ref={notificationHistoryManagerRef} userId={userId} />
             </div>
             <div className="max-w-3xl mx-auto">
                 <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">

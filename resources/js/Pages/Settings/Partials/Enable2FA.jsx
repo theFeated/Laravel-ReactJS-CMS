@@ -3,12 +3,14 @@ import { useForm } from '@inertiajs/react';
 import axios from 'axios';
 import InstructionModal from '../../../Components/InstructionModal';
 import NotificationManager from "../../../Components/Notification/NotificationManager";
+import NotificationHistoryManager from '../../../Components/Notification/NotificationHistoryManager';
 
-export default function Enable2FA({ initialIs2FAEnabled }) {
+export default function Enable2FA({ initialIs2FAEnabled, userId }) {
     const [is2FAEnabled, setIs2FAEnabled] = useState(initialIs2FAEnabled);
     const [showInstructions, setShowInstructions] = useState(false);
     const [error, setError] = useState('');
     const notificationManagerRef = useRef(null);
+    const notificationHistoryManagerRef = useRef(null);
 
     const { setData, processing } = useForm({
         is_2fa_enabled: initialIs2FAEnabled,
@@ -26,21 +28,35 @@ export default function Enable2FA({ initialIs2FAEnabled }) {
             setIs2FAEnabled(newState);
             setError('');
 
+            const message = newState 
+                ? 'TOTP has been enabled successfully.' 
+                : 'TOTP has been disabled successfully.';
+    
             // Show success notification
-            notificationManagerRef.current.addNotification(
-                newState ? 'Two-Factor Authentication has been enabled successfully.' : 'Two-Factor Authentication has been disabled successfully.',
-                'success'
-            );
+            notificationManagerRef.current.addNotification(message, 'success');
+    
+            // Save notification to history
+            if (notificationHistoryManagerRef.current) {
+                await notificationHistoryManagerRef.current.saveNotification(message, 'success');
+            } else {
+                console.error('notificationHistoryManagerRef is not available');
+            }
 
         } catch (error) {
             setError('Failed to update EOTP settings. Please try again.');
             console.error('Settings update error:', error);
 
+            const errorMessage = 'Failed to update TOTP settings. Please try again.';
+    
             // Show error notification
-            notificationManagerRef.current.addNotification(
-                'Failed to update EOTP settings. Please try again.',
-                'error'
-            );
+            notificationManagerRef.current.addNotification(errorMessage, 'error');
+    
+            // Save error notification to history
+            if (notificationHistoryManagerRef.current) {
+                await notificationHistoryManagerRef.current.saveNotification(errorMessage, 'error');
+            } else {
+                console.error('notificationHistoryManagerRef is not available');
+            }
         }
     };
 
@@ -71,6 +87,7 @@ export default function Enable2FA({ initialIs2FAEnabled }) {
         <div className="dark:bg-gray-900">
             <div>
                 <NotificationManager ref={notificationManagerRef} />
+                <NotificationHistoryManager ref={notificationHistoryManagerRef} userId={userId} />
             </div>
             <div className="mt-6 space-y-4 xl:mt-12">
                 <div className="flex items-center justify-between max-w-2xl px-8 py-4 mx-auto border rounded-xl dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition">

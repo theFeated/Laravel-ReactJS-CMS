@@ -5,10 +5,14 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import { useForm } from '@inertiajs/react';
 import { Transition } from '@headlessui/react';
+import NotificationManager from "../../../Components/Notification/NotificationManager";
+import NotificationHistoryManager from '../../../Components/Notification/NotificationHistoryManager';
 
-export default function UpdatePasswordForm({ className = '' }) {
+export default function UpdatePasswordForm({ className = '', userId }) {
     const passwordInput = useRef();
     const currentPasswordInput = useRef();
+    const notificationManagerRef = useRef();
+    const notificationHistoryManagerRef = useRef();
 
     const { data, setData, errors, put, reset, processing, recentlySuccessful } = useForm({
         current_password: '',
@@ -16,24 +20,43 @@ export default function UpdatePasswordForm({ className = '' }) {
         password_confirmation: '',
     });
 
-    const updatePassword = (e) => {
+    const updatePassword = async (e) => {
         e.preventDefault();
 
-        put(route('password.update'), {
-            preserveScroll: true,
-            onSuccess: () => reset(),
-            onError: (errors) => {
-                if (errors.password) {
-                    reset('password', 'password_confirmation');
-                    passwordInput.current.focus();
-                }
+        try {
+            await put(route('password.update'), {
+                preserveScroll: true,
+                onSuccess: () => {
+                    reset();
+                    const message = 'Password updated successfully.';
+                    notificationManagerRef.current.addNotification(message, 'success');
+                    if (notificationHistoryManagerRef.current) {
+                        notificationHistoryManagerRef.current.saveNotification(message, 'success', userId);
+                    } else {
+                        console.error('notificationHistoryManagerRef is not available');
+                    }
+                },
+                onError: (errors) => {
+                    if (errors.password) {
+                        reset('password', 'password_confirmation');
+                        passwordInput.current.focus();
+                    }
 
-                if (errors.current_password) {
-                    reset('current_password');
-                    currentPasswordInput.current.focus();
-                }
-            },
-        });
+                    if (errors.current_password) {
+                        reset('current_password');
+                        currentPasswordInput.current.focus();
+                    }
+                },
+            });
+        } catch (error) {
+            const errorMessage = 'Failed to update password. Please try again.';
+            notificationManagerRef.current.addNotification(errorMessage, 'error');
+            if (notificationHistoryManagerRef.current) {
+                await notificationHistoryManagerRef.current.saveNotification(errorMessage, 'error', userId);
+            } else {
+                console.error('notificationHistoryManagerRef is not available');
+            }
+        }
     };
 
     return (
@@ -45,6 +68,10 @@ export default function UpdatePasswordForm({ className = '' }) {
                     Ensure your account is using a long, random password to stay secure.
                 </p>
             </header>
+            <div>
+                <NotificationManager ref={notificationManagerRef} />
+                <NotificationHistoryManager ref={notificationHistoryManagerRef} userId={userId} />
+            </div>
 
             <form onSubmit={updatePassword} className="mt-6 space-y-6">
                 <div>

@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef} from 'react';
 import ApplicationLogo from '@/Components/ApplicationLogo';
 import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
@@ -11,8 +11,9 @@ import NotificationManager from '../Components/Notification/NotificationManager'
 import { useForm } from '@inertiajs/react';
 import axios from 'axios';
 import NotificationHistoryModal from '../Components/Notification/NotificationHistoryModal';
+import NotificationHistoryManager from '../Components/Notification/NotificationHistoryManager';
 
-export default function Authenticated({ header, children, initialIsDarkModeEnabled }) {
+export default function Authenticated({ header, children, initialIsDarkModeEnabled, userId }) {
     const user = usePage().props.auth.user;
     const { url } = usePage();
     const currentPage = url.split('/').pop().replace('-', ' ').replace(/^\w/, (c) => c.toUpperCase());
@@ -35,6 +36,7 @@ export default function Authenticated({ header, children, initialIsDarkModeEnabl
     const [isDarkModeEnabled, setIsDarkModeEnabled] = useState(initialIsDarkModeEnabled);
     const [error, setError] = useState('');
     const notificationManagerRef = useRef(null);
+    const notificationHistoryManagerRef = useRef(null);
 
     const { setData, processing } = useForm({
         is_dark_mode_enabled: initialIsDarkModeEnabled,
@@ -59,30 +61,44 @@ export default function Authenticated({ header, children, initialIsDarkModeEnabl
                 document.documentElement.classList.remove('dark');
             }
 
+            const message = newState 
+            ? 'Dark mode has been enabled successfully.' 
+            : 'Dark mode has been disabled successfully.';
+
             // Show success notification
-            notificationManagerRef.current.addNotification(
-                newState ? 'Dark mode has been enabled successfully.' : 'Dark mode has been disabled successfully.',
-                'success'
-            );
+            notificationManagerRef.current.addNotification(message, 'success');
+
+            // Save notification to history
+            if (notificationHistoryManagerRef.current) {
+                await notificationHistoryManagerRef.current.saveNotification(message, 'success');
+            } else {
+                console.error('notificationHistoryManagerRef is not available');
+            }
 
         } catch (error) {
             setError('Failed to update dark mode settings. Please try again.');
             console.error('Settings update error:', error);
 
+            const errorMessage = 'Failed to update dark mode settings. Please try again.';
+    
             // Show error notification
-            notificationManagerRef.current.addNotification(
-                'Failed to update dark mode settings. Please try again.',
-                'error'
-            );
+            notificationManagerRef.current.addNotification(errorMessage, 'error');
+    
+            // Save error notification to history
+            if (notificationHistoryManagerRef.current) {
+                await notificationHistoryManagerRef.current.saveNotification(errorMessage, 'error');
+            } else {
+                console.error('notificationHistoryManagerRef is not available');
+            }
         }
     };
     
-
     return (
         <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
             <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
             <div>
                 <NotificationManager ref={notificationManagerRef} />
+                <NotificationHistoryManager ref={notificationHistoryManagerRef} userId={userId} />
             </div>
             <NotificationHistoryModal
                 isOpen={isHistoryModalOpen}

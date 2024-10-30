@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Notification;
+use App\Models\NotificationSettings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class NotificationController extends Controller
 {
@@ -63,7 +65,13 @@ class NotificationController extends Controller
             'type' => 'required|string',
             'message' => 'required|string',
         ]);
-    
+
+        // Check if notifications are enabled for the user
+        $settings = NotificationSettings::where('user_id', $validatedData['user_id'])->first();
+        if ($settings && !$settings->is_notification_enabled) {
+            return response()->json(['message' => 'Notifications are disabled for this user'], 403);
+        }
+
         // Direct creation without try-catch
         $notification = Notification::create([
             'user_id' => $validatedData['user_id'],
@@ -71,7 +79,7 @@ class NotificationController extends Controller
             'message' => $validatedData['message'],
             'read_at' => null
         ]);
-    
+
         return response()->json([
             'message' => 'Notification created successfully',
             'notification' => $notification
@@ -99,13 +107,19 @@ class NotificationController extends Controller
             }
 
             $notifications = collect($request->notifications)->map(function ($item) {
+                // Check if notifications are enabled for the user
+                $settings = NotificationSettings::where('user_id', $item['user_id'])->first();
+                if ($settings && !$settings->is_notification_enabled) {
+                    return null;
+                }
+
                 return Notification::create([
                     'user_id' => $item['user_id'],
                     'type' => $item['type'],
                     'message' => $item['message'],
                     'read_at' => null
                 ]);
-            });
+            })->filter();
 
             return response()->json([
                 'message' => 'Notifications created successfully',
@@ -126,6 +140,12 @@ class NotificationController extends Controller
     public static function createNotification($userId, $type, $message)
     {
         try {
+            // Check if notifications are enabled for the user
+            $settings = NotificationSettings::where('user_id', $userId)->first();
+            if ($settings && !$settings->is_notification_enabled) {
+                return null;
+            }
+
             $notification = Notification::create([
                 'user_id' => $userId,
                 'type' => $type,

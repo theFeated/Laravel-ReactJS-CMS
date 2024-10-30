@@ -2,13 +2,15 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import DeleteUserForm from './Partials/DeleteUserForm';
 import UpdatePasswordForm from './Partials/UpdatePasswordForm';
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm';
-import { Head } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
 
 const defaultPhotoUrl = '/cms/img/grayprofile.png';
 
 export default function Edit({ mustVerifyEmail, status }) {
+    const { auth } = usePage().props;
+    
     return (
-        <AuthenticatedLayout>
+        <AuthenticatedLayout userId={auth.user.id} >
             <Head title="Profile" />
 
             <div className="py-12">
@@ -19,15 +21,20 @@ export default function Edit({ mustVerifyEmail, status }) {
                             status={status}
                             className="max-w-xl"
                             defaultPhotoUrl={defaultPhotoUrl}
+                            userId={auth.user.id}
                         />
                     </div>
 
                     <div className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                        <UpdatePasswordForm className="max-w-xl" />
+                        <UpdatePasswordForm className="max-w-xl"
+                        userId={auth.user.id}
+                        />
                     </div>
 
                     <div className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                        <DeleteUserForm className="max-w-xl" />
+                        <DeleteUserForm className="max-w-xl" 
+                        userId={auth.user.id}
+                        />
                     </div>
                 </div>
             </div>

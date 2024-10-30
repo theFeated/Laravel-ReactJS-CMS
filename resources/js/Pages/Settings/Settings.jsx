@@ -22,17 +22,17 @@ export default function Settings({ isGoogleAuthEnabled, is2FAEnabled, webIcon, w
         switch (activeTab) {
             case 'google-auth': return <EnableGoogleAuth initialIsGoogleAuthEnabled={isGoogleAuthEnabled} userId={auth.user.id} />;
             case '2fa': return <Enable2FA initialIs2FAEnabled={is2FAEnabled} userId={auth.user.id} />;
-            case 'google2fa': return <Google2FAToggle initialIsGoogle2FAEnabled={isGoogle2FAEnabled} />;
+            case 'google2fa': return <Google2FAToggle initialIsGoogle2FAEnabled={isGoogle2FAEnabled} userId={auth.user.id}  />;
             case 'web-icon-name': return <WebIconAndName initialWebIcon={webIcon} initialWebName={webName} userId={auth.user.id} />;
-            case 'upload-logo': return <UploadLogo initialLogo={logo} />;
-            case 'notification-settings': return <NotificationSettings />;
-            case 'dark-mode': return <EnableDarkMode initialIsDarkModeEnabled={isDarkModeEnabled} />;
+            case 'upload-logo': return <UploadLogo initialLogo={logo} userId={auth.user.id}  />;
+            case 'notification-settings': return <NotificationSettings userId={auth.user.id}  />;
+            case 'dark-mode': return <EnableDarkMode initialIsDarkModeEnabled={isDarkModeEnabled} userId={auth.user.id}  />;
             default: return null;
         }
     };
     
     return (
-        <AuthenticatedLayout>
+        <AuthenticatedLayout userId={auth.user.id} >
             <Head title="Settings" />
             <div className="main flex flex-col m-5">
                 {/* Tab container with better spacing */}
