@@ -17,25 +17,32 @@ const NotificationHistoryModal = ({
     const [totalPages, setTotalPages] = useState(1);
     const [perPage, setPerPage] = useState(10);
     const [isPerPageDropdownOpen, setIsPerPageDropdownOpen] = useState(false);
+    const [sortOrder, setSortOrder] = useState("newest");
+    const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
 
+    useEffect(() => {
+        filterNotifications();
+    }, [history, filter, sortOrder]);
     useEffect(() => {
         if (isOpen) {
             fetchHistory(currentPage);
         }
     }, [isOpen, currentPage]);
 
-    useEffect(() => {
-        filterNotifications();
-    }, [history, filter]);
-
     const filterNotifications = () => {
-        if (filter === "all") {
-            setFilteredHistory(history);
-        } else {
-            setFilteredHistory(
-                history.filter((group) => group.type === filter)
-            );
+        let filtered = [...history]; 
+    
+        if (filter !== "all") {
+            filtered = filtered.filter((group) => group.type === filter);
         }
+    
+        if (sortOrder === "newest") {
+            filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        } else {
+            filtered.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+        }
+    
+        setFilteredHistory(filtered);
     };
 
     const markAllAsRead = async () => {
@@ -462,7 +469,7 @@ const NotificationHistoryModal = ({
                                     tabIndex={-1}
                                 >
                                     <ul>
-                                        {[10, 20, 50, 100].map((option) => (
+                                        {[10, 20, 50, 100, 500, 1000, 5000].map((option) => (
                                             <li
                                                 key={option}
                                                 onClick={() => {
@@ -483,6 +490,54 @@ const NotificationHistoryModal = ({
                                     </ul>
                                 </div>
                             )}
+                        </div>
+
+                        <div className="relative">
+                            <button
+                                id="sort-button"
+                                onClick={() => {
+                                    setSortOrder(sortOrder === "newest" ? "oldest" : "newest");
+                                }}
+                                className="h-8 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded px-3 py-1 pr-8 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 flex items-center"
+                            >
+                                {sortOrder === "newest" ? (
+                                    <>
+                                        <span className="mr-1">N</span>
+                                        <svg
+                                            className="w-4 h-4 ml-2 absolute top-1/2 right-2 transform -translate-y-1/2"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={2}
+                                                d="M5 15l7-7 7 7"
+                                            />
+                                        </svg>
+                                    </>
+                                ) : (
+                                    <>
+                                        <span className="mr-1">O</span>
+                                        <svg
+                                            className="w-4 h-4 ml-2 absolute top-1/2 right-2 transform -translate-y-1/2"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={2}
+                                                d="M19 9l-7 7-7-7"
+                                            />
+                                        </svg>
+                                    </>
+                                )}
+                            </button>
                         </div>
                     </div>
 

@@ -13,7 +13,7 @@ class NotificationController extends Controller
     public function index(Request $request)
     {
         try {
-            $perPage = $request->input('per_page', 10); // Default 10 per page
+            $perPage = $request->input('per_page', 10);
             $notifications = Auth::user()
                 ->notifications()
                 ->orderBy('created_at', 'desc')
