@@ -13,12 +13,16 @@ const NotificationHistoryModal = ({
     const [error, setError] = useState(null);
     const [filter, setFilter] = useState("all");
     const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [perPage, setPerPage] = useState(10);
+    const [isPerPageDropdownOpen, setIsPerPageDropdownOpen] = useState(false);
 
     useEffect(() => {
         if (isOpen) {
-            fetchHistory();
+            fetchHistory(currentPage);
         }
-    }, [isOpen]);
+    }, [isOpen, currentPage]);
 
     useEffect(() => {
         filterNotifications();
@@ -105,18 +109,30 @@ const NotificationHistoryModal = ({
         return grouped;
     };
 
-    const fetchHistory = async () => {
+    const fetchHistory = async (page = 1, perPage = 10) => {
         try {
             setIsLoading(true);
             setError(null);
-            const response = await axios.get("/notification-history");
+
+            const response = await axios.get(
+                `/notification-history?page=${page}&per_page=${perPage}`
+            );
             const groupedHistory = groupNotifications(response.data.history);
+
             setHistory(groupedHistory);
+            setCurrentPage(response.data.current_page);
+            setTotalPages(response.data.last_page);
         } catch (error) {
             setError("Failed to load notification history");
             console.error("Error fetching notification history:", error);
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const goToPage = (page) => {
+        if (page >= 1 && page <= totalPages) {
+            setCurrentPage(page);
         }
     };
 
@@ -351,61 +367,167 @@ const NotificationHistoryModal = ({
                         </svg>
                     </button>
                 </div>
+                <div className="px-6 py-2 border-b border-gray-200 dark:border-gray-700 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+                    <div className="flex items-center space-x-4">
+                        <div className="relative">
+                            <button
+                                id="filter-button"
+                                className="h-8 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded px-3 py-1 pr-8 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 flex items-center"
+                                onClick={() =>
+                                    setIsFilterDropdownOpen(
+                                        !isFilterDropdownOpen
+                                    )
+                                }
+                            >
+                                {typeIcons[filter]}
+                                <svg
+                                    className="w-4 h-4 ml-2 absolute top-1/2 right-2 transform -translate-y-1/2"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M19 9l-7 7-7-7"
+                                    />
+                                </svg>
+                            </button>
 
-                <div className="px-6 py-2 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-                    <div className="relative">
+                            {isFilterDropdownOpen && (
+                                <div
+                                    className="absolute z-10 mt-2 rounded-md shadow-lg bg-white dark:bg-gray-700 ring-1 ring-black ring-opacity-5"
+                                    role="menu"
+                                    aria-orientation="vertical"
+                                    aria-labelledby="filter-button"
+                                    tabIndex={-1}
+                                >
+                                    <ul>
+                                        {Object.keys(typeIcons).map((type) => (
+                                            <li
+                                                key={type}
+                                                onClick={() => {
+                                                    setFilter(type);
+                                                    setIsFilterDropdownOpen(
+                                                        false
+                                                    );
+                                                }}
+                                                className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
+                                                role="menuitem"
+                                                tabIndex={-1}
+                                            >
+                                                {typeIcons[type]}{" "}
+                                                {/* Only show the icon */}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="relative">
+                            <button
+                                id="per-page-button"
+                                onClick={() =>
+                                    setIsPerPageDropdownOpen(
+                                        !isPerPageDropdownOpen
+                                    )
+                                }
+                                className="h-8 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded px-3 py-1 pr-8 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 flex items-center"
+                            >
+                                {perPage}
+                                <svg
+                                    className="w-4 h-4 ml-2 absolute top-1/2 right-2 transform -translate-y-1/2"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M19 9l-7 7-7-7"
+                                    />
+                                </svg>
+                            </button>
+                            {isPerPageDropdownOpen && (
+                                <div
+                                    className="absolute z-10 mt-2 rounded-md shadow-lg bg-white dark:bg-gray-700 ring-1 ring-black ring-opacity-5"
+                                    role="menu"
+                                    aria-orientation="vertical"
+                                    aria-labelledby="per-page-button"
+                                    tabIndex={-1}
+                                >
+                                    <ul>
+                                        {[10, 20, 50, 100].map((option) => (
+                                            <li
+                                                key={option}
+                                                onClick={() => {
+                                                    setPerPage(option);
+                                                    setCurrentPage(1);
+                                                    fetchHistory(1, option);
+                                                    setIsPerPageDropdownOpen(
+                                                        false
+                                                    );
+                                                }}
+                                                className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
+                                                role="menuitem"
+                                                tabIndex={-1}
+                                            >
+                                                {option}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="flex items-center justify-center space-x-2">
                         <button
-                            id="filter-button"
-                            className="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded px-3 py-1 pr-8 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 flex items-center"
-                            onClick={() =>
-                                setIsFilterDropdownOpen(!isFilterDropdownOpen)
-                            }
+                            onClick={() => goToPage(currentPage - 1)}
+                            disabled={currentPage === 1}
+                            className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none"
+                            aria-label="Previous page"
                         >
-                            {typeIcons[filter]}
                             <svg
-                                className="w-4 h-4 ml-2 absolute top-1/2 right-2 transform -translate-y-1/2"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                                xmlns="http://www.w3.org/2000/svg"
+                                className="w-5 h-5 text-gray-500 dark:text-gray-400"
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
                             >
                                 <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M19 9l-7 7-7-7"
+                                    fillRule="evenodd"
+                                    d="M15 10a1 1 0 01-1 1H6.414l3.293 3.293a1 1 0 01-1.414 1.414l-5-5a1 1 0 010-1.414l5-5a1 1 0 011.414 1.414L6.414 9H14a1 1 0 011 1z"
+                                    clipRule="evenodd"
                                 />
                             </svg>
                         </button>
-
-                        {isFilterDropdownOpen && (
-                            <div
-                                className="absolute z-10 mt-2 rounded-md shadow-lg bg-white dark:bg-gray-700 ring-1 ring-black ring-opacity-5"
-                                role="menu"
-                                aria-orientation="vertical"
-                                aria-labelledby="filter-button"
-                                tabIndex={-1}
+                        <span className="text-sm text-gray-700 dark:text-gray-300">
+                            Page {currentPage} of {totalPages}
+                        </span>
+                        <button
+                            onClick={() => goToPage(currentPage + 1)}
+                            disabled={currentPage === totalPages}
+                            className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none"
+                            aria-label="Next page"
+                        >
+                            <svg
+                                className="w-5 h-5 text-gray-500 dark:text-gray-400"
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
                             >
-                                <ul>
-                                    {Object.keys(typeIcons).map((type) => (
-                                        <li
-                                            key={type}
-                                            onClick={() => {
-                                                setFilter(type);
-                                                setIsFilterDropdownOpen(false);
-                                            }}
-                                            className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
-                                            role="menuitem"
-                                            tabIndex={-1}
-                                        >
-                                            {typeIcons[type]}{" "}
-                                            {/* Only show the icon */}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
+                                <path
+                                    fillRule="evenodd"
+                                    d="M5 10a1 1 0 011-1h7.586l-3.293-3.293a1 1 0 011.414-1.414l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414-1.414L13.586 11H6a1 1 0 01-1-1z"
+                                    clipRule="evenodd"
+                                />
+                            </svg>
+                        </button>
                     </div>
+
                     {filteredHistory.length > 0 && (
                         <button
                             onClick={handleRemoveAllNotifications}

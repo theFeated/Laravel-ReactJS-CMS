@@ -10,16 +10,19 @@ use Illuminate\Support\Facades\Validator;
 
 class NotificationController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         try {
+            $perPage = $request->input('per_page', 10); // Default 10 per page
             $notifications = Auth::user()
                 ->notifications()
                 ->orderBy('created_at', 'desc')
-                ->get(); // Use get() instead of paginate() for simplicity
-
+                ->paginate($perPage); 
+    
             return response()->json([
-                'history' => $notifications,
+                'history' => $notifications->items(), 
+                'current_page' => $notifications->currentPage(),
+                'last_page' => $notifications->lastPage(),
                 'unread_count' => Auth::user()->notifications()->whereNull('read_at')->count()
             ]);
         } catch (\Exception $e) {
