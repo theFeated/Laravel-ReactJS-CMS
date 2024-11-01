@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { useForm } from '@inertiajs/react';
-import RecoveryCodesModal from '../../../Components/RecoveryCodesModal';
+import { useForm, usePage } from '@inertiajs/react';
+import RecoveryCodesModal from "../../../Components/RecoveryCodes/RecoveryCodesModal";
+import Notification from "../../../Components/Notification/Notification";
 
 export default function Google2FAVerify() {
     const { data, setData, post, processing, errors } = useForm({
         code: '',
     });
     const [showRecoveryCodesModal, setShowRecoveryCodesModal] = useState(false);
+    const { flash } = usePage().props;
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -23,6 +25,14 @@ export default function Google2FAVerify() {
 
     return (
         <div className="relative font-inter antialiased">
+            {flash.notification && (
+                <div className="absolute top-4 right-4 z-50">
+                    <Notification 
+                        message={flash.notification.message} 
+                        type={flash.notification.type} 
+                    />
+                </div>
+            )}
             <main className="relative min-h-screen flex flex-col justify-center bg-slate-50 overflow-hidden">
                 <div className="w-full max-w-6xl mx-auto px-4 md:px-6 py-24">
                     <div className="flex justify-center">

@@ -189,7 +189,7 @@ class Google2FAController extends Controller
     
         if ($valid) {
             session(['2fa_verified' => true]);
-            return redirect()->intended('/')->with('success', '2FA verification successful.');
+            return redirect()->intended('/dashboard')->with('success', '2FA verification successful.');
         }
     
         return back()->withErrors(['code' => 'Invalid 2FA code. Please try again.']);
