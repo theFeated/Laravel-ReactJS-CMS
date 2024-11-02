@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Validation\ValidationException;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -30,29 +31,39 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        $request->authenticate();
+        try {
+            $request->authenticate();
 
-        $request->session()->regenerate();
+            $request->session()->regenerate();
 
-        $user = Auth::user();
-        
-        // Create welcome message
-        $message = 'Welcome back, ' . $user->name . '! We are glad to see you again.';
-        
-        // Add notification to session
-        $request->session()->flash('notification', [
-            'message' => $message,
-            'type' => 'success',
-        ]);
+            $user = Auth::user();
+            
+            // Create welcome message
+            $message = 'Welcome back, ' . $user->name . '! We are glad to see you again.';
+            
+            // Add notification to session
+            $request->session()->flash('notification', [
+                'message' => $message,
+                'type' => 'success',
+            ]);
 
-        // Save to notification history
-        Notification::create([
-            'user_id' => $user->id,
-            'message' => $message,
-            'type' => 'success'
-        ]);
+            // Save to notification history
+            Notification::create([
+                'user_id' => $user->id,
+                'message' => $message,
+                'type' => 'success'
+            ]);
 
-        return redirect()->intended(route('dashboard', absolute: false));
+            return redirect()->intended(route('dashboard', absolute: false));
+        } catch (ValidationException $e) {
+            // Add failure notification to session
+            $request->session()->flash('notification', [
+                'message' => 'Login failed. Please check your credentials and try again.',
+                'type' => 'error',
+            ]);
+
+            return redirect()->route('login')->withErrors($e->errors());
+        }
     }
 
     /**

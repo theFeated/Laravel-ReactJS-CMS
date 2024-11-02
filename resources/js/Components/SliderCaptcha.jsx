@@ -1,0 +1,96 @@
+import React, { useEffect, useRef, useState } from "react";
+import '../../css/slider-captcha.css';
+
+const SliderCaptcha = ({ onSuccess, isOpen, onClose }) => {
+    const captchaInstance = useRef(null);
+    const captchaInitialized = useRef(false);
+    const [scriptLoaded, setScriptLoaded] = useState(false);
+
+    useEffect(() => {
+        // Load the script
+        const script = document.createElement('script');
+        script.src = "../cms/js/slider-captcha.js";
+        script.async = true;
+        script.onload = () => setScriptLoaded(true);
+        document.body.appendChild(script);
+
+        return () => {
+            document.body.removeChild(script);
+        };
+    }, []);
+
+    useEffect(() => {
+        const cleanup = () => {
+            if (captchaInstance.current) {
+                captchaInstance.current = null;
+            }
+            captchaInitialized.current = false;
+
+            const existingCaptcha = document.getElementById('captcha');
+            if (existingCaptcha) {
+                existingCaptcha.innerHTML = '';
+            }
+        };
+
+        if (isOpen && scriptLoaded && !captchaInitialized.current) {
+            if (window.sliderCaptcha) {
+                captchaInstance.current = window.sliderCaptcha({
+                    id: 'captcha',
+                    loadingText: 'Loading...',
+                    failedText: 'Try again',
+                    barText: 'Slide right to fill',
+                    repeatIcon: 'fa fa-redo',
+                    onSuccess: function () {
+                        setTimeout(() => {
+                            if (onSuccess) {
+                                onSuccess();
+                                cleanup();
+                            }
+                        }, 1000);
+                    },
+                });
+                captchaInitialized.current = true;
+            } else {
+                console.error('sliderCaptcha is not available');
+            }
+        }
+
+        return cleanup;
+    }, [isOpen, onSuccess, scriptLoaded]);
+
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50">
+            <div className="flex items-center justify-center min-h-screen">
+                <div className="container-fluid">
+                    <div className="row justify-content-center">
+                        <div className="col-md-4 mb-5">
+                            <div className="sc-slidercaptcha card">
+                                <div className="card-header">
+                                    <span>Please complete security verification!</span>
+                                </div>
+                                <div className="card-body">
+                                    <div id="captcha"></div>
+                                </div>
+                                <div className="card-footer">
+                                    <button
+                                        onClick={() => {
+                                            onClose();
+                                            captchaInitialized.current = false;
+                                        }}
+                                        className="btn btn-secondary"
+                                    >
+                                        Cancel
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default SliderCaptcha;
