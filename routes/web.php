@@ -66,9 +66,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/mark-notification-as-read', [NotificationController::class, 'markAsRead']);
     Route::post('/notifications', [NotificationController::class, 'store'])->name('notifications.store');
     Route::delete('/notification-history', [NotificationController::class, 'destroyAll']); 
+
+    Route::get('/api/settings', [SettingsController::class, 'getSettings']);
+
 });
-//Login fetch the settings for the gogle auth
-Route::get('/api/settings', [SettingsController::class, 'getSettings']);
 
 Route::get('auth/google/redirect', [GoogleAuthController::class, 'redirectToGoogle'])->name('auth.google.redirect');
 Route::get('auth/google/callback', [GoogleAuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');

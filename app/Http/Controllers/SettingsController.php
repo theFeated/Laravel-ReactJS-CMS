@@ -25,7 +25,8 @@ class SettingsController extends Controller
             'isGoogle2FAEnabled' => $setting ? $setting->is_google2fa_enabled : false,
             'recoveryCode' => $recoveryCode ? $recoveryCode->code : null,
             'isCodeCopied' => $recoveryCode ? $recoveryCode->is_code_copied : false,
-            'isDarkModeEnabled' => $setting ? $setting->is_dark_mode_enabled : false, // Added dark mode setting
+            'isDarkModeEnabled' => $setting ? $setting->is_dark_mode_enabled : false, 
+            'isCaptchaSliderEnabled' => $setting ? $setting->is_captcha_slider_enabled : false, // Added dark mode setting
         ]);
     }
 
@@ -73,6 +74,15 @@ class SettingsController extends Controller
             ]);
             $setting->update([
                 'is_dark_mode_enabled' => $request->is_dark_mode_enabled,
+            ]);
+        }
+
+        if ($request->has('is_slider_captcha_enabled')) {
+            $request->validate([
+                'is_slider_captcha_enabled' => 'required|boolean',
+            ]);
+            $setting->update([
+                'is_slider_captcha_enabled' => $request->is_slider_captcha_enabled,
             ]);
         }
 
@@ -140,6 +150,7 @@ class SettingsController extends Controller
             'logo' => $setting && $setting->logo ? Storage::url($setting->logo) : '',
             'is_google2fa_enabled' => $setting ? $setting->is_google2fa_enabled : false,
             'is_dark_mode_enabled' => $setting ? $setting->is_dark_mode_enabled : false,
+            'is_slider_captcha_enabled' => $setting ? $setting->is_slider_captcha_enabled : false,
         ]);
     }
 }

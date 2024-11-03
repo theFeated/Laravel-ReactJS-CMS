@@ -90,13 +90,13 @@ export default function Google2FAToggle({ initialIsGoogle2FAEnabled }) {
     ];
 
     return (
-        <div className="dark:bg-gray-900 px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <div className="dark:bg-gray-900 p-4 sm:p-6">
             <div>
                 <NotificationManager ref={notificationManagerRef} />
             </div>
             <div className="mt-6 space-y-4 xl:mt-12">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between max-w-2xl px-4 sm:px-8 py-4 mx-auto border rounded-xl dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition">
-                    <div className="flex items-center mb-4 sm:mb-0">
+                    <div className="flex items-center w-full sm:w-auto mb-4 sm:mb-0">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             className="w-5 h-5 text-gray-400 sm:h-9 sm:w-9"

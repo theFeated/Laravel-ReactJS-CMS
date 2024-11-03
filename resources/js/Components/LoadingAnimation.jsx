@@ -22,7 +22,7 @@ const LoadingAnimation = ({ children, shouldRefresh }) => {
                     if (shouldRefresh) {
                         window.location.reload();
                     }
-                }, 550); // 0.55 seconds delay enough to show the logo
+                }, 600); // 0.55 seconds delay enough to show the logo
             }
         };
 

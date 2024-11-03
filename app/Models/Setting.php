@@ -16,7 +16,8 @@ class Setting extends Model
         'web_name',
         'logo',
         'is_google2fa_enabled',
-        'is_dark_mode_enabled'
+        'is_dark_mode_enabled',
+        'is_captcha_slider_enabled',
     ];
 
     public function user()
