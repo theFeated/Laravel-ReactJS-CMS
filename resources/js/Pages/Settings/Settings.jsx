@@ -8,7 +8,7 @@ import UploadLogo from './Partials/UploadLogo';
 import Google2FAToggle from '../Google2FA/Partials/Google2FAToggle';
 import NotificationSettings from './Partials/NotificationSettings';
 import EnableDarkMode from './Partials/EnableDarkMode';
-import EnableCaptchaSlider from './Partials/EnableCaptchaSlider'; // Import the new component
+import EnableCaptchaSlider from './Partials/EnableCaptchaSlider';
 
 export default function Settings({ isGoogleAuthEnabled, is2FAEnabled, webIcon, webName, logo, isGoogle2FAEnabled, isDarkModeEnabled, isCaptchaSliderEnabled }) {
     const [activeTab, setActiveTab] = useState(localStorage.getItem('activeTab') || 'google-auth');
@@ -28,7 +28,7 @@ export default function Settings({ isGoogleAuthEnabled, is2FAEnabled, webIcon, w
             case 'upload-logo': return <UploadLogo initialLogo={logo} userId={auth.user.id} />;
             case 'notification-settings': return <NotificationSettings userId={auth.user.id} />;
             case 'dark-mode': return <EnableDarkMode initialIsDarkModeEnabled={isDarkModeEnabled} userId={auth.user.id} />;
-            case 'captcha-slider': return <EnableCaptchaSlider initialIsCaptchaSliderEnabled={isCaptchaSliderEnabled} userId={auth.user.id} />; // Render the captcha slider component
+            // case 'captcha-slider': return <EnableCaptchaSlider initialIsCaptchaSliderEnabled={isCaptchaSliderEnabled} userId={auth.user.id} />;
             default: return null;
         }
     };
@@ -112,7 +112,7 @@ export default function Settings({ isGoogleAuthEnabled, is2FAEnabled, webIcon, w
                             >
                                 Logo
                             </button>
-                            <button
+                            {/* <button
                                 className={`tab flex-1 px-4 py-2 text-center focus:outline-none transition-all duration-200
                                     ${activeTab === 'captcha-slider' 
                                         ? 'text-blue-600 border-b-4 border-blue-600' 
@@ -121,7 +121,7 @@ export default function Settings({ isGoogleAuthEnabled, is2FAEnabled, webIcon, w
                                 onClick={() => setActiveTab('captcha-slider')}
                             >
                                 Captcha Slider
-                            </button>
+                            </button> */}
                         </div>
                     </div>
                 </div>

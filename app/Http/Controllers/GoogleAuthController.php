@@ -77,7 +77,7 @@ class GoogleAuthController extends Controller
 
             DB::commit();
 
-            return redirect()->intended('dashboard')->with('notification', [
+            return redirect()->route('dashboard')->with('notification', [
                 'message' => 'Welcome back, ' . $user->name . '! We are glad to see you again.',
                 'type' => 'success',
             ]);
@@ -133,7 +133,7 @@ class GoogleAuthController extends Controller
 
             DB::commit();
 
-            return redirect()->intended('dashboard')->with('notification', [
+            return redirect()->route('dashboard')->with('notification', [
                 'message' => 'Successfully registered! Your default password is 1234',
                 'type' => 'success',
             ]);

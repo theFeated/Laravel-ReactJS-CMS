@@ -77,12 +77,12 @@ class SettingsController extends Controller
             ]);
         }
 
-        if ($request->has('is_slider_captcha_enabled')) {
+        if ($request->has('is_captcha_slider_enabled')) {
             $request->validate([
-                'is_slider_captcha_enabled' => 'required|boolean',
+                'is_captcha_slider_enabled' => 'required|boolean',
             ]);
             $setting->update([
-                'is_slider_captcha_enabled' => $request->is_slider_captcha_enabled,
+                'is_captcha_slider_enabled' => $request->is_captcha_slider_enabled,
             ]);
         }
 
@@ -150,7 +150,7 @@ class SettingsController extends Controller
             'logo' => $setting && $setting->logo ? Storage::url($setting->logo) : '',
             'is_google2fa_enabled' => $setting ? $setting->is_google2fa_enabled : false,
             'is_dark_mode_enabled' => $setting ? $setting->is_dark_mode_enabled : false,
-            'is_slider_captcha_enabled' => $setting ? $setting->is_slider_captcha_enabled : false,
+            'is_captcha_slider_enabled' => $setting ? $setting->is_captcha_slider_enabled : false,
         ]);
     }
 }

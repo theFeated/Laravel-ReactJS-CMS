@@ -1,9 +1,10 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useForm } from "@inertiajs/react";
 import axios from "axios";
-import InstructionModal from "../../../Components/InstructionModal";
-import NotificationManager from "../../../Components/Notification/NotificationManager";
-import NotificationHistoryManager from "../../../Components/Notification/NotificationHistoryManager";
+import InstructionModal from "@/Components/InstructionModal";
+import NotificationManager from "@/Components/Notification/NotificationManager";
+import NotificationHistoryManager from "@/Components/Notification/NotificationHistoryManager";
+import SliderCaptcha from "@/Components/SliderCaptcha";
 
 export default function EnableCaptchaSlider({
     initialIsCaptchaSliderEnabled,
@@ -16,12 +17,67 @@ export default function EnableCaptchaSlider({
     const [error, setError] = useState("");
     const notificationManagerRef = useRef(null);
     const notificationHistoryManagerRef = useRef(null);
+    const [sliderCaptchaOpen, setSliderCaptchaOpen] = useState(false);
+    const [isCaptchaEnabled, setIsCaptchaEnabled] = useState(false);
+    const [clickCount, setClickCount] = useState(0);
+    const [lastClickTime, setLastClickTime] = useState(Date.now());
 
     const { setData, processing } = useForm({
         is_captcha_slider_enabled: initialIsCaptchaSliderEnabled,
     });
 
-    const toggleCaptchaSlider = async () => {
+    const checkUserSettings = async () => {
+        try {
+            const response = await axios.get("/api/settings");
+            const { is_captcha_slider_enabled } = response.data;
+            setIsCaptchaEnabled(is_captcha_slider_enabled);
+        } catch (error) {
+            console.error("Error fetching user settings:", error);
+            setIsCaptchaEnabled(false);
+        }
+    };
+
+    useEffect(() => {
+        checkUserSettings();
+    }, []);
+
+    const toggleCaptchaSlider = () => {
+        const currentTime = Date.now();
+        const timeSinceLastClick = currentTime - lastClickTime;
+
+        // Reset click count if more than 5 seconds have passed
+        if (timeSinceLastClick > 5000) {
+            setClickCount(0);
+        }
+
+        setLastClickTime(currentTime);
+        setClickCount((prevCount) => prevCount + 1);
+
+        // Check if the captcha should be shown
+        if (isCaptchaEnabled) {
+            if (clickCount >= 3) { // Show captcha if clicked more than 3 times
+                notifySpamDetected(); // Notify the user about spam detection
+                setSliderCaptchaOpen(true);
+            } else {
+                handleCaptchaSuccess();
+            }
+        } else {
+            handleCaptchaSuccess();
+        }
+    };
+
+    const notifySpamDetected = () => {
+        const message = "Spam detected! Please complete the captcha verification.";
+        notificationManagerRef.current.addNotification(message, "warning");
+        if (notificationHistoryManagerRef.current) {
+            notificationHistoryManagerRef.current.saveNotification(message, "warning");
+        } else {
+            console.error("notificationHistoryManagerRef is not available");
+        }
+    };
+
+    const handleCaptchaSuccess = async () => {
+        setSliderCaptchaOpen(false);
         try {
             const newState = !isCaptchaSliderEnabled;
             setData("is_captcha_slider_enabled", newState);
@@ -88,9 +144,14 @@ export default function EnableCaptchaSlider({
                 "Using a captcha slider helps protect your application from spam and abuse by ensuring that real users are interacting with your forms.",
         },
         {
+            title: "Default Behavior",
+            description:
+                "The captcha slider is always enabled during manual login to ensure security.",
+        },
+        {
             title: "How to Set Up",
             description:
-                "Simply toggle the switch to enable or disable the captcha slider. Your preference will be saved and applied across the application.",
+                "You can toggle the switch to enable or disable the captcha slider for additional anti-spam features. Your preference will be saved and applied across the application.",
         },
         {
             title: "How it Works",
@@ -118,12 +179,12 @@ export default function EnableCaptchaSlider({
                     <div className="flex items-center w-full sm:w-auto mb-4 sm:mb-0">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
-                            className="w-5 h-5 text-gray-400 sm:h-9 sm:w-9 flex-shrink-0" 
-                            viewBox="0 0 220 210" 
-                            fill="none" 
-                            stroke="currentColor" 
-                            strokeWidth="2" 
-                            strokeLinecap="round" 
+                            className="w-5 h-5 text-gray-400 sm:h-9 sm:w-9 flex-shrink-0"
+                            viewBox="0 0 220 210"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
                             strokeLinejoin="round"
                         >
                             <path
@@ -158,7 +219,7 @@ export default function EnableCaptchaSlider({
                         </div>
                     </div>
 
-                    <div className="flex items-center justify-between w-full sm:w-auto mt-4 sm:mt-0">
+                    <div className="flex items-center justify-between w-full sm:w-auto">
                         <span className="mr-3 text-sm text-gray-600 dark:text-gray-300">
                             {isCaptchaSliderEnabled ? "Enabled" : "Disabled"}
                         </span>
@@ -174,15 +235,7 @@ export default function EnableCaptchaSlider({
                                 onChange={toggleCaptchaSlider}
                                 disabled={processing}
                             />
-                            <div className="w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:bg-blue-600 transition-colors duration-300">
-                                <div
-                                    className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform duration-300 ${
-                                        isCaptchaSliderEnabled
-                                            ? "translate-x-5"
-                                            : ""
-                                    }`}
-                                ></div>
-                            </div>
+                            <div className="w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:bg-blue-600 after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
                         </label>
                     </div>
                 </div>
@@ -192,6 +245,14 @@ export default function EnableCaptchaSlider({
                         <p className="text-red-500 text-sm">{error}</p>
                     </div>
                 )}
+
+                <SliderCaptcha
+                    isOpen={sliderCaptchaOpen}
+                    onClose={() => setSliderCaptchaOpen(false)}
+                    onSuccess={handleCaptchaSuccess}
+                    alwaysShow={false}
+                    userId={userId}
+                />
             </div>
 
             <InstructionModal

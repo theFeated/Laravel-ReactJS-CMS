@@ -6,7 +6,11 @@
     margin-top: 0;
 }
 
-.block {
+
+/* important, this shit is used by the js and is messing with other 
+    existing block css class, change from block to scblock,
+    js also revise to use the scblock*/
+.scblock {
     position: absolute;
     left: 0;
     top: 0;

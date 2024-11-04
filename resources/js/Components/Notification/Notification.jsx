@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 
 export default function Notification({ 
     id, 
@@ -47,67 +48,95 @@ export default function Notification({
 
     if (!visible || !message) return null;
 
-    return (
-        <div className="w-80 animate-fade-in-down">
-            <div
-                className={`bg-white rounded-lg border shadow-lg ${
-                    type === 'success'
-                        ? 'border-green-500'
-                        : type === 'error'
-                        ? 'border-red-500'
-                        : 'border-blue-500'
-                }`}
+    const getTypeStyle = (type) => {
+        switch (type) {
+            case "success":
+                return "bg-green-100 text-green-800";
+            case "error":
+                return "bg-red-100 text-red-800";
+            case "warning":
+                return "bg-yellow-100 text-yellow-800";
+            case "info":
+                return "bg-blue-100 text-blue-800";
+            default:
+                return "bg-gray-100 text-gray-800";
+        }
+    };
+
+    const typeStyle = getTypeStyle(type);
+
+    const typeIcons = {
+        success: (
+            <svg
+                className="w-5 h-5 text-green-500"
+                fill="currentColor"
+                viewBox="0 0 20 20"
             >
-                {/* Rest of your JSX remains the same */}
+                <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clipRule="evenodd"
+                />
+            </svg>
+        ),
+        error: (
+            <svg
+                className="w-5 h-5 text-red-500"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+            >
+                <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                    clipRule="evenodd"
+                />
+            </svg>
+        ),
+        warning: (
+            <svg
+                className="w-5 h-5 text-yellow-400"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+            >
+                <path
+                    fillRule="evenodd"
+                    d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                    clipRule="evenodd"
+                />
+            </svg>
+        ),
+        info: (
+            <svg
+                className="w-5 h-5 text-blue-500"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+            >
+                <path
+                    fillRule="evenodd"
+                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                    clipRule="evenodd"
+                />
+            </svg>
+        ),
+        all: (
+            <svg
+                className="w-5 h-5 text-white-500"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+            >
+                <path d="M5 3a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V5a2 2 0 00-2-2H5zm7 2a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1zm0 4a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1zm0 4a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
+            </svg>
+        ),
+    };
+
+    return (
+        <div className="w-80 animate-fade-in-down" role="alert" aria-live="assertive">
+            <div className={`rounded-lg border shadow-lg ${typeStyle}`}>
                 <div className="flex items-center justify-between p-4">
                     <div className="flex items-center flex-grow">
-                        <div className="flex-shrink-0">
-                            {type === 'success' ? (
-                                <svg
-                                    className="h-5 w-5 text-green-500"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                                    />
-                                </svg>
-                            ) : type === 'error' ? (
-                                <svg
-                                    className="h-5 w-5 text-red-500"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                                    />
-                                </svg>
-                            ) : (
-                                <svg
-                                    className="h-5 w-5 text-blue-500"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                                    />
-                                </svg>
-                            )}
-                        </div>
+                        <div className="flex-shrink-0">{typeIcons[type]}</div>
                         <div className="ml-3 mr-2">
-                            <p className="text-xs text-gray-600">{message}</p>
+                            <p className={`text-xs ${typeStyle}`}>{message}</p>
                         </div>
                     </div>
                     <button
@@ -129,13 +158,7 @@ export default function Notification({
                 </div>
                 <div className="h-1 w-full bg-gray-200 rounded-b-lg relative">
                     <div
-                        className={`h-full rounded-b-lg transition-all duration-100 ease-linear ${
-                            type === 'success'
-                                ? 'bg-green-500'
-                                : type === 'error'
-                                ? 'bg-red-500'
-                                : 'bg-blue-500'
-                        }`}
+                        className={`h-full rounded-b-lg transition-all duration-100 ease-linear ${typeStyle}`}
                         style={{ width: `${progress}%` }}
                     ></div>
                 </div>

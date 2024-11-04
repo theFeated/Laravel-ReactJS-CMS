@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Notification;
 use App\Models\User;
 use App\Models\NotificationSettings;
 use Illuminate\Auth\Events\Registered;
@@ -34,20 +35,20 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
+            'email' => 'required|string|lowercase|email|max:255|unique:' . User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
-
+    
         try {
             DB::beginTransaction();
-
+    
             // Create user
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
             ]);
-
+    
             // Create default notification settings
             NotificationSettings::create([
                 'user_id' => $user->id,
@@ -56,18 +57,31 @@ class RegisteredUserController extends Controller
                 'progress_step' => 3,
                 'max_notifications' => 3
             ]);
-
+    
+            // Save registration notification to history
+            Notification::create([
+                'user_id' => $user->id,
+                'message' => 'Account created successfully.',
+                'type' => 'success'
+            ]);
+    
             DB::commit();
-
+    
             event(new Registered($user));
-
+    
             Auth::login($user);
-
-            return redirect(route('dashboard', absolute: false));
-
+    
+            return redirect()->route('dashboard')->with('notification', [
+                'message' => 'Account created successfully. Welcome!',
+                'type' => 'success',
+            ]);
+    
         } catch (\Exception $e) {
             DB::rollBack();
-            throw $e;
+            return redirect()->route('register')->with('notification', [
+                'message' => 'Registration failed. Please try again.',
+                'type' => 'error',
+            ]);
         }
     }
 }

@@ -1,30 +1,49 @@
 import React, { useEffect, useRef, useState } from "react";
-import '../../css/slider-captcha.css';
 
 const SliderCaptcha = ({ onSuccess, isOpen, onClose }) => {
     const captchaInstance = useRef(null);
     const captchaInitialized = useRef(false);
     const [scriptLoaded, setScriptLoaded] = useState(false);
+    const cssLoaded = useRef(false);
 
     useEffect(() => {
-        // Load the script
-        const script = document.createElement('script');
-        script.src = "../cms/js/slider-captcha.js";
-        script.async = true;
-        script.onload = () => setScriptLoaded(true);
-        document.body.appendChild(script);
+        if (isOpen) {
+            // Load the CSS file only if it hasn't been loaded
+            if (!cssLoaded.current) {
+                const link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = '../cms/css/slider-captcha.css';
+                document.head.appendChild(link);
+                cssLoaded.current = true; // Mark CSS as loaded
+            }
 
+            // Load the script only if it hasn't been loaded
+            if (!scriptLoaded) {
+                const script = document.createElement('script');
+                script.src = "../cms/js/slider-captcha.js";
+                script.async = true;
+                script.onload = () => setScriptLoaded(true);
+                document.body.appendChild(script);
+            }
+        }
+
+        // Cleanup function to remove the script and CSS
         return () => {
-            document.body.removeChild(script);
+            if (isOpen) {
+                const existingCaptcha = document.getElementById('captcha');
+                if (existingCaptcha) {
+                    existingCaptcha.innerHTML = ''; // Clear the captcha
+                }
+                captchaInitialized.current = false; // Reset initialization flag
+            }
         };
-    }, []);
+    }, [isOpen, scriptLoaded]);
 
     useEffect(() => {
         const cleanup = () => {
             if (captchaInstance.current) {
                 captchaInstance.current = null;
             }
-            captchaInitialized.current = false;
 
             const existingCaptcha = document.getElementById('captcha');
             if (existingCaptcha) {
