@@ -46,8 +46,8 @@ class AuthenticatedSessionController extends Controller
             $message = 'Welcome back, ' . $user->name . '! We are glad to see you again.';
             
             // Add notification to session
-            $request->session()->put('notification', [
-                'message' => $message,
+            return redirect()->route('dashboard')->with('notification', [
+                'message' => 'Welcome back, ' . $user->name . '! We are glad to see you again.',
                 'type' => 'success',
             ]);
 
