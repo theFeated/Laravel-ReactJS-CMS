@@ -44,6 +44,13 @@ class AuthenticatedSessionController extends Controller
             
             // Create welcome message
             $message = 'Welcome back, ' . $user->name . '! We are glad to see you again.';
+
+            // Save login notification to history
+            Notification::create([
+                'user_id' => $user->id,
+                'message' => 'Logged in successfully.',
+                'type' => 'success'
+            ]);
             
             // Add notification to session
             return redirect()->route('dashboard')->with('notification', [

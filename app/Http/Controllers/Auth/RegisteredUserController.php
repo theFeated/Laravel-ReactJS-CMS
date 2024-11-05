@@ -38,17 +38,26 @@ class RegisteredUserController extends Controller
             'email' => 'required|string|lowercase|email|max:255|unique:' . User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
-    
+
         try {
             DB::beginTransaction();
-    
+
+            // Check if user already exists
+            $existingUser = User::where('email', $request->email)->first();
+            if ($existingUser) {
+                return redirect()->route('register')->with('notification', [
+                    'message' => 'User already exists. Please log in.',
+                    'type' => 'error',
+                ]);
+            }
+
             // Create user
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
             ]);
-    
+
             // Create default notification settings
             NotificationSettings::create([
                 'user_id' => $user->id,
@@ -57,25 +66,25 @@ class RegisteredUserController extends Controller
                 'progress_step' => 3,
                 'max_notifications' => 3
             ]);
-    
+
             // Save registration notification to history
             Notification::create([
                 'user_id' => $user->id,
                 'message' => 'Account created successfully.',
                 'type' => 'success'
             ]);
-    
+
             DB::commit();
-    
+
             event(new Registered($user));
-    
+
             Auth::login($user);
-    
+
             return redirect()->route('dashboard')->with('notification', [
                 'message' => 'Account created successfully. Welcome!',
                 'type' => 'success',
             ]);
-    
+
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->route('register')->with('notification', [

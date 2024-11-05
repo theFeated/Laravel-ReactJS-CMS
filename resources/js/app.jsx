@@ -7,6 +7,7 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import axios from 'axios';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+const defaultLogo = '/cms/img/j.png';
 
 // List of auth-related routes that should be excluded from custom settings
 const authRoutes = [
@@ -27,7 +28,7 @@ const fetchSettings = async () => {
     if (isAuthPage()) {
         return {
             web_name: appName,
-            web_icon: null,
+            web_icon: defaultLogo,
             is_dark_mode_enabled: false,
         };
     }
@@ -39,7 +40,7 @@ const fetchSettings = async () => {
         console.error('Error fetching settings:', error);
         return {
             web_name: appName,
-            web_icon: null,
+            web_icon: defaultLogo,
             is_dark_mode_enabled: false,
         };
     }
@@ -51,9 +52,12 @@ const updateDocument = (settings) => {
         document.title = appName;
         // Reset favicon to default if needed
         let link = document.querySelector("link[rel~='icon']");
-        if (link) {
-            link.href = '/favicon.ico'; // Your default favicon path
+        if (!link) {
+            link = document.createElement('link');
+            link.rel = 'icon';
+            document.getElementsByTagName('head')[0].appendChild(link);
         }
+        link.href = defaultLogo; // Your default favicon path
         // Ensure dark mode is disabled on auth pages
         document.documentElement.classList.remove('dark');
         return;
@@ -62,15 +66,13 @@ const updateDocument = (settings) => {
     // For non-auth pages, apply custom settings
     document.title = settings.web_name || appName;
 
-    if (settings.web_icon) {
-        let link = document.querySelector("link[rel~='icon']");
-        if (!link) {
-            link = document.createElement('link');
-            link.rel = 'icon';
-            document.getElementsByTagName('head')[0].appendChild(link);
-        }
-        link.href = settings.web_icon;
+    let link = document.querySelector("link[rel~='icon']");
+    if (!link) {
+        link = document.createElement('link');
+        link.rel = 'icon';
+        document.getElementsByTagName('head')[0].appendChild(link);
     }
+    link.href = settings.web_icon || defaultLogo;
 
     if (settings.is_dark_mode_enabled) {
         document.documentElement.classList.add('dark');

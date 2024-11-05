@@ -176,9 +176,14 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
                                 <div className="mb-4 md:mb-0">
                                     <p className="text-lg font-semibold">
                                         Created by{" "}
-                                        <span className="text-pink-400">
-                                            Jean Vergel Dionsay
-                                        </span>
+                                        <a
+                                            href="https://github.com/theFeated/"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-pink-400 hover:underline"
+                                        >
+                                            theFeated
+                                        </a>
                                     </p>
                                     <p className="text-sm">
                                         Design enhanced by{" "}

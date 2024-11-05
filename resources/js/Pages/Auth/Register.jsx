@@ -26,7 +26,7 @@ export default function Register() {
     const handleCaptchaSuccess = () => {
         setSliderCaptchaOpen(false);
         setLoading(true);
-        post(route("login"), {
+        post(route("register"), {
             onFinish: () => {
                 setLoading(false);
                 reset("password", "password_confirmation");
@@ -46,7 +46,7 @@ export default function Register() {
             {loading ? (
                 <LoadingAnimation shouldRefresh={true} />
             ) : (
-                <div className="min-h-screen bg-gradient-to-br from-pink-200 to-blue-300 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+                <div className="min-h-screen bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -222,7 +222,6 @@ export default function Register() {
                     </motion.div>
                 </div>
             )}
-
             <SliderCaptcha
                 isOpen={sliderCaptchaOpen}
                 onSuccess={handleCaptchaSuccess}

@@ -9,10 +9,10 @@ export default function Guest({ children }) {
         // <div className="min-h-screen flex flex-col justify-center items-center bg-gray-100 dark:bg-gray-900 relative">
         <div>
             {flash.notification && (
-                <div className="">
-                    <Notification
-                        message={flash.notification.message}
-                        type={flash.notification.type}
+                <div className="absolute top-4 right-4 z-50">
+                    <Notification 
+                        message={flash.notification.message} 
+                        type={flash.notification.type} 
                     />
                 </div>
             )}

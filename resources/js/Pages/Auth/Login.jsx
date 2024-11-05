@@ -45,7 +45,7 @@ export default function Login({ status, canResetPassword }) {
             {loading ? (
                 <LoadingAnimation shouldRefresh={true} />
             ) : (
-                <div className="min-h-screen bg-gradient-to-br from-pink-200 to-blue-300 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+                <div className="min-h-screen bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -95,7 +95,7 @@ export default function Login({ status, canResetPassword }) {
                                         type="email"
                                         name="email"
                                         value={data.email}
-                                        className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                                        className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                                         placeholder="Email address"
                                         autoComplete="username"
                                         onChange={(e) =>
@@ -116,7 +116,11 @@ export default function Login({ status, canResetPassword }) {
                                         type="password"
                                         name="password"
                                         value={data.password}
-                                        className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition duration-200"
+                                        className="appearance-none rounded-none relative block 
+                                        w-full px-3 py-2 border border-gray-300 placeholder-gray-500 
+                                        text-gray-900 rounded-b-md focus:outline-none focus:ring-2 
+                                        focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm 
+                                        transition duration-200"
                                         autoComplete="current-password"
                                         required
                                         placeholder="Password"
