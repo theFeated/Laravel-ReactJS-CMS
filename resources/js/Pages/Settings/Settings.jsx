@@ -28,7 +28,7 @@ export default function Settings({ isGoogleAuthEnabled, is2FAEnabled, webIcon, w
             case 'upload-logo': return <UploadLogo initialLogo={logo} userId={auth.user.id} />;
             case 'notification-settings': return <NotificationSettings userId={auth.user.id} />;
             case 'dark-mode': return <EnableDarkMode initialIsDarkModeEnabled={isDarkModeEnabled} userId={auth.user.id} />;
-            // case 'captcha-slider': return <EnableCaptchaSlider initialIsCaptchaSliderEnabled={isCaptchaSliderEnabled} userId={auth.user.id} />;
+            case 'captcha-slider': return <EnableCaptchaSlider initialIsCaptchaSliderEnabled={isCaptchaSliderEnabled} userId={auth.user.id} />;
             default: return null;
         }
     };

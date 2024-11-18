@@ -4,6 +4,7 @@ import RecoveryCodesModal from "../../../Components/RecoveryCodes/RecoveryCodesM
 import Notification from "../../../Components/Notification/Notification";
 
 export default function Google2FAVerify() {
+    const { auth } = usePage().props;
     const { data, setData, post, processing, errors } = useForm({
         code: '',
     });
@@ -21,6 +22,10 @@ export default function Google2FAVerify() {
                 console.error('Error verifying 2FA code:', errors);
             },
         });
+    };
+
+    const handleSetup2FA = () => {
+        window.location.href = '/setup-2fa';
     };
 
     return (
@@ -81,13 +86,25 @@ export default function Google2FAVerify() {
                                     </button>
                                 </div>
                             </form>
-                            <div className="text-sm text-slate-500 mt-4">Lost your device?{' '}
+                            <div className="text-sm text-slate-500 mt-4">
+                                Lost your device?{' '}
                                 <button
-                                    className="font-medium text-indigo-500 hover:text-indigo-600"
+                                    className="font-medium text-indigo-500 hover:text-indigo-600 mr-2"
                                     onClick={() => setShowRecoveryCodesModal(true)}
                                 >
                                     Use Recovery Code
                                 </button>
+                            </div>
+                            <div className="text-sm text-slate-500 mt-4">
+                               Incomplete Setup?{' '}
+                                {!auth.two_factor_enabled && (
+                                    <button
+                                        className="font-medium text-green-500 hover:text-green-600"
+                                        onClick={handleSetup2FA}
+                                    >
+                                        Setup 2FA
+                                    </button>
+                                )}
                             </div>
                         </div>
                     </div>
