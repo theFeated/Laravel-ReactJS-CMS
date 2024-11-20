@@ -7,7 +7,7 @@ import NotificationHistoryManager from "../../../Components/Notification/Notific
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 
-const NotificationSettings = ({userId}) => {
+const EnableNotification = ({userId}) => {
     const [settings, setSettings] = useState({
         is_notification_enabled: true,
         display_duration: 3000,
@@ -267,7 +267,7 @@ const NotificationSettings = ({userId}) => {
                         </svg>
                         <div className="flex flex-col mx-3 sm:mx-5 space-y-1">
                             <h2 className="text-lg font-medium text-gray-700 sm:text-2xl dark:text-gray-200">
-                                Notification Settings
+                                Notifications
                             </h2>
                             <div className="flex flex-wrap items-center space-x-2">
                                 <span className="px-2 py-1 text-xs text-blue-500 bg-blue-50 rounded-full dark:bg-blue-900/30">
@@ -349,4 +349,4 @@ const NotificationSettings = ({userId}) => {
     );
 };
 
-export default NotificationSettings;
+export default EnableNotification;

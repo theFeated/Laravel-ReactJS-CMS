@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from "react";
 import { useForm } from '@inertiajs/react';
 import axios from 'axios';
 import InstructionModal from '../../../Components/InstructionModal';
@@ -15,6 +15,19 @@ export default function Enable2FA({ initialIs2FAEnabled, userId }) {
     const { setData, processing } = useForm({
         is_2fa_enabled: initialIs2FAEnabled,
     });
+
+    useEffect(() => {
+        const savedState = localStorage.getItem("is2FAEnabled");
+        if (savedState !== null) {
+            setIs2FAEnabled(JSON.parse(savedState));
+        }
+    }, []);
+    useEffect(() => {
+        localStorage.setItem(
+            "is2FAEnabled",
+            JSON.stringify(is2FAEnabled)
+        );
+    }, [is2FAEnabled]);
 
     const toggle2FA = async () => {
         try {

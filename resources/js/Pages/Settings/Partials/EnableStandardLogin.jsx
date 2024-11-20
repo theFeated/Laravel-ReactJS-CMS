@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useForm } from "@inertiajs/react";
 import axios from "axios";
 import InstructionModal from "../../../Components/InstructionModal";
@@ -9,7 +9,7 @@ export default function EnableStandardLogin({
     initialIsManualLoginEnabled,
     userId,
 }) {
-    const [isStandardLoginEnabled, setIsManualLoginEnabled] = useState(
+    const [isStandardLoginEnabled, setIsStandardLoginEnabled] = useState(
         initialIsManualLoginEnabled
     );
     const [showInstructions, setShowInstructions] = useState(false);
@@ -19,6 +19,19 @@ export default function EnableStandardLogin({
     const { setData, processing } = useForm({
         is_standard_login_enabled: initialIsManualLoginEnabled,
     });
+
+    useEffect(() => {
+        const savedState = localStorage.getItem("isStandardLoginEnabled");
+        if (savedState !== null) {
+            setIsStandardLoginEnabled(JSON.parse(savedState));
+        }
+    }, []);
+    useEffect(() => {
+        localStorage.setItem(
+            "isStandardLoginEnabled",
+            JSON.stringify(isStandardLoginEnabled)
+        );
+    }, [isStandardLoginEnabled]);
 
     const instructionSteps = [
         {
@@ -78,7 +91,11 @@ export default function EnableStandardLogin({
                 "Failed to update Standard Login settings. Please try again.";
 
             // Check if the error response contains a specific message
-            if (error.response && error.response.data && error.response.data.message) {
+            if (
+                error.response &&
+                error.response.data &&
+                error.response.data.message
+            ) {
                 errorMessage = error.response.data.message;
             }
 
@@ -97,7 +114,7 @@ export default function EnableStandardLogin({
             }
         }
     };
-    
+
     return (
         <div className="dark:bg-gray-900 p-4 sm:p-6">
             <NotificationManager ref={notificationManagerRef} />

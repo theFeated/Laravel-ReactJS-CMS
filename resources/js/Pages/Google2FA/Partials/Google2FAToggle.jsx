@@ -26,6 +26,19 @@ export default function Google2FAToggle({ initialIsGoogle2FAEnabled, userId }) {
     });
 
     useEffect(() => {
+        const savedState = localStorage.getItem("isGoogle2FAEnabled");
+        if (savedState !== null) {
+            setIsGoogle2FAEnabled(JSON.parse(savedState));
+        }
+    }, []);
+    useEffect(() => {
+        localStorage.setItem(
+            "isGoogle2FAEnabled",
+            JSON.stringify(isGoogle2FAEnabled)
+        );
+    }, [isGoogle2FAEnabled]);
+
+    useEffect(() => {
         setIsGoogle2FAEnabled(initialIsGoogle2FAEnabled || false);
         checkUserSettings();
     }, [initialIsGoogle2FAEnabled]);

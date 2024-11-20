@@ -6,7 +6,7 @@ import Enable2FA from './Partials/Enable2FA';
 import SetWebIconAndName from './Partials/SetWebIconAndName';
 import SetLogo from './Partials/SetLogo';
 import Google2FAToggle from '../Google2FA/Partials/Google2FAToggle';
-import NotificationSettings from './Partials/NotificationSettings';
+import EnableNotification from './Partials/EnableNotification';
 import EnableDarkMode from './Partials/EnableDarkMode';
 import EnableCaptchaSlider from './Partials/EnableCaptchaSlider';
 import EnableStandardLogin from './Partials/EnableStandardLogin';
@@ -28,7 +28,7 @@ export default function Settings({ isGoogleAuthEnabled, is2FAEnabled, webIcon, w
             case 'google2fa': return <Google2FAToggle initialIsGoogle2FAEnabled={isGoogle2FAEnabled} userId={auth.user.id} />;
             case 'web-icon-name': return <SetWebIconAndName initialWebIcon={webIcon} initialWebName={webName} userId={auth.user.id} />;
             case 'upload-logo': return <SetLogo initialLogo={set_logo} userId={auth.user.id} />;
-            case 'notification-settings': return <NotificationSettings userId={auth.user.id} />;
+            case 'notification-settings': return <EnableNotification userId={auth.user.id} />;
             case 'dark-mode': return <EnableDarkMode initialIsDarkModeEnabled={isDarkModeEnabled} userId={auth.user.id} />;
             case 'captcha-slider': return <EnableCaptchaSlider initialIsCaptchaSliderEnabled={isCaptchaSliderEnabled} userId={auth.user.id} />;
             default: return null;
