@@ -9,9 +9,9 @@ import Google2FAToggle from '../Google2FA/Partials/Google2FAToggle';
 import NotificationSettings from './Partials/NotificationSettings';
 import EnableDarkMode from './Partials/EnableDarkMode';
 import EnableCaptchaSlider from './Partials/EnableCaptchaSlider';
-import EnableManualLogin from './Partials/EnableManualLogin';
+import EnableStandardLogin from './Partials/EnableStandardLogin';
 
-export default function Settings({ isGoogleAuthEnabled, is2FAEnabled, webIcon, webName, set_logo, isGoogle2FAEnabled, isDarkModeEnabled, isCaptchaSliderEnabled, isManualLoginEnabled  }) {
+export default function Settings({ isGoogleAuthEnabled, is2FAEnabled, webIcon, webName, set_logo, isGoogle2FAEnabled, isDarkModeEnabled, isCaptchaSliderEnabled, isStandardLoginEnabled  }) {
     const [activeTab, setActiveTab] = useState(localStorage.getItem('activeTab') || 'google-auth');
     const { auth } = usePage().props;
 
@@ -23,6 +23,7 @@ export default function Settings({ isGoogleAuthEnabled, is2FAEnabled, webIcon, w
     const renderActiveTab = () => {
         switch (activeTab) {
             case 'google-auth': return <EnableGoogleAuth initialIsGoogleAuthEnabled={isGoogleAuthEnabled} userId={auth.user.id} />;
+            case 'manual-login': return <EnableStandardLogin initialIsManualLoginEnabled={isStandardLoginEnabled} userId={auth.user.id} />; 
             case '2fa': return <Enable2FA initialIs2FAEnabled={is2FAEnabled} userId={auth.user.id} />;
             case 'google2fa': return <Google2FAToggle initialIsGoogle2FAEnabled={isGoogle2FAEnabled} userId={auth.user.id} />;
             case 'web-icon-name': return <SetWebIconAndName initialWebIcon={webIcon} initialWebName={webName} userId={auth.user.id} />;
@@ -30,7 +31,6 @@ export default function Settings({ isGoogleAuthEnabled, is2FAEnabled, webIcon, w
             case 'notification-settings': return <NotificationSettings userId={auth.user.id} />;
             case 'dark-mode': return <EnableDarkMode initialIsDarkModeEnabled={isDarkModeEnabled} userId={auth.user.id} />;
             case 'captcha-slider': return <EnableCaptchaSlider initialIsCaptchaSliderEnabled={isCaptchaSliderEnabled} userId={auth.user.id} />;
-            case 'manual-login': return <EnableManualLogin initialIsManualLoginEnabled={isManualLoginEnabled} userId={auth.user.id} />; // Add this case
             default: return null;
         }
     };
@@ -53,6 +53,16 @@ export default function Settings({ isGoogleAuthEnabled, is2FAEnabled, webIcon, w
                                 onClick={() => setActiveTab('google-auth')}
                             >
                                 Google Auth
+                            </button>
+                            <button
+                                className={`tab flex-1 px-4 py-2 text-center focus:outline-none transition-all duration-200
+                                    ${activeTab === 'manual-login' 
+                                        ? 'text-blue-600 border-b-4 border-blue-600' 
+                                        : 'text-gray-600 hover:text-blue-600 hover:border-b-4 hover:border-blue-600'
+                                    }`}
+                                onClick={() => setActiveTab('manual-login')}
+                            >
+                                Standard Login
                             </button>
                             <button
                                 className={`tab flex-1 px-4 py-2 text-center focus:outline-none transition-all duration-200
@@ -124,16 +134,6 @@ export default function Settings({ isGoogleAuthEnabled, is2FAEnabled, webIcon, w
                             >
                                 Captcha Slider
                             </button> */}
-                             <button
-                                className={`tab flex-1 px-4 py-2 text-center focus:outline-none transition-all duration-200
-                                    ${activeTab === 'manual-login' 
-                                        ? 'text-blue-600 border-b-4 border-blue-600' 
-                                        : 'text-gray-600 hover:text-blue-600 hover:border-b-4 hover:border-blue-600'
-                                    }`}
-                                onClick={() => setActiveTab('manual-login')}
-                            >
-                                Manual Login
-                            </button>
                         </div>
                     </div>
                 </div>

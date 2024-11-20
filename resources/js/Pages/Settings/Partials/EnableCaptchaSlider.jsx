@@ -146,7 +146,7 @@ export default function EnableCaptchaSlider({
         {
             title: "Default Behavior",
             description:
-                "The captcha slider is always enabled during manual login to ensure security.",
+                "The captcha slider is always enabled during Standard Login to ensure security.",
         },
         {
             title: "How to Set Up",

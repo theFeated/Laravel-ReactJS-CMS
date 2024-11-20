@@ -19,7 +19,7 @@ class CreateSettingsTable extends Migration
             $table->boolean('is_google2fa_enabled')->default(false);
             $table->boolean('is_dark_mode_enabled')->default(false);
             $table->boolean('is_captcha_slider_enabled')->default(true);
-            $table->boolean('is_manual_login_enabled')->default(true);
+            $table->boolean('is_standard_login_enabled')->default(true);
             $table->timestamps();
         });
     }

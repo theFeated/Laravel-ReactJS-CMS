@@ -68,7 +68,12 @@ export default function EnableGoogleAuth({ initialIsGoogleAuthEnabled, userId })
         } catch (error) {
             console.error('Settings update error:', error);
     
-            const errorMessage = 'Failed to update Google Authentication settings. Please try again.';
+            let errorMessage = 'Failed to update Google Authentication settings. Please try again.';
+            
+            // Check if the error response contains a specific message
+            if (error.response && error.response.data && error.response.data.message) {
+                errorMessage = error.response.data.message;
+            }
     
             // Show error notification
             notificationManagerRef.current.addNotification(errorMessage, 'error');

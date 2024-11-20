@@ -146,7 +146,7 @@ export default function SetLogo({ initialLogo, userId }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!set_logo) {
-            const errorMessage = 'Please select a set_logo to upload';
+            const errorMessage = 'Please select a logo to upload';
             setErrors({ set_logo: errorMessage });
             notificationManagerRef.current.addNotification(
                 errorMessage,

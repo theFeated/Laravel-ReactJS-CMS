@@ -18,7 +18,7 @@ class Setting extends Model
         'is_google2fa_enabled',
         'is_dark_mode_enabled',
         'is_captcha_slider_enabled',
-        'is_manual_login_enabled',
+        'is_standard_login_enabled',
     ];
 
     public function user()

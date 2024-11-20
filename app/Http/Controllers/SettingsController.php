@@ -25,9 +25,9 @@ class SettingsController extends Controller
             'isGoogle2FAEnabled' => $setting ? $setting->is_google2fa_enabled : false,
             'recoveryCode' => $recoveryCode ? $recoveryCode->code : null,
             'isCodeCopied' => $recoveryCode ? $recoveryCode->is_code_copied : false,
-            'isDarkModeEnabled' => $setting ? $setting->is_dark_mode_enabled : false, 
+            'isDarkModeEnabled' => $setting ? $setting->is_dark_mode_enabled : false,
             'isCaptchaSliderEnabled' => $setting ? $setting->is_captcha_slider_enabled : false,
-            'isManualLoginEnabled' => $setting ? $setting->is_manual_login_enabled : false,
+            'isStandardLoginEnabled' => $setting ? $setting->is_standard_login_enabled : false,
         ]);
     }
 
@@ -36,6 +36,21 @@ class SettingsController extends Controller
         $user = $request->user();
         $setting = Setting::firstOrCreate(['user_id' => $user->id]);
 
+        $isGoogleAuthEnabled = $request->has('is_google_auth_enabled')
+            ? $request->is_google_auth_enabled
+            : $setting->is_google_auth_enabled;
+
+        $isStandardLoginEnabled = $request->has('is_standard_login_enabled')
+            ? $request->is_standard_login_enabled
+            : $setting->is_standard_login_enabled;
+
+        if (!$isGoogleAuthEnabled && !$isStandardLoginEnabled) {
+            return response()->json([
+                'message' => 'You must keep at least one login method enabled.',
+            ], 400);
+        }
+
+        // Proceed with individual setting updates
         if ($request->has('is_google_auth_enabled')) {
             $request->validate([
                 'is_google_auth_enabled' => 'required|boolean',
@@ -44,6 +59,16 @@ class SettingsController extends Controller
                 'is_google_auth_enabled' => $request->is_google_auth_enabled,
             ]);
         }
+
+        if ($request->has('is_standard_login_enabled')) {
+            $request->validate([
+                'is_standard_login_enabled' => 'required|boolean',
+            ]);
+            $setting->update([
+                'is_standard_login_enabled' => $request->is_standard_login_enabled,
+            ]);
+        }
+
 
         if ($request->has('is_2fa_enabled')) {
             $request->validate([
@@ -86,16 +111,6 @@ class SettingsController extends Controller
                 'is_captcha_slider_enabled' => $request->is_captcha_slider_enabled,
             ]);
         }
-
-        if ($request->has('is_manual_login_enabled')) {
-            $request->validate([
-                'is_manual_login_enabled' => 'required|boolean',
-            ]);
-            $setting->update([
-                'is_manual_login_enabled' => $request->is_manual_login_enabled,
-            ]);
-        }
-
 
         return response()->json(['message' => 'Settings updated successfully']);
     }
@@ -162,7 +177,7 @@ class SettingsController extends Controller
             'is_google2fa_enabled' => $setting ? $setting->is_google2fa_enabled : false,
             'is_dark_mode_enabled' => $setting ? $setting->is_dark_mode_enabled : false,
             'is_captcha_slider_enabled' => $setting ? $setting->is_captcha_slider_enabled : false,
-            'is_manual_login_enabled' => $setting ? $setting->is_manual_login_enabled : false,
+            'is_standard_login_enabled' => $setting ? $setting->is_standard_login_enabled : false,
         ]);
     }
 }
