@@ -4,8 +4,8 @@ import InstructionModal from '../../../Components/InstructionModal';
 import NotificationManager from "../../../Components/Notification/NotificationManager";
 import NotificationHistoryManager from '../../../Components/Notification/NotificationHistoryManager';
 
-export default function UploadLogo({ initialLogo, userId }) {
-    const [logo, setLogo] = useState(null);
+export default function SetLogo({ initialLogo, userId }) {
+    const [set_logo, setLogo] = useState(null);
     const [preview, setPreview] = useState(initialLogo);
     const [processing, setProcessing] = useState(false);
     const [errors, setErrors] = useState({});
@@ -29,11 +29,11 @@ export default function UploadLogo({ initialLogo, userId }) {
         },
         {
             title: 'Design Guidelines',
-            description: 'Ensure your logo is clear and readable when displayed in different sizes.'
+            description: 'Ensure your set_logo is clear and readable when displayed in different sizes.'
         },
         {
             title: 'After Upload',
-            description: 'Your new logo will be automatically optimized and may take a few minutes to appear across all pages.'
+            description: 'Your new set_logo will be automatically optimized and may take a few minutes to appear across all pages.'
         }
     ];
 
@@ -43,7 +43,7 @@ export default function UploadLogo({ initialLogo, userId }) {
             // File size validation (2MB limit)
             if (file.size > 2 * 1024 * 1024) {
                 const errorMessage = 'File size must be less than 2MB';
-                setErrors({ logo: errorMessage });
+                setErrors({ set_logo: errorMessage });
                 notificationManagerRef.current.addNotification(
                     errorMessage,
                     'error'
@@ -61,7 +61,7 @@ export default function UploadLogo({ initialLogo, userId }) {
             const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml'];
             if (!validTypes.includes(file.type)) {
                 const errorMessage = 'Please upload a valid image file (SVG, PNG, JPG, or GIF)';
-                setErrors({ logo: errorMessage });
+                setErrors({ set_logo: errorMessage });
                 notificationManagerRef.current.addNotification(
                     errorMessage,
                     'error'
@@ -94,7 +94,7 @@ export default function UploadLogo({ initialLogo, userId }) {
                             console.error('notificationHistoryManagerRef is not available');
                         }
                     } else {
-                        setErrors({ logo: result.error });
+                        setErrors({ set_logo: result.error });
                         notificationManagerRef.current.addNotification(
                             result.error,
                             'error'
@@ -126,7 +126,7 @@ export default function UploadLogo({ initialLogo, userId }) {
                             console.error('notificationHistoryManagerRef is not available');
                         }
                     } else {
-                        setErrors({ logo: result.error });
+                        setErrors({ set_logo: result.error });
                         notificationManagerRef.current.addNotification(
                             result.error,
                             'error'
@@ -145,9 +145,9 @@ export default function UploadLogo({ initialLogo, userId }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!logo) {
-            const errorMessage = 'Please select a logo to upload';
-            setErrors({ logo: errorMessage });
+        if (!set_logo) {
+            const errorMessage = 'Please select a set_logo to upload';
+            setErrors({ set_logo: errorMessage });
             notificationManagerRef.current.addNotification(
                 errorMessage,
                 'error'
@@ -168,11 +168,11 @@ export default function UploadLogo({ initialLogo, userId }) {
 
         try {
             // Process SVG files before upload
-            if (logo.type === 'image/svg+xml') {
-                const sanitizedSVG = await sanitizeSVGFile(logo);
-                formData.append('logo', sanitizedSVG);
+            if (set_logo.type === 'image/svg+xml') {
+                const sanitizedSVG = await sanitizeSVGFile(set_logo);
+                formData.append('set_logo', sanitizedSVG);
             } else {
-                formData.append('logo', logo);
+                formData.append('set_logo', set_logo);
             }
 
             const response = await axios.post('/settings/upload-logo', formData, {
@@ -195,16 +195,16 @@ export default function UploadLogo({ initialLogo, userId }) {
             }
         } catch (error) {
             const errorMessage = error.response?.data?.errors || { 
-                general: 'Failed to upload logo. Please try again.' 
+                general: 'Failed to upload set_logo. Please try again.' 
             };
             setErrors(errorMessage);
             notificationManagerRef.current.addNotification(
-                'Failed to upload logo. Please try again.',
+                'Failed to upload set_logo. Please try again.',
                 'error'
             );
             // Save error notification to history
             if (notificationHistoryManagerRef.current) {
-                await notificationHistoryManagerRef.current.saveNotification('Failed to upload logo. Please try again.', 'error');
+                await notificationHistoryManagerRef.current.saveNotification('Failed to upload set_logo. Please try again.', 'error');
             } else {
                 console.error('notificationHistoryManagerRef is not available');
             }
@@ -355,7 +355,7 @@ export default function UploadLogo({ initialLogo, userId }) {
                                     Upload Your Logo
                                 </h2>
                                 <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                                    Customize your website's branding with a professional logo
+                                    Customize your website's branding with a professional set_logo
                                 </p>
                             </div>
                             <button
@@ -391,14 +391,14 @@ export default function UploadLogo({ initialLogo, userId }) {
                                 <div className="flex-1 w-full sm:w-auto">
                                     <input
                                         type="file"
-                                        id="logo"
+                                        id="set_logo"
                                         className="hidden"
                                         onChange={handleLogoChange}
                                         accept="image/*"
                                         disabled={processing}
                                     />
                                     <label
-                                        htmlFor="logo"
+                                        htmlFor="set_logo"
                                         className="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer transition"
                                     >
                                         Select New Logo
@@ -411,8 +411,8 @@ export default function UploadLogo({ initialLogo, userId }) {
                                     </p>
                                 </div>
                             </div>
-                            {errors.logo && (
-                                <p className="text-sm text-red-600 dark:text-red-400 mt-2">{errors.logo}</p>
+                            {errors.set_logo && (
+                                <p className="text-sm text-red-600 dark:text-red-400 mt-2">{errors.set_logo}</p>
                             )}
                         </div>
     

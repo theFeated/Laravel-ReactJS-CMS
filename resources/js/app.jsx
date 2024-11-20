@@ -27,8 +27,8 @@ const fetchSettings = async () => {
     // If it's an auth page, return default settings
     if (isAuthPage()) {
         return {
-            web_name: appName,
-            web_icon: defaultLogo,
+            set_web_name: appName,
+            set_web_icon: defaultLogo,
             is_dark_mode_enabled: false,
         };
     }
@@ -39,8 +39,8 @@ const fetchSettings = async () => {
     } catch (error) {
         console.error('Error fetching settings:', error);
         return {
-            web_name: appName,
-            web_icon: defaultLogo,
+            set_web_name: appName,
+            set_web_icon: defaultLogo,
             is_dark_mode_enabled: false,
         };
     }
@@ -64,7 +64,7 @@ const updateDocument = (settings) => {
     }
 
     // For non-auth pages, apply custom settings
-    document.title = settings.web_name || appName;
+    document.title = settings.set_web_name || appName;
 
     let link = document.querySelector("link[rel~='icon']");
     if (!link) {
@@ -72,7 +72,7 @@ const updateDocument = (settings) => {
         link.rel = 'icon';
         document.getElementsByTagName('head')[0].appendChild(link);
     }
-    link.href = settings.web_icon || defaultLogo;
+    link.href = settings.set_web_icon || defaultLogo;
 
     if (settings.is_dark_mode_enabled) {
         document.documentElement.classList.add('dark');
@@ -87,7 +87,7 @@ fetchSettings().then((settings) => {
             if (isAuthPage()) {
                 return `${title} - ${appName}`;
             }
-            return `${title} - ${settings.web_name || appName}`;
+            return `${title} - ${settings.set_web_name || appName}`;
         },
         resolve: (name) => resolvePageComponent(`./Pages/${name}.jsx`, import.meta.glob('./Pages/**/*.jsx')),
         setup({ el, App, props }) {

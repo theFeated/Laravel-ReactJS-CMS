@@ -12,12 +12,13 @@ class Setting extends Model
         'user_id',
         'is_google_auth_enabled',
         'is_2fa_enabled',
-        'web_icon',
-        'web_name',
-        'logo',
+        'set_web_icon',
+        'set_web_name',
+        'set_logo',
         'is_google2fa_enabled',
         'is_dark_mode_enabled',
         'is_captcha_slider_enabled',
+        'is_manual_login_enabled',
     ];
 
     public function user()

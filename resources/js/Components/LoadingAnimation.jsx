@@ -13,10 +13,10 @@ const LoadingAnimation = ({ children, shouldRefresh }) => {
         const fetchLogo = async () => {
             try {
                 const response = await axios.get("/api/settings");
-                setLogoUrl(response.data.logo);
+                setLogoUrl(response.data.set_logo);
             } catch (error) {
                 console.error("Error fetching settings:", error);
-                // setError("Failed to load logo. Please try again.");
+                // setError("Failed to load set_logo. Please try again.");
             } finally {
                 setTimeout(() => {
                     setLoading(false);

@@ -13,12 +13,13 @@ class CreateSettingsTable extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->boolean('is_google_auth_enabled')->default(true);
             $table->boolean('is_2fa_enabled')->default(false);
-            $table->string('web_icon')->nullable();
-            $table->string('web_name')->nullable();
-            $table->string('logo')->nullable();
+            $table->string('set_web_icon')->nullable();
+            $table->string('set_web_name')->nullable();
+            $table->string('set_logo')->nullable();
             $table->boolean('is_google2fa_enabled')->default(false);
             $table->boolean('is_dark_mode_enabled')->default(false);
             $table->boolean('is_captcha_slider_enabled')->default(true);
+            $table->boolean('is_manual_login_enabled')->default(true);
             $table->timestamps();
         });
     }

@@ -19,14 +19,15 @@ class SettingsController extends Controller
         return Inertia::render('Settings/Settings', [
             'isGoogleAuthEnabled' => $setting ? $setting->is_google_auth_enabled : false,
             'is2FAEnabled' => $setting ? $setting->is_2fa_enabled : false,
-            'webIcon' => $setting && $setting->web_icon ? Storage::url($setting->web_icon) : '',
-            'webName' => $setting ? $setting->web_name : '',
-            'logo' => $setting && $setting->logo ? Storage::url($setting->logo) : '',
+            'webIcon' => $setting && $setting->set_web_icon ? Storage::url($setting->set_web_icon) : '',
+            'webName' => $setting ? $setting->set_web_name : '',
+            'set_logo' => $setting && $setting->set_logo ? Storage::url($setting->set_logo) : '',
             'isGoogle2FAEnabled' => $setting ? $setting->is_google2fa_enabled : false,
             'recoveryCode' => $recoveryCode ? $recoveryCode->code : null,
             'isCodeCopied' => $recoveryCode ? $recoveryCode->is_code_copied : false,
             'isDarkModeEnabled' => $setting ? $setting->is_dark_mode_enabled : false, 
-            'isCaptchaSliderEnabled' => $setting ? $setting->is_captcha_slider_enabled : false, // Added dark mode setting
+            'isCaptchaSliderEnabled' => $setting ? $setting->is_captcha_slider_enabled : false,
+            'isManualLoginEnabled' => $setting ? $setting->is_manual_login_enabled : false,
         ]);
     }
 
@@ -86,6 +87,16 @@ class SettingsController extends Controller
             ]);
         }
 
+        if ($request->has('is_manual_login_enabled')) {
+            $request->validate([
+                'is_manual_login_enabled' => 'required|boolean',
+            ]);
+            $setting->update([
+                'is_manual_login_enabled' => $request->is_manual_login_enabled,
+            ]);
+        }
+
+
         return response()->json(['message' => 'Settings updated successfully']);
     }
 
@@ -93,23 +104,23 @@ class SettingsController extends Controller
     {
         $user = $request->user();
         $request->validate([
-            'web_icon' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'web_name' => 'required|string',
+            'set_web_icon' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'set_web_name' => 'required|string',
         ]);
 
         $setting = Setting::firstOrCreate(['user_id' => $user->id]);
 
-        if ($request->hasFile('web_icon')) {
-            if ($setting->web_icon) {
-                Storage::disk('public')->delete($setting->web_icon);
+        if ($request->hasFile('set_web_icon')) {
+            if ($setting->set_web_icon) {
+                Storage::disk('public')->delete($setting->set_web_icon);
             }
 
-            $file = $request->file('web_icon');
+            $file = $request->file('set_web_icon');
             $filePath = $file->store('web_icons', 'public');
-            $setting->web_icon = $filePath;
+            $setting->set_web_icon = $filePath;
         }
 
-        $setting->web_name = $request->web_name;
+        $setting->set_web_name = $request->set_web_name;
         $setting->save();
 
         return response()->json(['message' => 'Web icon and name updated successfully']);
@@ -119,19 +130,19 @@ class SettingsController extends Controller
     {
         $user = $request->user();
         $request->validate([
-            'logo' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'set_logo' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         $setting = Setting::firstOrCreate(['user_id' => $user->id]);
 
-        if ($request->hasFile('logo')) {
-            if ($setting->logo) {
-                Storage::disk('public')->delete($setting->logo);
+        if ($request->hasFile('set_logo')) {
+            if ($setting->set_logo) {
+                Storage::disk('public')->delete($setting->set_logo);
             }
 
-            $file = $request->file('logo');
+            $file = $request->file('set_logo');
             $filePath = $file->store('logos', 'public');
-            $setting->logo = $filePath;
+            $setting->set_logo = $filePath;
             $setting->save();
         }
 
@@ -145,12 +156,13 @@ class SettingsController extends Controller
         return response()->json([
             'is_google_auth_enabled' => $setting ? $setting->is_google_auth_enabled : false,
             'is_2fa_enabled' => $setting ? $setting->is_2fa_enabled : false,
-            'web_icon' => $setting && $setting->web_icon ? Storage::url($setting->web_icon) : '',
-            'web_name' => $setting ? $setting->web_name : '',
-            'logo' => $setting && $setting->logo ? Storage::url($setting->logo) : '',
+            'set_web_icon' => $setting && $setting->set_web_icon ? Storage::url($setting->set_web_icon) : '',
+            'set_web_name' => $setting ? $setting->set_web_name : '',
+            'set_logo' => $setting && $setting->set_logo ? Storage::url($setting->set_logo) : '',
             'is_google2fa_enabled' => $setting ? $setting->is_google2fa_enabled : false,
             'is_dark_mode_enabled' => $setting ? $setting->is_dark_mode_enabled : false,
             'is_captcha_slider_enabled' => $setting ? $setting->is_captcha_slider_enabled : false,
+            'is_manual_login_enabled' => $setting ? $setting->is_manual_login_enabled : false,
         ]);
     }
 }

@@ -4,7 +4,7 @@ import InstructionModal from '../../../Components/InstructionModal';
 import NotificationManager from "../../../Components/Notification/NotificationManager";
 import NotificationHistoryManager from '../../../Components/Notification/NotificationHistoryManager';
 
-export default function WebIconAndName({ initialWebIcon, initialWebName, userId }) {
+export default function SetWebIconAndName({ initialWebIcon, initialWebName, userId }) {
     const [webIcon, setWebIcon] = useState(null);
     const [webName, setWebName] = useState(initialWebName);
     const [preview, setPreview] = useState(initialWebIcon);
@@ -44,7 +44,7 @@ export default function WebIconAndName({ initialWebIcon, initialWebName, userId 
             // File size validation (2MB limit)
             if (file.size > 2 * 1024 * 1024) {
                 const errorMessage = 'File size must be less than 2MB';
-                setErrors({ web_icon: errorMessage });
+                setErrors({ set_web_icon: errorMessage });
                 notificationManagerRef.current.addNotification(
                     errorMessage,
                     'error'
@@ -62,7 +62,7 @@ export default function WebIconAndName({ initialWebIcon, initialWebName, userId 
             const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml'];
             if (!validTypes.includes(file.type)) {
                 const errorMessage = 'Please upload a valid image file (SVG, PNG, JPG, or GIF)';
-                setErrors({ web_icon: errorMessage });
+                setErrors({ set_web_icon: errorMessage });
                 notificationManagerRef.current.addNotification(
                     errorMessage,
                     'error'
@@ -96,7 +96,7 @@ export default function WebIconAndName({ initialWebIcon, initialWebName, userId 
                         }
                     } else {
                         const errorMessage = 'Invalid SVG file. Please ensure it contains no malicious content.';
-                        setErrors({ web_icon: errorMessage });
+                        setErrors({ set_web_icon: errorMessage });
                         notificationManagerRef.current.addNotification(
                             errorMessage,
                             'error'
@@ -141,10 +141,10 @@ export default function WebIconAndName({ initialWebIcon, initialWebName, userId 
                 try {
                     // Sanitize SVG before upload
                     const sanitizedSVG = await sanitizeSVG(webIcon);
-                    formData.append('web_icon', sanitizedSVG);
+                    formData.append('set_web_icon', sanitizedSVG);
                 } catch (error) {
                     const errorMessage = 'Error processing SVG file';
-                    setErrors({ web_icon: errorMessage });
+                    setErrors({ set_web_icon: errorMessage });
                     notificationManagerRef.current.addNotification(
                         errorMessage,
                         'error'
@@ -159,11 +159,11 @@ export default function WebIconAndName({ initialWebIcon, initialWebName, userId 
                     return;
                 }
             } else {
-                formData.append('web_icon', webIcon);
+                formData.append('set_web_icon', webIcon);
             }
         }
 
-        if (webName) formData.append('web_name', webName);
+        if (webName) formData.append('set_web_name', webName);
 
         try {
             const response = await axios.post('/settings/update-web-icon-and-name', formData, {
@@ -358,8 +358,8 @@ export default function WebIconAndName({ initialWebIcon, initialWebName, userId 
                                     </p>
                                 </div>
                             </div>
-                            {errors.web_icon && (
-                                <p className="text-sm text-red-600 dark:text-red-400 mt-2">{errors.web_icon}</p>
+                            {errors.set_web_icon && (
+                                <p className="text-sm text-red-600 dark:text-red-400 mt-2">{errors.set_web_icon}</p>
                             )}
                         </div>
     
@@ -377,8 +377,8 @@ export default function WebIconAndName({ initialWebIcon, initialWebName, userId 
                                 disabled={processing}
                                 placeholder="Enter website name"
                             />
-                            {errors.web_name && (
-                                <p className="text-sm text-red-600 dark:text-red-400 mt-2">{errors.web_name}</p>
+                            {errors.set_web_name && (
+                                <p className="text-sm text-red-600 dark:text-red-400 mt-2">{errors.set_web_name}</p>
                             )}
                         </div>
     

@@ -2,17 +2,17 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 
 export default function ApplicationLogo(props) {
-    const [logo, setLogo] = useState('/cms/img/j.png');
+    const [set_logo, setLogo] = useState('/cms/img/j.png');
 
     useEffect(() => {
         const fetchLogo = async () => {
             try {
                 const response = await axios.get('/api/settings');
-                if (response.data.logo) {
-                    setLogo(response.data.logo);
+                if (response.data.set_logo) {
+                    setLogo(response.data.set_logo);
                 }
             } catch (error) {
-                console.error('Error fetching logo', error);
+                console.error('Error fetching set_logo', error);
             }
         };
 
@@ -22,7 +22,7 @@ export default function ApplicationLogo(props) {
     return (
         <img
             {...props}
-            src={logo}
+            src={set_logo}
             alt="Logo"
             className="h-12 w-auto lg:h-16"
         />
