@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
+import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 
-export default function Notification({ 
-    id, 
-    message, 
-    type, 
-    onClose, 
-    displayDuration = 3000,  // Default value if not provided
-    progressStep = 3.33      // Default value if not provided
+export default function Notification({
+    id,
+    message,
+    type,
+    onClose,
+    displayDuration = 3000, // Default value if not provided
+    progressStep = 3.33, // Default value if not provided
 }) {
     const [visible, setVisible] = useState(true);
     const [progress, setProgress] = useState(100);
@@ -63,7 +63,23 @@ export default function Notification({
         }
     };
 
+    const getProgressColor = (type) => {
+        switch (type) {
+            case "success":
+                return "bg-green-600"; // A harmonious green that matches success
+            case "error":
+                return "bg-red-600"; // A harmonious red that matches error
+            case "warning":
+                return "bg-yellow-600"; // A harmonious yellow that matches warning
+            case "info":
+                return "bg-blue-600"; // A harmonious blue that matches info
+            default:
+                return "bg-gray-600"; // Neutral gray for default
+        }
+    };
+
     const typeStyle = getTypeStyle(type);
+    const progressColor = getProgressColor(type);
 
     const typeIcons = {
         success: (
@@ -130,7 +146,11 @@ export default function Notification({
     };
 
     return (
-        <div className="w-80 animate-fade-in-down" role="alert" aria-live="assertive">
+        <div
+            className="w-80 animate-fade-in-down"
+            role="alert"
+            aria-live="assertive"
+        >
             <div className={`rounded-lg border shadow-lg ${typeStyle}`}>
                 <div className="flex items-center justify-between p-4">
                     <div className="flex items-center flex-grow">
@@ -156,9 +176,9 @@ export default function Notification({
                         </svg>
                     </button>
                 </div>
-                <div className="h-1 w-full bg-gray-200 rounded-b-lg relative">
+                <div className="h-1 w-full rounded-b-lg relative">
                     <div
-                        className={`h-full rounded-b-lg transition-all duration-100 ease-linear ${typeStyle}`}
+                        className={`h-full rounded-b-lg transition-all duration-100 ease-linear ${progressColor}`} // Use the progress color based on type
                         style={{ width: `${progress}%` }}
                     ></div>
                 </div>

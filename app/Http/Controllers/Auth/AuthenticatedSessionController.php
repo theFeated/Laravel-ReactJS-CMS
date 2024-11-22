@@ -50,7 +50,7 @@ class AuthenticatedSessionController extends Controller
     
                 // Check if Standard Login is disabled
                 if ($setting && !$setting->is_standard_login_enabled) {
-                    Log::warning('You disabled standard login. Try another way in.', [
+                    Log::warning('Standard Login is not enabled for your account.', [
                         'user_id' => $user->id,
                         'email' => $user->email,
                         'manual_login_enabled' => $setting->is_standard_login_enabled,
@@ -58,7 +58,7 @@ class AuthenticatedSessionController extends Controller
     
                     // Set notification for Standard Login disabled
                     $request->session()->put('notification', [
-                        'message' => 'You disabled standard login. Try another way in.',
+                        'message' => 'Standard Login is not enabled for your account.',
                         'type' => 'error',
                     ]);
             
